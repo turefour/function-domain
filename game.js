@@ -19,7 +19,7 @@
   const pt = (c) => String.fromCharCode(65 + c);
 
   /* 版本号单一来源：页面展示、单文件命名、发布说明都读这里 */
-  const VERSION = '1.0.1';
+  const VERSION = '1.0.2';
 
   const COLORS = ['#7bf1c4', '#7cc6ff', '#ffc06a', '#ff9db0'];
 
@@ -125,7 +125,7 @@
       expr: (p) => `y = ${fix(p[0])}x\u2074 ${sgn(p[1])}x\u00b3 ${sgn(p[2])}x\u00b2 ${sgn(p[3])}x ${sgn(p[4])}`,
     },
     log: {
-      name: '对数函数', short: 'LOG', unlock: 34,
+      name: '对数函数', short: 'LOG', unlock: 33,
       form: 'y = A ln(x \u2212 B) + C',
       params: ['A', 'B', 'C'], defaults: [1, 0, 0],
       /* 定义域 x > B，边界留一点余量避免采样缝隙 */
@@ -137,14 +137,14 @@
       },
     },
     tan: {
-      name: '正切函数', short: 'TAN', unlock: 36,
+      name: '正切函数', short: 'TAN', unlock: 35,
       form: 'y = A tan(B x) + C',
       params: ['A', 'B', 'C'], defaults: [1, 1, 0],
       f: (x, p) => p[0] * Math.tan(p[1] * x) + p[2],
       expr: (p) => `y = ${fix(p[0])}\u00b7tan(${fix(p[1])}x) ${sgn(p[2])}`,
     },
     gauss: {
-      name: '高斯函数', short: 'GAUSS', unlock: 38,
+      name: '高斯函数', short: 'GAUSS', unlock: 37,
       form: 'y = A e^(\u2212(x\u2212B)\u00b2/C\u00b2) + D',
       params: ['A', 'B', 'C', 'D'], defaults: [1, 0, 1, 0],
       f: (x, p) => {
@@ -159,7 +159,7 @@
       },
     },
     logistic: {
-      name: '逻辑斯蒂', short: 'SIGMOID', unlock: 40,
+      name: '逻辑斯蒂', short: 'SIGMOID', unlock: 39,
       form: 'y = A / (1 + e^(\u2212B(x\u2212C))) + D',
       params: ['A', 'B', 'C', 'D'], defaults: [1, 1, 0, 0],
       f: (x, p) => p[0] / (1 + Math.exp(-p[1] * (x - p[2]))) + p[3],
@@ -692,6 +692,21 @@
       'fb.limit': '每分钟只能提交一次，{s} 秒后可再试',
       'fb.offline': '离线版无法提交，请通过服务器地址访问',
       'fb.fail': '提交失败，请稍后再试',
+      'err.eyebrow': 'RUNTIME ERROR · 运行异常',
+      'err.title': '程序出错了',
+      'err.send': '回传报告',
+      'err.sending': '上报中',
+      'err.copy': '复制信息',
+      'err.close': '关闭',
+      'err.note': '报告只包含错误信息、版本与关卡，不含任何个人数据。',
+      'err.sent': '错误报告已回传，谢谢',
+      'err.limit': '上报太频繁，{s} 秒后可再试',
+      'err.fail': '回传失败，可先复制信息',
+      'err.offline': '离线版无法回传，已复制到剪贴板',
+      'err.copied': '错误信息已复制',
+      'err.copyFail': '复制失败，请手动选中文本',
+      'err.noStack': '（没有可用的堆栈信息）',
+      'err.freeze': '页面卡顿',
       'toast.copied': '仓库地址已复制',
       'param.stop': '停止',
       'aria.delete': '删除公式',
@@ -716,7 +731,7 @@
       'lesson.brief': 'FUNCTION BRIEF · 函数简介',
       'toast.unlock': '新公式解锁：{name}',
       'toast.unlockMore': '同时解锁：{name}',
-      'toast.locked': '{name} 将在第 {n} 关解锁',
+      'toast.locked': '{name} 不在本关的可选函数中',
       'toast.limit': '本关公式数量已达上限',
       'toast.hitStop': '曲线经过目标点，已自动停止',
       'toast.matchStop': '与目标图像重合，已自动停止',
@@ -790,6 +805,21 @@
       'fb.limit': 'One per minute — try again in {s}s',
       'fb.offline': 'Offline build cannot submit; open it from the server',
       'fb.fail': 'Submit failed, try again later',
+      'err.eyebrow': 'RUNTIME ERROR',
+      'err.title': 'Something went wrong',
+      'err.send': 'Send report',
+      'err.sending': 'Sending',
+      'err.copy': 'Copy details',
+      'err.close': 'Close',
+      'err.note': 'The report contains only the error, version and level — no personal data.',
+      'err.sent': 'Error report sent, thanks',
+      'err.limit': 'Too many reports — try again in {s}s',
+      'err.fail': 'Send failed; copy the details instead',
+      'err.offline': 'Offline build cannot send; details copied to clipboard',
+      'err.copied': 'Error details copied',
+      'err.copyFail': 'Copy failed — select the text manually',
+      'err.noStack': '(no stack trace available)',
+      'err.freeze': 'Page freeze',
       'toast.copied': 'Repository URL copied',
       'param.stop': 'Stop',
       'aria.delete': 'Delete formula',
@@ -814,7 +844,7 @@
       'lesson.brief': 'FUNCTION BRIEF',
       'toast.unlock': 'New formula unlocked: {name}',
       'toast.unlockMore': 'Also unlocked: {name}',
-      'toast.locked': '{name} unlocks at level {n}',
+      'toast.locked': '{name} is not available in this level',
       'toast.limit': 'Formula limit reached for this level',
       'toast.hitStop': 'Curve reached a light point — auto stopped',
       'toast.matchStop': 'Curve matches the target image — auto stopped',
@@ -961,42 +991,49 @@
       const LEVELS = [
     {
       name: '初次绘制',
+      pool: ['linear', 'abs'],
       hint: '让直线穿过 A 点。a 控制倾斜，b 控制它与 y 轴的交点。',
       seed: 'linear', maxForms: 1, tol: 0.36,
       points: [{ x: 3, y: 2 }],
     },
     {
       name: '两点之间',
+      pool: ['linear', 'abs'],
       hint: '一条直线要同时压住两个光点，斜率必须刚好。',
       seed: 'linear', maxForms: 1, tol: 0.30,
       points: [{ x: 2, y: 3 }, { x: 5, y: 1 }],
     },
     {
       name: '折角初现',
+      pool: ['linear', 'abs'],
       hint: '绝对值函数在顶点折成 V 形，a 决定张口大小，b 决定折点位置。',
       seed: 'abs', maxForms: 1, tol: 0.29,
       points: [{ x: 0, y: 2 }, { x: 1, y: 0 }, { x: 2, y: 2 }],
     },
     {
       name: '倒悬之 V',
+      pool: ['linear', 'abs'],
       hint: 'a 取负值时 V 形倒过来，c 把顶点抬离 x 轴。',
       seed: 'abs', maxForms: 1, tol: 0.29,
       points: [{ x: -1, y: 0 }, { x: 1, y: 2 }, { x: 3, y: 0 }],
     },
     {
       name: '弯曲',
+      pool: ['linear', 'quadratic', 'abs'],
       hint: '三个不共线的点无法被一条直线同时穿过，换抛物线。',
       seed: 'quadratic', maxForms: 1, tol: 0.29,
       points: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 2 }],
     },
     {
       name: '四点共弧',
+      pool: ['linear', 'quadratic', 'abs'],
       hint: '四个点落在同一条抛物线上，a、b、c 要一起配合。',
       seed: 'quadratic', maxForms: 1, tol: 0.27,
       points: [{ x: 0, y: 1 }, { x: 1, y: 0 }, { x: 2, y: 1 }, { x: 3, y: 4 }],
     },
     {
       name: '抬高之弧',
+      pool: ['linear', 'quadratic', 'abs'],
       hint: 'c 把整条抛物线抬高，顶点离开原点。注意右上角的禁区。',
       seed: 'quadratic', maxForms: 1, tol: 0.27,
       points: [{ x: -2, y: 5 }, { x: 0, y: 1 }, { x: 2, y: 5 }],
@@ -1006,6 +1043,7 @@
     },
     {
       name: '双向绕行',
+      pool: ['linear', 'quadratic', 'abs'],
       hint: '两处禁区卡在角落，抛物线要从中穿过。',
       seed: 'quadratic', maxForms: 1, tol: 0.26,
       points: [{ x: -1, y: 0 }, { x: 0, y: -3 }, { x: 1, y: -4 }, { x: 3, y: 0 }],
@@ -1016,6 +1054,7 @@
     },
     {
       name: '弧线迷阵',
+      pool: ['linear', 'quadratic', 'abs'],
       hint: '五个点与两处禁区，抛物线的开口与位置都要算准。',
       seed: 'quadratic', maxForms: 1, tol: 0.26,
       points: [{ x: 0, y: 3 }, { x: 1, y: 0 }, { x: 2, y: -1 }, { x: 3, y: 0 }, { x: 4, y: 3 }],
@@ -1026,18 +1065,21 @@
     },
     {
       name: '双曲',
+      pool: ['linear', 'quadratic', 'reciprocal', 'abs'],
       hint: '反比例函数在原点两侧分成两支，中间是断裂的。',
       seed: 'reciprocal', maxForms: 1, tol: 0.26,
       points: [{ x: 1, y: 3 }, { x: 2, y: 2 }, { x: -1, y: -1 }, { x: -2, y: 0 }],
     },
     {
       name: '远端双曲',
+      pool: ['linear', 'quadratic', 'reciprocal', 'abs'],
       hint: 'a 越大，曲线离原点越远，两支都向外推。',
       seed: 'reciprocal', maxForms: 1, tol: 0.26,
       points: [{ x: 1, y: 4 }, { x: 2, y: 2 }, { x: 4, y: 1 }, { x: -2, y: -2 }],
     },
     {
       name: '偏移双曲',
+      pool: ['linear', 'quadratic', 'reciprocal', 'abs'],
       hint: 'b 把整条双曲线上下平移，禁区挡在右上。',
       seed: 'reciprocal', maxForms: 1, tol: 0.24,
       points: [{ x: 1, y: 4 }, { x: 3, y: 2 }, { x: -1, y: -2 }, { x: -3, y: 0 }],
@@ -1047,6 +1089,7 @@
     },
     {
       name: '双曲回廊',
+      pool: ['linear', 'quadratic', 'reciprocal', 'abs'],
       hint: '两条禁区把可走的空间压成一条窄廊。',
       seed: 'reciprocal', maxForms: 1, tol: 0.24,
       points: [{ x: 1, y: 4 }, { x: 2, y: 3 }, { x: -1, y: 0 }, { x: -2, y: 1 }],
@@ -1057,6 +1100,7 @@
     },
     {
       name: '双曲三重门',
+      pool: ['linear', 'quadratic', 'reciprocal', 'abs'],
       hint: '五个点、三处禁区，双曲线的两支要分别照顾不同的光点。',
       seed: 'reciprocal', maxForms: 1, tol: 0.24,
       points: [{ x: 1, y: 5 }, { x: 3, y: 3 }, { x: -1, y: -1 }, { x: -3, y: 1 }, { x: -0.5, y: -4 }],
@@ -1068,18 +1112,21 @@
     },
     {
       name: '波动',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs'],
       hint: '振幅 a 拉开波峰，频率 b 决定周期，偏移 c 把整条波抬高。',
       seed: 'sine', maxForms: 1, tol: 0.27,
       points: [{ x: 0, y: 1 }, { x: 1.5, y: 3 }, { x: 3.1, y: 1.08 }],
     },
     {
       name: '陡波',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs'],
       hint: '正弦的三点跨越大半个周期，先找到波峰再定 a。',
       seed: 'sine', maxForms: 1, tol: 0.26,
       points: [{ x: -1.57, y: -3 }, { x: 0, y: 0 }, { x: 1.57, y: 3 }],
     },
     {
       name: '密波',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs'],
       hint: 'b 越大波越密，禁区卡在右上，别让波峰扫进去。',
       seed: 'sine', maxForms: 1, tol: 0.24,
       points: [{ x: 0, y: 1 }, { x: 0.79, y: 3 }, { x: 1.57, y: 1 }],
@@ -1089,6 +1136,7 @@
     },
     {
       name: '长波',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs'],
       hint: '五个点散布在一个完整周期里，b 决定周期长度。',
       seed: 'sine', maxForms: 1, tol: 0.24,
       points: [{ x: 0, y: 0 }, { x: 1.57, y: 2 }, { x: 3.14, y: 0 }, { x: 4.71, y: -2 }, { x: 6.28, y: 0 }],
@@ -1099,6 +1147,7 @@
     },
     {
       name: '波域禁区',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs'],
       hint: '三处禁区把波形夹在中间，注意左侧和右上的空隙。',
       seed: 'sine', maxForms: 1, tol: 0.24,
       points: [{ x: -3.14, y: 1 }, { x: -1.57, y: -1 }, { x: 0, y: 1 }, { x: 1.57, y: 3 }],
@@ -1110,18 +1159,21 @@
     },
     {
       name: '攀升',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential'],
       hint: '指数曲线增长极快，b 的一点点变化会让整条曲线剧烈偏移。',
       seed: 'exponential', maxForms: 1, tol: 0.29,
       points: [{ x: -1, y: 1.5 }, { x: 0, y: 2 }, { x: 1, y: 3 }],
     },
     {
       name: '陡升',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential'],
       hint: 'b 变大后曲线抬升更急，靠 a 与 c 把三点对齐。',
       seed: 'exponential', maxForms: 1, tol: 0.27,
       points: [{ x: -1, y: 0.25 }, { x: 0, y: 1 }, { x: 1, y: 4 }],
     },
     {
       name: '攀升禁区',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential'],
       hint: '四点阶梯状上升，左侧有一大片禁区。',
       seed: 'exponential', maxForms: 2, tol: 0.26,
       points: [{ x: -1, y: 2.5 }, { x: 0, y: 3 }, { x: 1, y: 4 }, { x: 2, y: 6 }],
@@ -1131,6 +1183,7 @@
     },
     {
       name: '高台',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential'],
       hint: '四点顺着指数曲线阶梯上升，右下与右上各有一处禁区。',
       seed: 'exponential', maxForms: 1, tol: 0.26,
       points: [{ x: -0.5, y: 1.5 }, { x: 0, y: 2 }, { x: 0.5, y: 3 }, { x: 1, y: 5 }],
@@ -1141,30 +1194,35 @@
     },
     {
       name: '根号之门',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt'],
       hint: '根式只在 x ≥ b 的地方有图像，左端是曲线的起点。',
       seed: 'sqrt', maxForms: 1, tol: 0.27,
       points: [{ x: 0, y: 0 }, { x: 1, y: 2 }, { x: 4, y: 4 }],
     },
     {
       name: '整流',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs'],
       hint: '绝对值套在正弦上，波谷被压平在一条水平线上。',
       seed: 'sinAbs', maxForms: 1, tol: 0.26,
       points: [{ x: 0, y: 1 }, { x: 1.57, y: 3 }, { x: 3.14, y: 1 }],
     },
     {
       name: '三次回旋',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic'],
       hint: '三次函数的 S 形要同时照顾两个拐点，四个参数一起调。',
       seed: 'cubic', maxForms: 2, tol: 0.26,
       points: [{ x: -2, y: -2 }, { x: -1, y: 2 }, { x: 1, y: -2 }, { x: 2, y: 2 }],
     },
     {
       name: '平方反比',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq'],
       hint: '平方反比对 x 轴对称，两侧都向上张开。',
       seed: 'recipSq', maxForms: 2, tol: 0.26,
       points: [{ x: 1, y: 5 }, { x: 2, y: 2 }, { x: -1, y: 5 }, { x: -2, y: 2 }],
     },
     {
       name: '双线复合',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq'],
       hint: '根式负责右侧，直线负责左侧，右上还有一处禁区。',
       seed: 'sqrt', maxForms: 3, tol: 0.26,
       points: [{ x: 1, y: 2 }, { x: 4, y: 3 }, { x: -2, y: 0 }, { x: 2, y: 2 }],
@@ -1174,6 +1232,7 @@
     },
     {
       name: '三线交错',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq'],
       hint: '三次曲线与整流正弦交错，两个禁区各守一角。',
       seed: 'cubic', maxForms: 3, tol: 0.26,
       points: [{ x: -1, y: 2 }, { x: 1, y: -2 }, { x: 0, y: 1 }, { x: 1.57, y: 3 }],
@@ -1184,6 +1243,7 @@
     },
     {
       name: '收敛',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq'],
       hint: '最后一关。三次、整流正弦与平方反比三条曲线，六点三禁区。',
       brief: {
         plan: '六个点分三组：三次曲线管对角，整流正弦压住上下两条水平段，平方反比补剩下的点。',
@@ -1200,12 +1260,14 @@
     },
     {
       name: '四次起伏',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic'],
       hint: '四次曲线两端同向发散。五个点恰好定死五个参数，先对好中间的低谷。',
       seed: 'quartic', maxForms: 1, tol: 0.38,
       points: [{ x: -2, y: 1.2 }, { x: -1, y: 0.2 }, { x: 0, y: 1 }, { x: 1, y: 1.2 }, { x: 2, y: 3.2 }],
     },
     {
       name: '双谷',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic'],
       hint: 'A、C、D 决定两个低谷的位置与深度，左上那处禁区挡住了取巧的直线。',
       seed: 'quartic', maxForms: 1, tol: 0.36,
       points: [{ x: -2, y: 0.4 }, { x: -1, y: 0.25 }, { x: 0, y: 1 }, { x: 1, y: 0.85 }, { x: 2, y: 1.6 }],
@@ -1213,6 +1275,7 @@
     },
     {
       name: '多峰',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic'],
       hint: '最后一关。五个点、两处禁区，四次曲线的两端必须绕开左上与右下。',
       seed: 'quartic', maxForms: 1, tol: 0.36,
       points: [{ x: -2, y: 0.8 }, { x: -1, y: 0.7 }, { x: 0, y: 1.2 }, { x: 1, y: 1.1 }, { x: 2, y: 1.6 }],
@@ -1223,12 +1286,14 @@
     },
     {
       name: '对数之门',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log'],
       hint: '对数只在 x > B 的地方有图像，越往右增长越慢。',
       seed: 'log', maxForms: 1, tol: 0.38,
       points: [{ x: 0.5, y: -1.39 }, { x: 1, y: 0 }, { x: 2, y: 1.39 }, { x: 4, y: 2.77 }],
     },
     {
       name: '对数走廊',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log'],
       hint: 'B 把整条曲线右移，左端有一条看不见的垂直渐近线。',
       seed: 'log', maxForms: 1, tol: 0.36,
       points: [{ x: 2, y: 1 }, { x: 3, y: 1.69 }, { x: 5, y: 2.39 }, { x: 9, y: 3.08 }],
@@ -1238,24 +1303,28 @@
     },
     {
       name: '正切之墙',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan'],
       hint: '正切在每个周期的两端冲向无穷，中间那段才是可用的。',
       seed: 'tan', maxForms: 1, tol: 0.36,
       points: [{ x: -0.6, y: -2.05 }, { x: -0.3, y: -0.93 }, { x: 0, y: 0 }, { x: 0.3, y: 0.93 }, { x: 0.6, y: 2.05 }],
     },
     {
       name: '正切周期',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan'],
       hint: 'C 抬高整段正切；一次只能盯住一个周期，别被旁边的陡坡带走。',
       seed: 'tan', maxForms: 1, tol: 0.36,
       points: [{ x: -1, y: -0.56 }, { x: -0.5, y: 0.45 }, { x: 0, y: 1 }, { x: 0.5, y: 1.55 }, { x: 1, y: 2.56 }],
     },
     {
       name: '钟形',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss'],
       hint: '高斯曲线左右对称，C 是宽度：越小越尖。',
       seed: 'gauss', maxForms: 1, tol: 0.38,
       points: [{ x: -2, y: 0.07 }, { x: -1, y: 1.47 }, { x: 0, y: 4 }, { x: 1, y: 1.47 }, { x: 2, y: 0.07 }],
     },
     {
       name: '偏峰',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss'],
       hint: 'B 把峰的顶点挪开原点，D 把整座山抬高。',
       seed: 'gauss', maxForms: 1, tol: 0.36,
       points: [{ x: -1, y: 0.55 }, { x: 0, y: 1.6 }, { x: 1, y: 3.5 }, { x: 2, y: 1.6 }, { x: 3, y: 0.55 }],
@@ -1265,12 +1334,14 @@
     },
     {
       name: 'S 形',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss', 'logistic'],
       hint: '逻辑斯蒂从下渐近线爬到上渐近线，中间那一段最陡。',
       seed: 'logistic', maxForms: 1, tol: 0.38,
       points: [{ x: -2, y: 0.07 }, { x: -1, y: 0.48 }, { x: 0, y: 2 }, { x: 1, y: 3.52 }, { x: 2, y: 3.93 }],
     },
     {
       name: '缓升',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss', 'logistic'],
       hint: 'B 控制上升的陡峭程度，D 把整条 S 形上下平移。',
       seed: 'logistic', maxForms: 1, tol: 0.36,
       points: [{ x: -1, y: -0.64 }, { x: 0, y: -0.19 }, { x: 1, y: 0.5 }, { x: 2, y: 1.19 }, { x: 3, y: 1.64 }],
@@ -1280,6 +1351,7 @@
     },
     {
       name: '对数与弦',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss', 'logistic'],
       hint: '两条曲线分工：对数负责右侧缓慢上升，直线负责左侧下行。',
       brief: {
         plan: '左边两点共线，右边三点在同一条对数曲线上，两条曲线各管一段。',
@@ -1294,6 +1366,7 @@
     },
     {
       name: '三角与对数',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss', 'logistic'],
       hint: '正弦在左，对数在右，两处禁区把中间的路挤窄了。',
       brief: {
         plan: '左边三点交给正弦，右边三点交给对数。',
@@ -1309,6 +1382,7 @@
     },
     {
       name: '钟形与弦',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss', 'logistic'],
       hint: '高斯峰顶配合一条下降的直线，注意左下角的方块。',
       brief: {
         plan: '高斯负责峰顶三点，直线接管右侧的下降段。',
@@ -1323,6 +1397,7 @@
     },
     {
       name: 'S 形与弧',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss', 'logistic'],
       hint: 'S 形在左侧缓慢起步，抛物线接管右侧上升。',
       brief: {
         plan: '左侧三点在 S 形的起步段，右侧三点交给抛物线。',
@@ -1338,6 +1413,7 @@
     },
     {
       name: '三层',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss', 'logistic'],
       hint: '对数、高斯、直线各管一段，三条曲线拼出完整路径。',
       brief: {
         plan: '六个点分给三条曲线：对数两点、高斯两点、直线两点。',
@@ -1354,6 +1430,7 @@
     },
     {
       name: '混合曲线',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss', 'logistic'],
       hint: '正切负责中段，逻辑斯蒂接管右侧，抛物线补齐左侧。',
       brief: {
         plan: '正切管中段，逻辑斯蒂管右侧，抛物线补左侧。',
@@ -1365,6 +1442,7 @@
     },
     {
       name: '禁区迷阵',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss', 'logistic'],
       hint: '四块禁区把图面切成走廊，曲线必须从缝里穿过。',
       brief: {
         plan: '四块禁区把平面切成走廊，三条曲线分别走中、右、左。',
@@ -1382,6 +1460,7 @@
     },
     {
       name: '终章',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss', 'logistic'],
       hint: '最后一关：四条曲线、四处禁区，把学过的一切都用上。',
       brief: {
         plan: '四条曲线、四处禁区：正弦守中段，逻辑斯蒂走右侧，高斯占左上，直线串联。',
@@ -1399,6 +1478,7 @@
     },
     {
       name: '测试场',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss', 'logistic'],
       hint: '实验关卡：全部函数直接可用，最多 10 条公式，视窗放大到 ±20，没有禁区。',
       seed: 'linear', maxForms: 10, tol: 0.60, radius: 20,
       test: true, allKinds: true,
@@ -1528,6 +1608,13 @@
     fbText: $('#fb-text'),
     fbSend: $('#fb-send'),
     fbCount: $('#fb-count'),
+    errOverlay: $('#err-overlay'),
+    errMsg: $('#err-msg'),
+    errMeta: $('#err-meta'),
+    errStack: $('#err-stack'),
+    errSend: $('#err-send'),
+    errCopy: $('#err-copy'),
+    errClose: $('#err-close'),
     lesson: $('#lesson'),
     lessonEyebrow: $('#lesson-eyebrow'),
     lessonTitle: $('#lesson-title'),
@@ -1588,7 +1675,6 @@
     }
     while (save.cleared.length < LEVELS.length) save.cleared.push(false);
     /* 进度一致性：可进入的关卡永远不超过“已通关数 + 1” */
-    save.unlocked = Math.min(save.unlocked, clamp(clearedCount() + 1, 1, LEVELS.length));
   }
 
   function persist() {
@@ -1612,18 +1698,23 @@
     return KINDS[kind].unlock || 0;
   }
 
-  function isKindUnlocked(kind) {
-    return clearedCount() >= unlockLevelOf(kind);
+  /* 函数池硬绑定在关卡上：每关的 pool 就是这一关能用的全部公式，
+     与通关记录、与解锁阈值都无关，改关卡数据即可调整 */
+  function levelPool() {
+    return (state.level && state.level.pool) || [];
   }
 
-  /* 本次进入关卡时刚好跨过解锁线的公式，用于播放一次高亮提示 */
+  function isKindUnlocked(kind) {
+    return levelPool().includes(kind);
+  }
+
+  /* 本次进入关卡时刚好跨过解锁线的公式，用于播放一次高亮提示。
+     save.seen 记的是「上一次进入的关卡序号」，跳关时也能正确判定。 */
   function freshUnlocks() {
-    const cleared = clearedCount();
-    const seen = clamp(parseInt(save.seen, 10) || 0, 0, LEVELS.length);
-    return ALL_KINDS.filter((k) => {
-      const at = unlockLevelOf(k);
-      return at > 0 && at <= cleared && at > seen;
-    });
+    const pool = levelPool();
+    const seen = clamp(parseInt(save.seen, 10) || 0, 0, LEVELS.length - 1);
+    const prev = new Set((LEVELS[seen] && LEVELS[seen].pool) || []);
+    return pool.filter((k) => !prev.has(k) && k !== 'linear' && k !== 'abs');
   }
 
   /* ---------------- 视图计算 ---------------- */
@@ -1787,7 +1878,7 @@
     const fresh = freshUnlocks();
     state.fresh = fresh;
     if (fresh.length) {
-      save.seen = clearedCount();
+      save.seen = state.levelIndex;
       persist();
     }
 
@@ -1860,7 +1951,7 @@
     const level = state.level;
     if (!level) return;
     if (!isKindUnlocked(kind)) {
-      toast(t('toast.locked', { name: kindName(kind), n: unlockLevelOf(kind) + 1 }));
+      toast(t('toast.locked', { name: kindName(kind) }));
       return;
     }
     if (state.forms.length >= level.maxForms) {
@@ -2250,27 +2341,26 @@
 
   function renderPalette() {
     if (!state.level) return;
-    const cleared = clearedCount();
+    const pool = levelPool();
     const fresh = state.fresh || [];
-    const allOpen = !!(state.level && state.level.allKinds);
-    const openCount = allOpen ? ALL_KINDS.length : ALL_KINDS.filter((k) => cleared >= unlockLevelOf(k)).length;
+    const openCount = pool.length;
 
     dom.paletteTag.textContent = `${openCount} / ${ALL_KINDS.length}`;
     dom.paletteOps.innerHTML = OPS
       .map((o) => `<span class="op-chip" title="${t(o.tipKey)}">${o.mark}</span>`)
       .join('');
 
-    fillPaletteGroup(dom.paletteListBasic, BASIC_KINDS, cleared, fresh);
-    fillPaletteGroup(dom.paletteListAdvanced, ADVANCED_KINDS, cleared, fresh);
+    fillPaletteGroup(dom.paletteListBasic, BASIC_KINDS, pool, fresh);
+    fillPaletteGroup(dom.paletteListAdvanced, ADVANCED_KINDS, pool, fresh);
     refreshPaletteState();
   }
 
-  function fillPaletteGroup(host, kinds, cleared, fresh) {
+  function fillPaletteGroup(host, kinds, pool, fresh) {
     host.innerHTML = '';
     kinds.forEach((kind) => {
       const def = KINDS[kind];
       const at = unlockLevelOf(kind);
-      const unlocked = (state.level && state.level.allKinds) || cleared >= at;
+      const unlocked = pool.includes(kind);
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.dataset.kind = kind;
@@ -2278,7 +2368,7 @@
         + (unlocked ? '' : ' is-locked')
         + (fresh.includes(kind) ? ' is-new' : '');
       btn.disabled = !unlocked;
-      btn.title = unlocked ? `${kindName(kind)} ${def.form}` : t('toast.locked', { name: kindName(kind), n: at + 1 });
+      btn.title = unlocked ? `${kindName(kind)} ${def.form}` : t('toast.locked', { name: kindName(kind) });
       btn.innerHTML = unlocked
         ? `<span class="pi-top"><span class="pi-name">${kindName(kind)}</span>`
           + `<span class="pi-short">${def.short}<b class="pi-plus">+</b></span></span>`
@@ -2947,6 +3037,9 @@
   function drawTargets(ctx, time) {
     if (!view) return;
 
+    /* 虚环就是命中边界：半径与 checkWin 的判定完全一致，看到进圈即算命中 */
+    const ringR = Math.max(9, Math.max(MIN_TOL_PX, state.level.tol * view.scale));
+
     for (let i = 0; i < state.targets.length; i++) {
       const t = state.targets[i];
       const px = sx(t.x);
@@ -2971,10 +3064,10 @@
       ctx.save();
       ctx.setLineDash([3, 7]);
       ctx.lineDashOffset = -time * 16;
-      ctx.strokeStyle = t.hit ? 'rgba(255, 225, 163, 0.85)' : 'rgba(255, 192, 106, 0.4)';
+      ctx.strokeStyle = t.hit ? 'rgba(255, 225, 163, 0.9)' : 'rgba(255, 192, 106, 0.55)';
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.arc(px, py, 15, 0, Math.PI * 2);
+      ctx.arc(px, py, ringR, 0, Math.PI * 2);
       ctx.stroke();
       ctx.restore();
 
@@ -2983,7 +3076,7 @@
       ctx.strokeStyle = `rgba(255, 192, 106, ${0.34 * (1 - ph)})`;
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.arc(px, py, 6 + ph * 24, 0, Math.PI * 2);
+      ctx.arc(px, py, ringR * 0.55 + ph * ringR * 1.15, 0, Math.PI * 2);
       ctx.stroke();
 
       /* 中心点 */
@@ -3212,11 +3305,12 @@
 
   /* ---------------- 开始与关卡列表 ---------------- */
 
+  /* 全部关卡开放：续玩优先回到第一个未通关的关卡 */
   function nextPlayable() {
     for (let i = 0; i < LEVELS.length; i++) {
-      if (i < save.unlocked && !save.cleared[i]) return i;
+      if (!save.cleared[i]) return i;
     }
-    return clamp(save.unlocked - 1, 0, LEVELS.length - 1);
+    return 0;
   }
 
   function renderStartProgress() {
@@ -3233,12 +3327,11 @@
     dom.levelsGrid.innerHTML = '';
 
     LEVELS.forEach((lv, i) => {
-      const locked = !lv.test && i >= save.unlocked;
+      /* 所有关卡开放，任意选择 */
       const done = !!save.cleared[i];
       const card = document.createElement('button');
       card.type = 'button';
-      card.disabled = locked;
-      card.className = 'level-card' + (locked ? ' is-locked' : '') + (done ? ' is-cleared' : '');
+      card.className = 'level-card' + (done ? ' is-cleared' : '');
       card.style.animationDelay = `${Math.min(i * 0.018, 0.4)}s`;
       const badge = lv.test ? 'LAB' : lv.maxForms > 1 ? 'MIX' : (KINDS[lv.seed] || KINDS.linear).short;
       const zc = (lv.zones || []).length;
@@ -3249,10 +3342,8 @@
         + `<i class="lc-kind">${lv.points.length}P</i>`
         + (zc ? `<i class="lc-kind is-warn">${zc}Z</i>` : '')
         + `</span>` +
-        `<span class="lc-state">${locked ? t('state.locked') : done ? t('state.cleared') : t('state.pending')}</span>`;
-      card.addEventListener('click', () => {
-        if (!locked) startLevel(i);
-      });
+        `<span class="lc-state">${done ? t('state.cleared') : t('state.pending')}</span>`;
+      card.addEventListener('click', () => startLevel(i));
       dom.levelsGrid.appendChild(card);
     });
   }
@@ -3330,6 +3421,147 @@
       dom.fbSend.disabled = false;
       dom.fbSend.textContent = t('fb.send');
     }
+  }
+
+  /* ---------------- 错误捕获与上报 ----------------
+     未捕获异常、Promise 拒绝、主线程卡顿都会弹出错误卡片，
+     可一键回传到 /api/error 落成 error-report.csv。
+     ---------------------------------------------- */
+
+  const ERR_SEEN = new Set();
+  let errPayload = null;
+
+  function errPlainText() {
+    if (!errPayload) return '';
+    return [
+      `[${errPayload.kind}] ${errPayload.message}`,
+      `version=V${VERSION} level=${state.level ? state.levelIndex + 1 : 0}`,
+      `page=${location.href}`,
+      `ua=${navigator.userAgent}`,
+      '',
+      errPayload.stack || '',
+    ].join('\n');
+  }
+
+  function showErrorCard(kind, message, stack) {
+    if (!dom.errOverlay) return;
+    errPayload = { kind, message, stack: stack || '' };
+    dom.errMsg.textContent = message;
+    dom.errStack.textContent = stack || t('err.noStack');
+    dom.errMeta.textContent =
+      `V${VERSION} · ${state.level ? `LV ${state.levelIndex + 1}` : '—'} · ${kind}`;
+    dom.errOverlay.hidden = false;
+    if (dom.errSend) {
+      dom.errSend.disabled = false;
+      dom.errSend.textContent = t('err.send');
+    }
+  }
+
+  function closeErrorCard() {
+    if (dom.errOverlay) dom.errOverlay.hidden = true;
+  }
+
+  /* 同一错误只弹一次，避免每帧重复弹窗；捕获器本身不能抛错 */
+  function captureError(kind, message, stack) {
+    try {
+      const msg = String(message || '').slice(0, 400);
+      const sig = `${kind}|${msg}|${String(stack || '').slice(0, 160)}`;
+      if (ERR_SEEN.has(sig)) return;
+      if (ERR_SEEN.size > 40) ERR_SEEN.clear();
+      ERR_SEEN.add(sig);
+
+      if (dom.errOverlay && !dom.errOverlay.hidden) return; // 已在展示，不覆盖
+      showErrorCard(kind, msg || t('err.title'), String(stack || '').slice(0, 4000));
+    } catch (e) {
+      /* 兜底：错误捕获本身失败时静默 */
+    }
+  }
+
+  function copyErrorText(silent) {
+    const text = errPlainText();
+    const fallback = () => {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+        if (!silent) toast(t('err.copied'), true);
+      } catch (e) {
+        toast(t('err.copyFail'));
+      }
+    };
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(() => { if (!silent) toast(t('err.copied'), true); }).catch(fallback);
+    } else {
+      fallback();
+    }
+  }
+
+  async function sendErrorReport() {
+    if (!errPayload || !dom.errSend) return;
+
+    if (location.protocol === 'file:') {
+      copyErrorText(true);
+      toast(t('err.offline'));
+      return;
+    }
+
+    dom.errSend.disabled = true;
+    dom.errSend.textContent = t('err.sending');
+
+    try {
+      const res = await fetch('/api/error', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          kind: errPayload.kind,
+          message: errPayload.message,
+          stack: errPayload.stack,
+          version: `V${VERSION}`,
+          level: state.level ? state.levelIndex + 1 : 0,
+          page: location.pathname,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok && data.ok) {
+        toast(t('err.sent'), true);
+        closeErrorCard();
+      } else if (res.status === 429) {
+        toast(t('err.limit', { s: data.retryAfter || 60 }));
+        dom.errSend.disabled = false;
+        dom.errSend.textContent = t('err.send');
+      } else {
+        toast(t('err.fail'));
+        dom.errSend.disabled = false;
+        dom.errSend.textContent = t('err.send');
+      }
+    } catch (e) {
+      toast(t('err.fail'));
+      dom.errSend.disabled = false;
+      dom.errSend.textContent = t('err.send');
+    }
+  }
+
+  function bindErrorHandlers() {
+    window.addEventListener('error', (e) => {
+      if (!e || !e.message) return;
+      captureError('error', e.message, e.error && e.error.stack);
+    });
+
+    window.addEventListener('unhandledrejection', (e) => {
+      const reason = (e && e.reason) || {};
+      captureError('promise', reason.message || String(reason), reason.stack);
+    });
+
+    if (dom.errSend) dom.errSend.addEventListener('click', sendErrorReport);
+    /* 包一层，避免把点击事件对象当成 silent 参数传进去 */
+    if (dom.errCopy) dom.errCopy.addEventListener('click', () => copyErrorText(false));
+    if (dom.errClose) dom.errClose.addEventListener('click', closeErrorCard);
   }
 
   function bindUI() {
@@ -3475,6 +3707,7 @@
 
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
+        if (dom.errOverlay && !dom.errOverlay.hidden) { closeErrorCard(); return; }
         if (!dom.lesson.hidden) { closeLesson(); return; }
         if (dom.winOverlay.classList.contains('is-open')) return;
         if (state.screen === 'game') {
@@ -3498,6 +3731,12 @@
   let frameErrors = 0;
 
   function frame(ts) {
+    /* 两帧间隔异常大 = 主线程被卡住过；切后台时 rAF 本来就停，不算 */
+    const gap = lastTs ? ts - lastTs : 0;
+    if (gap > 3000 && document.visibilityState === 'visible') {
+      captureError('freeze', `${t('err.freeze')} · ${Math.round(gap)} ms`, 'requestAnimationFrame gap');
+    }
+
     const dt = clamp((ts - lastTs) / 1000, 0, 0.06);
     lastTs = ts;
     const time = ts / 1000;
@@ -3516,6 +3755,7 @@
         frameErrors += 1;
         console.error('[frame]', e && e.message ? e.message : e);
       }
+      captureError('frame', e && e.message ? e.message : String(e), e && e.stack);
     }
 
     requestAnimationFrame(frame);
@@ -3531,6 +3771,7 @@
       el.textContent = `V${VERSION}`;
     });
     bindUI();
+    bindErrorHandlers();
     setPanel('forms');
     resizeBg();
     renderStartProgress();

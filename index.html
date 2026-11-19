@@ -20,7 +20,7 @@
 <section class="screen screen-start is-active" id="screen-start">
   <div class="start-wrap">
     <div class="start-copy">
-      <p class="eyebrow"><span class="pip"></span>INTERACTIVE ATLAS OF CURVES <span class="sl">/</span> <span class="mono" data-version>V1.0.1</span></p>
+      <p class="eyebrow"><span class="pip"></span>INTERACTIVE ATLAS OF CURVES <span class="sl">/</span> <span class="mono" data-version>V1.0.2</span></p>
       <h1 class="brand">
         <span class="brand-cn">函数域</span>
         <span class="brand-en">FUNCTION <em>DOMAIN</em></span>
@@ -182,7 +182,7 @@
             </div>
             <div class="gh-row">
               <span class="gh-label" data-i18n="gh.version">版本</span>
-              <span class="gh-value mono" data-version>V1.0.1</span>
+              <span class="gh-value mono" data-version>V1.0.2</span>
             </div>
             <p class="gh-hint" data-i18n="gh.hint">在 GitHub 搜索 turefour/function-domain 即可找到源码与单文件版本。</p>
             <div class="gh-actions">
@@ -244,6 +244,22 @@
     <div class="lesson-actions">
       <button class="btn btn-primary" id="lesson-close" type="button" data-i18n="btn.remember">记住了</button>
     </div>
+  </div>
+</div>
+
+<div class="err-overlay" id="err-overlay" hidden>
+  <div class="err-card" role="alertdialog" aria-modal="true" aria-labelledby="err-title">
+    <p class="err-eyebrow mono" data-i18n="err.eyebrow">RUNTIME ERROR · 运行异常</p>
+    <h2 class="err-title" id="err-title" data-i18n="err.title">程序出错了</h2>
+    <p class="err-msg" id="err-msg"></p>
+    <p class="err-meta mono" id="err-meta"></p>
+    <pre class="err-stack" id="err-stack"></pre>
+    <div class="err-actions">
+      <button class="btn btn-primary" id="err-send" type="button" data-i18n="err.send">回传报告</button>
+      <button class="btn btn-line" id="err-copy" type="button" data-i18n="err.copy">复制信息</button>
+      <button class="btn btn-line" id="err-close" type="button" data-i18n="err.close">关闭</button>
+    </div>
+    <p class="err-note" data-i18n="err.note">报告只包含错误信息、版本与关卡，不含任何个人数据。</p>
   </div>
 </div>
 

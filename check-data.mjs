@@ -62,6 +62,35 @@ for (const m of levels.matchAll(/tol: ([\d.]+)/g)) {
   if (!(v > 0.1 && v < 0.8)) errors.push(`tol=${v} 超出合理范围 (0.1, 0.8)`);
 }
 
+/* 函数池硬绑定：每关的 pool 必须存在、无未知函数、且覆盖 seed 与全部解法用到的函数 */
+const levelEntries = levels.split(/\r?\n    \{\r?\n/).slice(1);
+const solEntries = sols.split(/\r?\n    \[/).slice(1);
+
+levelEntries.forEach((raw, i) => {
+  const n = i + 1;
+  const name = (raw.match(/name: '([^']+)'/) || [])[1] || `L${n}`;
+  const seed = (raw.match(/seed: '(\w+)'/) || [])[1];
+  const poolRaw = (raw.match(/pool: \[([^\]]*)\]/) || [])[1];
+
+  if (!poolRaw) {
+    errors.push(`L${n} ${name} 缺少 pool`);
+    return;
+  }
+
+  const pool = poolRaw.split(',').map((s) => s.trim().replace(/'/g, '')).filter(Boolean);
+  if (!pool.length) errors.push(`L${n} ${name} 的 pool 为空`);
+
+  const unknown = pool.filter((k) => !kindKeys.includes(k));
+  if (unknown.length) errors.push(`L${n} ${name} 的 pool 含未知函数: ${unknown.join(', ')}`);
+
+  if (seed && !pool.includes(seed)) errors.push(`L${n} ${name} 的 seed(${seed}) 不在 pool 中`);
+
+  const solRaw = solEntries[i] || '';
+  const used = [...solRaw.matchAll(/kind: '(\w+)'/g)].map((m) => m[1]);
+  const missing = [...new Set(used)].filter((k) => !pool.includes(k));
+  if (missing.length) errors.push(`L${n} ${name} 的解法用到 ${missing.join(', ')}，但不在 pool 中`);
+});
+
 const zhBlock = js.match(/zh: \{([\s\S]*?)\r?\n {4}\},/);
 const enBlock = js.match(/en: \{([\s\S]*?)\r?\n {2}\};/);
 const zhKeys = new Set([...(zhBlock ? zhBlock[1] : '').matchAll(/'([\w.]+)':/g)].map((m) => m[1]));
