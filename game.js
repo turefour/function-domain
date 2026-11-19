@@ -336,6 +336,8 @@
 
   const LANG_KEY = 'function-domain.lang';
   const REPO_URL = 'https://github.com/turefour/function-domain';
+  const FB_KEY = 'function-domain.fbAt';
+  const FB_MAX = 500;
 
   const KIND_EN = {
     linear: 'Linear', quadratic: 'Quadratic', reciprocal: 'Reciprocal', sine: 'Sine',
@@ -679,6 +681,16 @@
       'gh.open': '打开仓库',
       'gh.copy': '复制地址',
       'gh.version': '版本',
+      'fb.title': '反馈 / FEEDBACK',
+      'fb.placeholder': '遇到问题或有建议？写在这里（最多 500 字）。',
+      'fb.hint': '每分钟最多提交一次，内容会记录到本地表格。',
+      'fb.send': '提交',
+      'fb.sending': '提交中',
+      'fb.ok': '反馈已记录，谢谢',
+      'fb.empty': '内容太短，至少写两个字',
+      'fb.limit': '每分钟只能提交一次，{s} 秒后可再试',
+      'fb.offline': '离线版无法提交，请通过服务器地址访问',
+      'fb.fail': '提交失败，请稍后再试',
       'toast.copied': '仓库地址已复制',
       'param.stop': '停止',
       'aria.delete': '删除公式',
@@ -766,6 +778,16 @@
       'gh.open': 'Open repo',
       'gh.copy': 'Copy URL',
       'gh.version': 'Version',
+      'fb.title': 'FEEDBACK',
+      'fb.placeholder': 'Found a bug or have an idea? Write it here (max 500 chars).',
+      'fb.hint': 'One submission per minute; entries are saved to a local sheet.',
+      'fb.send': 'Send',
+      'fb.sending': 'Sending',
+      'fb.ok': 'Feedback saved, thanks',
+      'fb.empty': 'Too short — write at least two characters',
+      'fb.limit': 'One per minute — try again in {s}s',
+      'fb.offline': 'Offline build cannot submit; open it from the server',
+      'fb.fail': 'Submit failed, try again later',
       'toast.copied': 'Repository URL copied',
       'param.stop': 'Stop',
       'aria.delete': 'Delete formula',
@@ -860,6 +882,9 @@
     document.documentElement.lang = state.lang === 'en' ? 'en' : 'zh-CN';
     document.querySelectorAll('[data-i18n]').forEach((el) => {
       el.textContent = t(el.dataset.i18n);
+    });
+    document.querySelectorAll('[data-i18n-ph]').forEach((el) => {
+      el.placeholder = t(el.dataset.i18nPh);
     });
     if (dom.langSwitch) {
       dom.langSwitch.textContent = state.lang === 'en' ? '\u4e2d\u6587' : 'EN';
@@ -1498,6 +1523,9 @@
     githubBlock: $('#github-block'),
     btnOpenRepo: $('#btn-open-repo'),
     btnCopyRepo: $('#btn-copy-repo'),
+    fbText: $('#fb-text'),
+    fbSend: $('#fb-send'),
+    fbCount: $('#fb-count'),
     lesson: $('#lesson'),
     lessonEyebrow: $('#lesson-eyebrow'),
     lessonTitle: $('#lesson-title'),
@@ -3223,6 +3251,79 @@
 
   /* ---------------- 事件绑定 ---------------- */
 
+  /* ---------------- 反馈 ----------------
+     走同源 POST /api/feedback，服务端落 feedback.csv。
+     file:// 打开时没有后端，直接提示无法提交。
+     -------------------------------------- */
+
+  function updateFbCount() {
+    if (!dom.fbCount || !dom.fbText) return;
+    const n = dom.fbText.value.length;
+    dom.fbCount.textContent = `${n} / ${FB_MAX}`;
+    dom.fbCount.dataset.max = n >= FB_MAX ? 'true' : 'false';
+  }
+
+  function fbCooldownLeft() {
+    try {
+      const last = Number(localStorage.getItem(FB_KEY) || 0);
+      return Math.max(0, 60000 - (Date.now() - last));
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  async function submitFeedback() {
+    if (!dom.fbText) return;
+    const text = dom.fbText.value.trim();
+
+    if (text.length < 2) {
+      toast(t('fb.empty'));
+      return;
+    }
+    if (location.protocol === 'file:') {
+      toast(t('fb.offline'));
+      return;
+    }
+
+    const wait = fbCooldownLeft();
+    if (wait > 0) {
+      toast(t('fb.limit', { s: Math.ceil(wait / 1000) }));
+      return;
+    }
+
+    dom.fbSend.disabled = true;
+    dom.fbSend.textContent = t('fb.sending');
+    try {
+      const res = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text,
+          level: state.level ? state.levelIndex + 1 : 0,
+          page: location.pathname,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok && data.ok) {
+        dom.fbText.value = '';
+        updateFbCount();
+        try { localStorage.setItem(FB_KEY, String(Date.now())); } catch (e) { /* 忽略 */ }
+        toast(t('fb.ok'), true);
+      } else if (res.status === 429) {
+        toast(t('fb.limit', { s: data.retryAfter || 60 }));
+      } else {
+        toast(t('fb.fail'));
+      }
+    } catch (e) {
+      /* 离线、跨域或服务未开 */
+      toast(t('fb.offline'));
+    } finally {
+      dom.fbSend.disabled = false;
+      dom.fbSend.textContent = t('fb.send');
+    }
+  }
+
   function bindUI() {
     $('#btn-start').addEventListener('click', () => startLevel(nextPlayable()));
     $('#btn-open-levels').addEventListener('click', () => {
@@ -3296,6 +3397,15 @@
         window.open(REPO_URL, '_blank', 'noopener');
       });
     }
+    if (dom.fbSend) dom.fbSend.addEventListener('click', submitFeedback);
+    if (dom.fbText) {
+      dom.fbText.addEventListener('input', updateFbCount);
+      dom.fbText.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') submitFeedback();
+      });
+      updateFbCount();
+    }
+
     if (dom.btnCopyRepo) {
       dom.btnCopyRepo.addEventListener('click', async () => {
         try {

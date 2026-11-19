@@ -1248,6 +1248,74 @@ input.num:focus {
 .zone-list .zl-mark { color: rgba(255, 150, 164, .75); }
 .zone-list li.is-hot .zl-mark { color: var(--rose); }
 
+/* ---------- 反馈 ---------- */
+.feedback-block {
+  margin-top: 6px;
+  border: 1px solid rgba(123, 241, 196, .14);
+  background: rgba(123, 241, 196, .022);
+}
+.github-block + .feedback-block { margin-top: 6px; }
+.feedback-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 8px;
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .16em;
+  color: rgba(123, 241, 196, .7);
+  cursor: pointer;
+  list-style: none;
+}
+.feedback-title::-webkit-details-marker { display: none; }
+.feedback-title::after { content: '+'; opacity: .7; }
+.feedback-block[open] .feedback-title::after { content: '\2212'; }
+
+.feedback-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 8px 8px;
+}
+.fb-text {
+  width: 100%;
+  min-height: 56px;
+  max-height: 140px;
+  resize: vertical;
+  padding: 6px 8px;
+  border: 1px solid rgba(123, 241, 196, .18);
+  background: rgba(3, 10, 11, .55);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1.6;
+}
+.fb-text:focus {
+  outline: none;
+  border-color: rgba(123, 241, 196, .55);
+  box-shadow: 0 0 12px rgba(123, 241, 196, .12);
+}
+.fb-text::placeholder { color: var(--dim-2); }
+.fb-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.fb-count {
+  font-size: 8.5px;
+  letter-spacing: .08em;
+  color: var(--dim-2);
+}
+.fb-count[data-max="true"] { color: var(--amber); }
+.fb-hint {
+  margin: 0;
+  font-size: 9px;
+  line-height: 1.5;
+  color: var(--dim-2);
+}
+
 /* ---------- GitHub 引导 ---------- */
 .github-block {
   border: 1px solid rgba(123, 241, 196, .14);
