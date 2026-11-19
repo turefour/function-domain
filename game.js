@@ -204,6 +204,7 @@
   /* ---------------- 语言 ---------------- */
 
   const LANG_KEY = 'function-domain.lang';
+  const REPO_URL = 'https://github.com/turefour/function-domain';
 
   const KIND_EN = {
     linear: 'Linear', quadratic: 'Quadratic', reciprocal: 'Reciprocal', sine: 'Sine',
@@ -338,6 +339,13 @@
       'sol.standard': '标准解法',
       'sol.split': '分线解法',
       'zone.title': '禁区 / FORBIDDEN',
+      'gh.title': 'GITHUB / 源码',
+      'gh.account': '账号',
+      'gh.repo': '项目',
+      'gh.hint': '在 GitHub 搜索 turefour/function-domain 即可找到源码与单文件版本。',
+      'gh.open': '打开仓库',
+      'gh.copy': '复制地址',
+      'toast.copied': '仓库地址已复制',
       'zone.rect': '矩形禁区',
       'zone.circle': '圆形禁区',
       'zone.quadrant': '第 {q} 象限整块禁止',
@@ -402,6 +410,13 @@
       'sol.standard': 'Standard solution',
       'sol.split': 'Split solution',
       'zone.title': 'FORBIDDEN',
+      'gh.title': 'GITHUB / SOURCE',
+      'gh.account': 'Account',
+      'gh.repo': 'Repo',
+      'gh.hint': 'Search turefour/function-domain on GitHub for the source and the single-file build.',
+      'gh.open': 'Open repo',
+      'gh.copy': 'Copy URL',
+      'toast.copied': 'Repository URL copied',
       'zone.rect': 'Rect zone',
       'zone.circle': 'Circle zone',
       'zone.quadrant': 'Quadrant {q} blocked',
@@ -860,6 +875,9 @@
     solutionsBlock: $('#solutions-block'),
     solutionList: $('#solution-list'),
     langSwitch: $('#lang-switch'),
+    githubBlock: $('#github-block'),
+    btnOpenRepo: $('#btn-open-repo'),
+    btnCopyRepo: $('#btn-copy-repo'),
     lesson: $('#lesson'),
     lessonEyebrow: $('#lesson-eyebrow'),
     lessonTitle: $('#lesson-title'),
@@ -2547,6 +2565,23 @@
 
     if (dom.langSwitch) {
       dom.langSwitch.addEventListener('click', () => setLang(state.lang === 'zh' ? 'en' : 'zh'));
+    }
+
+    if (dom.btnOpenRepo) {
+      dom.btnOpenRepo.addEventListener('click', () => {
+        window.open(REPO_URL, '_blank', 'noopener');
+      });
+    }
+    if (dom.btnCopyRepo) {
+      dom.btnCopyRepo.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(REPO_URL);
+          toast(t('toast.copied'), true);
+        } catch (e) {
+          /* file:// 或旧浏览器下剪贴板不可用，直接把地址显示出来 */
+          toast(REPO_URL);
+        }
+      });
     }
 
     dom.lessonClose.addEventListener('click', closeLesson);

@@ -1219,6 +1219,62 @@ input.num:focus {
 .zone-list .zl-mark { color: rgba(255, 150, 164, .75); }
 .zone-list li.is-hot .zl-mark { color: var(--rose); }
 
+/* ---------- GitHub 引导 ---------- */
+.github-block {
+  border: 1px solid rgba(123, 241, 196, .14);
+  background: rgba(123, 241, 196, .022);
+}
+.github-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 8px;
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .16em;
+  color: rgba(123, 241, 196, .7);
+  cursor: pointer;
+  list-style: none;
+}
+.github-title::-webkit-details-marker { display: none; }
+.github-title::after { content: '+'; opacity: .7; }
+.github-block[open] .github-title::after { content: '\2212'; }
+
+.github-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 8px 8px;
+}
+.gh-row { display: flex; align-items: baseline; gap: 8px; }
+.gh-label {
+  flex: 0 0 36px;
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .12em;
+  color: var(--dim-2);
+}
+.gh-link {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .03em;
+  color: rgba(123, 241, 196, .92);
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(123, 241, 196, .3);
+}
+.gh-link:hover {
+  color: var(--mint);
+  border-bottom-color: var(--mint);
+}
+.gh-hint {
+  margin-top: 1px;
+  font-size: 9px;
+  line-height: 1.55;
+  color: var(--dim-2);
+}
+.gh-actions { display: flex; gap: 6px; margin-top: 3px; }
+
 .switches {
   display: grid;
   grid-template-columns: 1fr 1fr;
