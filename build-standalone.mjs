@@ -3,7 +3,7 @@
         node build-standalone.mjs --check   只校验产物是否与源码一致（CI/提交前用）
 */
 
-import { readFileSync, writeFileSync, statSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, statSync, existsSync, unlinkSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -29,19 +29,30 @@ if (out === html) throw new Error('未找到 style.css / game.js 引用，模板
 /* 注释不带时间戳，保证 --check 可以做逐字节比较 */
 out = out.replace('</head>', '<!-- 单文件构建：由 build-standalone.mjs 生成，请勿手改 -->\n</head>');
 
-const target = join(root, 'standalone.html');
+const version = (js.match(/const VERSION = '([\d.]+)'/) || [])[1];
+if (!version) throw new Error('game.js 缺少 VERSION 常量');
+
+/* 单文件产物按「函数域 + 版本号」命名 */
+const target = join(root, `函数域-V${version}.html`);
+const legacy = join(root, 'standalone.html');
 
 if (process.argv.includes('--check')) {
   const current = existsSync(target) ? readFileSync(target, 'utf8') : '';
   if (current !== out) {
-    console.error('standalone.html 与源码不一致，请先运行 node build-standalone.mjs');
+    console.error(`${target.split(/[\\/]/).pop()} 与源码不一致，请先运行 node build-standalone.mjs`);
     process.exit(1);
   }
-  console.log('standalone.html 已是最新');
+  console.log(`${target.split(/[\\/]/).pop()} 已是最新`);
   process.exit(0);
 }
 
 writeFileSync(target, out, 'utf8');
+if (existsSync(legacy)) {
+  try {
+    unlinkSync(legacy);
+    console.log('已移除旧的 standalone.html');
+  } catch (e) { /* 删不掉就留着，不影响新产物 */ }
+}
 
 const kb = (n) => (n / 1024).toFixed(1) + ' KB';
-console.log(`standalone.html 已生成：${kb(statSync(target).size)}（html ${kb(html.length)} + css ${kb(css.length)} + js ${kb(js.length)}）`);
+console.log(`函数域-V${version}.html 已生成：${kb(statSync(target).size)}（html ${kb(html.length)} + css ${kb(css.length)} + js ${kb(js.length)}）`);

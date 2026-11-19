@@ -1283,6 +1283,11 @@ input.num:focus {
   color: var(--mint);
   border-bottom-color: var(--mint);
 }
+.gh-value {
+  font-size: 10px;
+  letter-spacing: .06em;
+  color: rgba(123, 241, 196, .92);
+}
 .gh-hint {
   margin-top: 1px;
   font-size: 9px;
@@ -1853,7 +1858,7 @@ html[lang="en"] .brand-en {
 <section class="screen screen-start is-active" id="screen-start">
   <div class="start-wrap">
     <div class="start-copy">
-      <p class="eyebrow"><span class="pip"></span>INTERACTIVE ATLAS OF CURVES <span class="sl">/</span> <span class="mono">2026</span></p>
+      <p class="eyebrow"><span class="pip"></span>INTERACTIVE ATLAS OF CURVES <span class="sl">/</span> <span class="mono" data-version>V1.0.1</span></p>
       <h1 class="brand">
         <span class="brand-cn">函数域</span>
         <span class="brand-en">FUNCTION <em>DOMAIN</em></span>
@@ -2000,6 +2005,10 @@ html[lang="en"] .brand-en {
               <span class="gh-label" data-i18n="gh.repo">项目</span>
               <a class="gh-link" href="https://github.com/turefour/function-domain" target="_blank" rel="noopener noreferrer">function-domain</a>
             </div>
+            <div class="gh-row">
+              <span class="gh-label" data-i18n="gh.version">版本</span>
+              <span class="gh-value mono" data-version>V1.0.1</span>
+            </div>
             <p class="gh-hint" data-i18n="gh.hint">在 GitHub 搜索 turefour/function-domain 即可找到源码与单文件版本。</p>
             <div class="gh-actions">
               <button class="mini-btn" id="btn-open-repo" type="button" data-i18n="gh.open">打开仓库</button>
@@ -2073,6 +2082,9 @@ html[lang="en"] .brand-en {
     return v > 0 ? `+ ${fix(v)}` : `\u2212 ${fix(-v)}`;
   };
   const pt = (c) => String.fromCharCode(65 + c);
+
+  /* 版本号单一来源：页面展示、单文件命名、发布说明都读这里 */
+  const VERSION = '1.0.1';
 
   const COLORS = ['#7bf1c4', '#7cc6ff', '#ffc06a', '#ff9db0'];
 
@@ -2408,6 +2420,7 @@ html[lang="en"] .brand-en {
       'gh.hint': '在 GitHub 搜索 turefour/function-domain 即可找到源码与单文件版本。',
       'gh.open': '打开仓库',
       'gh.copy': '复制地址',
+      'gh.version': '版本',
       'toast.copied': '仓库地址已复制',
       'param.stop': '停止',
       'aria.delete': '删除公式',
@@ -2490,6 +2503,7 @@ html[lang="en"] .brand-en {
       'gh.hint': 'Search turefour/function-domain on GitHub for the source and the single-file build.',
       'gh.open': 'Open repo',
       'gh.copy': 'Copy URL',
+      'gh.version': 'Version',
       'toast.copied': 'Repository URL copied',
       'param.stop': 'Stop',
       'aria.delete': 'Delete formula',
@@ -4799,6 +4813,9 @@ html[lang="en"] .brand-en {
     loadSave();
     loadLang();
     applyI18n();
+    document.querySelectorAll('[data-version]').forEach((el) => {
+      el.textContent = `V${VERSION}`;
+    });
     bindUI();
     resizeBg();
     renderStartProgress();

@@ -1270,6 +1270,11 @@ input.num:focus {
   color: var(--mint);
   border-bottom-color: var(--mint);
 }
+.gh-value {
+  font-size: 10px;
+  letter-spacing: .06em;
+  color: rgba(123, 241, 196, .92);
+}
 .gh-hint {
   margin-top: 1px;
   font-size: 9px;

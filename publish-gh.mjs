@@ -4,7 +4,7 @@
    git 可执行文件：环境变量 GIT_EXE，默认 PATH 中的 git
    对应仓库：https://github.com/turefour/function-domain */
 
-import { copyFileSync, existsSync, mkdirSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -16,16 +16,28 @@ const target = process.argv[2]
   || join(homedir(), 'Desktop', 'function-domain');
 const GIT = process.env.GIT_EXE || 'git';
 
+const jsSrc = readFileSync(join(root, 'game.js'), 'utf8');
+const version = (jsSrc.match(/const VERSION = '([\d.]+)'/) || [])[1];
+if (!version) throw new Error('game.js 缺少 VERSION 常量');
+const bundle = `函数域-V${version}.html`;
+
 const FILES = [
-  'index.html', 'style.css', 'game.js',
-  'standalone.html', 'build-standalone.mjs', 'check-data.mjs', 'publish-gh.mjs',
+  'index.html', 'style.css', 'game.js', bundle,
+  'build-standalone.mjs', 'check-data.mjs', 'publish-gh.mjs',
 ];
 
-/* 1. 先重建单文件版本，避免把过期的 standalone.html 推上去 */
+/* 1. 先重建单文件版本，避免把过期的产物推上去 */
 execFileSync(process.execPath, [join(root, 'build-standalone.mjs')], { stdio: 'inherit' });
 
-/* 2. 同步到发布目录 */
+/* 2. 同步到发布目录，并清掉旧版本产物 */
 if (!existsSync(target)) mkdirSync(target, { recursive: true });
+for (const name of readdirSync(target)) {
+  const old = name === 'standalone.html' || (/^函数域-V.*\.html$/.test(name) && name !== bundle);
+  if (old) {
+    rmSync(join(target, name), { force: true });
+    console.log('removed stale', name);
+  }
+}
 for (const name of FILES) {
   copyFileSync(join(root, name), join(target, name));
   console.log('synced', name);
@@ -37,7 +49,7 @@ const git = (...args) => execFileSync(GIT, args, { cwd: target, encoding: 'utf8'
 try {
   git('add', '-A');
   git('-c', 'user.name=CodeVault', '-c', 'user.email=codevault@local',
-    'commit', '-m', `sync: ${new Date().toISOString().slice(0, 16).replace('T', ' ')}`);
+    'commit', '-m', `release: v${version}`);
   console.log('committed');
 } catch (e) {
   const out = `${e.stdout || ''}${e.stderr || ''}`;
@@ -51,7 +63,7 @@ try {
 
 try {
   git('push');
-  console.log('pushed -> https://github.com/turefour/function-domain');
+  console.log(`pushed v${version} -> https://github.com/turefour/function-domain`);
 } catch (e) {
   const out = `${e.stdout || ''}${e.stderr || ''}`.trim();
   console.error('推送失败，本地提交已保留：\n' + out.split('\n').slice(-3).join('\n'));

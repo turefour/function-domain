@@ -18,6 +18,9 @@
   };
   const pt = (c) => String.fromCharCode(65 + c);
 
+  /* 版本号单一来源：页面展示、单文件命名、发布说明都读这里 */
+  const VERSION = '1.0.1';
+
   const COLORS = ['#7bf1c4', '#7cc6ff', '#ffc06a', '#ff9db0'];
 
   /* 判定与手感相关的固定数值，集中在这里方便统一调整 */
@@ -352,6 +355,7 @@
       'gh.hint': '在 GitHub 搜索 turefour/function-domain 即可找到源码与单文件版本。',
       'gh.open': '打开仓库',
       'gh.copy': '复制地址',
+      'gh.version': '版本',
       'toast.copied': '仓库地址已复制',
       'param.stop': '停止',
       'aria.delete': '删除公式',
@@ -434,6 +438,7 @@
       'gh.hint': 'Search turefour/function-domain on GitHub for the source and the single-file build.',
       'gh.open': 'Open repo',
       'gh.copy': 'Copy URL',
+      'gh.version': 'Version',
       'toast.copied': 'Repository URL copied',
       'param.stop': 'Stop',
       'aria.delete': 'Delete formula',
@@ -2743,6 +2748,9 @@
     loadSave();
     loadLang();
     applyI18n();
+    document.querySelectorAll('[data-version]').forEach((el) => {
+      el.textContent = `V${VERSION}`;
+    });
     bindUI();
     resizeBg();
     renderStartProgress();
