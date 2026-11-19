@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>函数域 · FUNCTION DOMAIN</title>
+<meta name="theme-color" content="#05090a" />
+<meta name="description" content="用公式把曲线引向光点的函数图像解谜游戏" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2305090a'/%3E%3Cpath d='M3 25 C 9 25 9 7 16 7 S 23 25 29 25' stroke='%237bf1c4' stroke-width='2' fill='none'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,600&family=IBM+Plex+Mono:wght@300;400;500;600&family=Noto+Serif+SC:wght@400;600;900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<canvas id="bg-canvas" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ==================== 开始界面 ==================== -->
+<section class="screen screen-start is-active" id="screen-start">
+  <div class="start-wrap">
+    <div class="start-copy">
+      <p class="eyebrow"><span class="pip"></span>INTERACTIVE ATLAS OF CURVES <span class="sl">/</span> <span class="mono">2026</span></p>
+      <h1 class="brand">
+        <span class="brand-cn">函数域</span>
+        <span class="brand-en">FUNCTION <em>DOMAIN</em></span>
+      </h1>
+      <p class="tagline"><span data-i18n="start.tagline">把曲线，引向光点。</span><small data-i18n="start.taglineSub">拖动参数，让公式在坐标系中成立。</small></p>
+      <div class="start-actions">
+        <button class="btn btn-primary" id="btn-start" type="button"><span data-i18n="start.begin">开始观测</span><kbd>↵</kbd></button>
+        <button class="btn btn-ghost" id="btn-open-levels" type="button"><span data-i18n="start.levels">关卡序列</span></button>
+      </div>
+      <div class="start-foot">
+        <div class="track" id="start-track"></div>
+        <div class="foot-row">
+          <span class="mono" id="start-progress">00 / 10 已通关</span>
+          <span class="dim note" data-i18n="start.foot2">点击箭头启动增长 · 也可直接键入数值</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="start-deco" aria-hidden="true">
+      <div class="axes">
+        <span class="ax ax-h"></span>
+        <span class="ax ax-v"></span>
+        <span class="q q1">Ⅰ</span><span class="q q2">Ⅱ</span>
+        <span class="q q3">Ⅲ</span><span class="q q4">Ⅳ</span>
+        <svg class="curve" viewBox="0 0 320 320" preserveAspectRatio="none">
+          <path class="curve-path" d="M2 160 C 40 160 40 60 80 60 S 120 260 160 260 S 200 60 240 60 S 280 160 318 160" />
+        </svg>
+        <span class="orbit"><i></i></span>
+      </div>
+      <p class="deco-cap mono">FIG. 01 — A CURVE SEEKING ITS POINTS</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 关卡选择 ==================== -->
+<section class="screen screen-levels" id="screen-levels">
+  <div class="levels-wrap">
+    <header class="levels-head">
+      <button class="btn btn-tiny" id="btn-levels-back" type="button">← <span data-i18n="levels.back">返回</span></button>
+      <div class="levels-title">
+        <p class="eyebrow">SEQUENCE</p>
+        <h2 data-i18n="levels.title">关卡序列</h2>
+      </div>
+      <p class="mono dim" id="levels-count">00 / 10 CLEARED</p>
+    </header>
+    <div class="levels-grid" id="levels-grid"></div>
+    <p class="levels-note" data-i18n="levels.desc">每一关解锁一种新的函数形态。完成当前关卡，下一关才会开启。</p>
+  </div>
+</section>
+
+<!-- ==================== 游戏 ==================== -->
+<section class="screen screen-game" id="screen-game">
+  <div class="stage">
+    <header class="stage-head">
+      <div class="lv-id">
+        <span class="mono dim">LV</span>
+        <b id="lv-number">01</b>
+      </div>
+      <div class="lv-meta">
+        <h2 id="lv-name">初次绘制</h2>
+        <p id="lv-hint">让直线穿过光点。</p>
+      </div>
+      <div class="stage-stats">
+        <div class="stat"><span data-i18n="game.targets">目标</span><b id="stat-target">0 / 1</b></div>
+        <div class="stat"><span data-i18n="game.forms">公式</span><b id="stat-form">1 / 1</b></div>
+        <button class="chip" id="btn-hint" type="button" data-i18n="game.hint">提示</button>
+        <button class="chip" id="btn-pause" type="button" data-i18n="game.pause">暂停</button>
+      </div>
+    </header>
+
+    <div class="plot-wrap" id="plot-wrap">
+      <canvas id="plot-canvas"></canvas>
+      <span class="plot-cap tl mono">PLOT / LIVE</span>
+      <span class="plot-cap br mono">CARTESIAN FIELD</span>
+      <div class="plot-hud hud-left" aria-hidden="true">
+        <p class="hud-title mono">MISSION</p>
+        <ul class="hud-targets" id="hud-targets"></ul>
+        <p class="hud-zone mono" id="hud-zone"></p>
+        <p class="hud-foot mono" id="hud-range">VIEW ±10</p>
+      </div>
+      <div class="plot-hud hud-right" aria-hidden="true">
+        <p class="hud-title mono">SPECTRUM</p>
+        <ul class="hud-forms" id="hud-forms"></ul>
+      </div>
+      <div class="hint-pop" id="hint-pop"></div>
+      <div class="scan" id="scan"></div>
+    </div>
+  </div>
+
+  <div class="console">
+    <section class="panel panel-forms">
+      <header class="panel-head">
+        <h3 data-i18n="panel.forms">公式区</h3>
+        <div class="head-tools">
+          <span class="tag mono" id="form-count">1 / 1</span>
+          <button class="mini-btn" id="btn-stop-all" type="button" data-i18n="panel.stopAll">全部停止</button>
+        </div>
+      </header>
+      <div class="form-list" id="form-list"></div>
+      <p class="form-tip" data-i18n="form.tip">▲▼ 每秒 ±1 平滑增减，再点暂停；输入框可粘贴整条公式。</p>
+    </section>
+
+    <section class="panel panel-palette">
+      <header class="panel-head"><h3 data-i18n="panel.palette">公式选择区</h3><span class="tag mono" id="palette-tag" title="已解锁公式 / 全部公式">ADD</span></header>
+      <div class="palette-scroll">
+        <div class="palette-group">
+          <p class="palette-label" data-i18n="panel.basics">基础运算 · BASICS</p>
+          <div class="palette-ops" id="palette-ops"></div>
+          <div class="palette-list" id="palette-list-basic"></div>
+        </div>
+        <div class="palette-group">
+          <p class="palette-label" data-i18n="panel.advanced">进阶函数 · ADVANCED</p>
+          <div class="palette-list" id="palette-list-advanced"></div>
+        </div>
+      </div>
+      </section>
+
+    <section class="panel panel-settings">
+      <header class="panel-head"><h3 data-i18n="panel.settings">设置区</h3><span class="tag mono">SYS</span></header>
+      <div class="settings-body">
+        <ul class="target-list" id="target-list"></ul>
+        <details class="zone-block" id="zone-block" hidden>
+          <summary class="zone-title mono" id="zone-title" data-i18n="zone.title">禁区 / FORBIDDEN</summary>
+          <ul class="zone-list" id="zone-list"></ul>
+        </details>
+        <details class="solutions-block" id="solutions-block" hidden>
+          <summary class="solutions-title mono" data-i18n="sol.title">官方解法 / SOLUTIONS</summary>
+          <ul class="solution-list" id="solution-list"></ul>
+        </details>
+        <div class="switches">
+          <label class="switch"><input type="checkbox" id="opt-grid" checked /><span class="track"></span><span data-i18n="switch.grid">显示网格</span></label>
+          <label class="switch"><input type="checkbox" id="opt-ticks" checked /><span class="track"></span><span data-i18n="switch.ticks">坐标刻度</span></label>
+          <label class="switch"><input type="checkbox" id="opt-guides" checked /><span class="track"></span><span data-i18n="switch.guides">参考虚线</span></label>
+          <label class="switch"><input type="checkbox" id="opt-target" /><span class="track"></span><span data-i18n="switch.target">目标图像</span></label>
+        </div>
+        <p class="op-note" data-i18n="op.note">箭头启动匀速增减（每秒 ±1），再点暂停；「停止」键定格；输入框可粘贴整条公式。</p>
+        <div class="settings-actions">
+          <button class="btn btn-line" id="btn-reset" type="button" data-i18n="btn.reset">重置本关</button>
+          <button class="btn btn-line btn-warn" id="btn-home" type="button" data-i18n="btn.home">返回主页 · 选择关卡</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>
+
+<!-- ==================== 通关浮层 ==================== -->
+<div class="overlay" id="win-overlay">
+  <div class="win-card">
+    <p class="eyebrow">CURVE ALIGNED</p>
+    <h2 data-i18n="win.title">光点已连接</h2>
+    <p class="win-sub" id="win-sub">曲线穿过全部目标。</p>
+    <div class="win-stats" id="win-stats"></div>
+    <div class="win-actions">
+      <button class="btn btn-primary" id="btn-next" type="button" data-i18n="win.next">下一关 →</button>
+      <button class="btn btn-ghost" id="btn-replay" type="button" data-i18n="win.replay">重玩</button>
+      <button class="btn btn-ghost" id="btn-win-home" type="button" data-i18n="win.home">主页</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 函数教学 ==================== -->
+<div class="lesson" id="lesson" hidden>
+  <div class="lesson-card">
+    <p class="lesson-eyebrow mono" id="lesson-eyebrow">NEW FUNCTION</p>
+    <h2 class="lesson-title" id="lesson-title">一次函数</h2>
+    <p class="lesson-form mono" id="lesson-form">y = a x + b</p>
+    <div class="lesson-canvas-wrap">
+      <canvas id="lesson-canvas"></canvas>
+    </div>
+    <ul class="lesson-points" id="lesson-points"></ul>
+    <div class="lesson-actions">
+      <button class="btn btn-primary" id="lesson-close" type="button" data-i18n="btn.remember">记住了</button>
+    </div>
+  </div>
+</div>
+
+<button class="lang-switch" id="lang-switch" type="button" aria-label="Switch to English">EN</button>
+
+<div class="toast" id="toast"></div>
+
+<script src="game.js"></script>
+</body>
+</html>
