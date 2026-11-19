@@ -19,6 +19,13 @@
   const pt = (c) => String.fromCharCode(65 + c);
 
   const COLORS = ['#7bf1c4', '#7cc6ff', '#ffc06a', '#ff9db0'];
+
+  /* 判定与手感相关的固定数值，集中在这里方便统一调整 */
+  const MIN_TOL_PX = 5;        // 命中判定允许的最小像素容差
+  const STOP_RATIO = 0.65;     // 自动停机阈值 = 命中阈值 × 该比例
+  const ZONE_EPS = 0.14;       // 禁区判定容差（世界单位）
+  const SQRT_MARGIN = 0.3;     // 根式定义域向左留白，避免起点落进采样缝隙
+  const WIN_HOLD = 0.26;       // 全部命中后需要保持的秒数
   /* 参数增长固定为每秒 ±1，不再分档 */
 
   /* ---------------- 函数族 ---------------- */
@@ -77,7 +84,7 @@
       /* 定义域起点向左留一小段，避免起点正好落在采样网格缝隙里被判丢 */
       f: (x, p) => {
         const d = x - p[1];
-        if (d < -0.3) return NaN;
+        if (d < -SQRT_MARGIN) return NaN;
         return p[0] * Math.sqrt(Math.max(0, d)) + p[2];
       },
       expr: (p) => {
@@ -346,6 +353,17 @@
       'gh.open': '打开仓库',
       'gh.copy': '复制地址',
       'toast.copied': '仓库地址已复制',
+      'param.stop': '停止',
+      'aria.delete': '删除公式',
+      'aria.param': '参数 {name}',
+      'aria.increase': '{name} 增加',
+      'aria.decrease': '{name} 减少',
+      'op.add': '常数项相加：y = A x + B',
+      'op.sub': '常数项相减：B 取负值即可',
+      'op.mul': '系数相乘：A 与 B 叠加缩放',
+      'op.div': '反比例取商：A / x',
+      'op.abs': '绝对值折角：把曲线折成 V 形',
+      'op.sq': '平方：二次项 x²',
       'zone.rect': '矩形禁区',
       'zone.circle': '圆形禁区',
       'zone.quadrant': '第 {q} 象限整块禁止',
@@ -417,6 +435,17 @@
       'gh.open': 'Open repo',
       'gh.copy': 'Copy URL',
       'toast.copied': 'Repository URL copied',
+      'param.stop': 'Stop',
+      'aria.delete': 'Delete formula',
+      'aria.param': 'Parameter {name}',
+      'aria.increase': 'Increase {name}',
+      'aria.decrease': 'Decrease {name}',
+      'op.add': 'Add a constant: y = A x + B',
+      'op.sub': 'Subtract a constant: make B negative',
+      'op.mul': 'Scale coefficients: A and B multiply',
+      'op.div': 'Quotient: A / x',
+      'op.abs': 'Absolute value folds the curve into a V',
+      'op.sq': 'Square: the x^2 term',
       'zone.rect': 'Rect zone',
       'zone.circle': 'Circle zone',
       'zone.quadrant': 'Quadrant {q} blocked',
@@ -495,6 +524,18 @@
       dom.langSwitch.textContent = state.lang === 'en' ? '\u4e2d\u6587' : 'EN';
       dom.langSwitch.setAttribute('aria-label', state.lang === 'en' ? '\u5207\u6362\u4e2d\u6587' : 'Switch to English');
     }
+    /* 动态生成的控件没有 data-i18n，这里补一遍文本与无障碍标签 */
+    document.querySelectorAll('.fc-del').forEach((b) => b.setAttribute('aria-label', t('aria.delete')));
+    document.querySelectorAll('.form-card .num').forEach((inp) => {
+      inp.setAttribute('aria-label', t('aria.param', { name: inp.dataset.label || '' }));
+    });
+    document.querySelectorAll('.form-card .step').forEach((b) => {
+      const key = b.dataset.dir === '1' ? 'aria.increase' : 'aria.decrease';
+      b.setAttribute('aria-label', t(key, { name: b.dataset.label || '' }));
+    });
+    document.querySelectorAll('.form-card .stop').forEach((b) => {
+      b.textContent = t('param.stop');
+    });
   }
 
   function refreshWinText() {
@@ -524,7 +565,6 @@
       renderTargetList();
       renderZoneList();
       renderSolutions();
-      renderHud();
       updateStats();
       if (!dom.lesson.hidden && state.lessonKind) fillLesson(state.lessonKind, state.lessonIsNew);
       if (dom.winOverlay.classList.contains('is-open')) refreshWinText();
@@ -535,12 +575,12 @@
   const BASIC_KINDS = ['linear', 'abs'];
   const ADVANCED_KINDS = ['quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq'];
   const OPS = [
-    { mark: '+', tip: '常数项相加：y = a x + b' },
-    { mark: '\u2212', tip: '常数项相减：b 取负值即可' },
-    { mark: '\u00d7', tip: '系数相乘：a 与 b 叠加缩放' },
-    { mark: '\u00f7', tip: '反比例取商：a / x' },
-    { mark: '| |', tip: '绝对值折角：把曲线折成 V 形' },
-    { mark: '\u00b2', tip: '平方：二次项 x\u00b2' },
+    { mark: '+', tipKey: 'op.add' },
+    { mark: '\u2212', tipKey: 'op.sub' },
+    { mark: '\u00d7', tipKey: 'op.mul' },
+    { mark: '\u00f7', tipKey: 'op.div' },
+    { mark: '| |', tipKey: 'op.abs' },
+    { mark: '\u00b2', tipKey: 'op.sq' },
   ];
 
   /* ---------------- 关卡 ----------------
@@ -792,36 +832,36 @@
   --------------------------------------------- */
 
       const SOLUTIONS = [
-    [{ label: '标准解法', forms: [{ kind: 'linear', params: [1, -1] }] }],
-    [{ label: '标准解法', forms: [{ kind: 'linear', params: [-0.67, 4.33] }] }],
-    [{ label: '标准解法', forms: [{ kind: 'abs', params: [2, 1, 0] }] }],
-    [{ label: '标准解法', forms: [{ kind: 'abs', params: [-1, 1, 2] }] }],
-    [{ label: '标准解法', forms: [{ kind: 'quadratic', params: [1, -1, 0] }] }],
-    [{ label: '标准解法', forms: [{ kind: 'quadratic', params: [1, -2, 1] }] }],
-    [{ label: '标准解法', forms: [{ kind: 'quadratic', params: [1, 0, 1] }] }],
-    [{ label: '标准解法', forms: [{ kind: 'quadratic', params: [1, -2, -3] }] }],
-    [{ label: '标准解法', forms: [{ kind: 'quadratic', params: [1, -4, 3] }] }],
-    [{ label: '标准解法', forms: [{ kind: 'reciprocal', params: [2, 1] }] }],
-    [{ label: '标准解法', forms: [{ kind: 'reciprocal', params: [4, 0] }] }],
-    [{ label: '标准解法', forms: [{ kind: 'reciprocal', params: [3, 1] }] }],
-    [{ label: '标准解法', forms: [{ kind: 'reciprocal', params: [2, 2] }] }],
-    [{ label: '标准解法', forms: [{ kind: 'reciprocal', params: [3, 2] }] }],
-    [{ label: '标准解法', forms: [{ kind: 'sine', params: [2, 1, 1] }] }],
-    [{ label: '标准解法', forms: [{ kind: 'sine', params: [3, 1, 0] }] }],
-    [{ label: '标准解法', forms: [{ kind: 'sine', params: [2, 2, 1] }] }],
-    [{ label: '标准解法', forms: [{ kind: 'sine', params: [2, 1, 0] }] }],
-    [{ label: '标准解法', forms: [{ kind: 'sine', params: [2, 1, 1] }] }],
-    [{ label: '标准解法', forms: [{ kind: 'exponential', params: [1, 1, 1] }] }],
-    [{ label: '标准解法', forms: [{ kind: 'exponential', params: [1, 2, 0] }] }],
-    [{ label: '标准解法', forms: [{ kind: 'exponential', params: [1, 1, 2] }] }],
-    [{ label: '标准解法', forms: [{ kind: 'exponential', params: [1, 2, 1] }] }],
-    [{ label: '标准解法', forms: [{ kind: 'sqrt', params: [2, 0, 0] }] }],
-    [{ label: '标准解法', forms: [{ kind: 'sinAbs', params: [2, 1, 1] }] }],
-    [{ label: '标准解法', forms: [{ kind: 'cubic', params: [1, 0, -3, 0] }] }],
-    [{ label: '标准解法', forms: [{ kind: 'recipSq', params: [4, 1] }] }],
-    [{ label: '分线解法', forms: [{ kind: 'sqrt', params: [1, 0, 1] }, { kind: 'linear', params: [0.5, 1] }] }],
-    [{ label: '分线解法', forms: [{ kind: 'cubic', params: [1, 0, -3, 0] }, { kind: 'sinAbs', params: [2, 1, 1] }] }],
-    [{ label: '分线解法', forms: [{ kind: 'cubic', params: [1, 0, -3, 0] }, { kind: 'sinAbs', params: [2, 1, 1] }, { kind: 'recipSq', params: [4, 1] }] }],
+    [{ forms: [{ kind: 'linear', params: [1, -1] }] }],
+    [{ forms: [{ kind: 'linear', params: [-0.67, 4.33] }] }],
+    [{ forms: [{ kind: 'abs', params: [2, 1, 0] }] }],
+    [{ forms: [{ kind: 'abs', params: [-1, 1, 2] }] }],
+    [{ forms: [{ kind: 'quadratic', params: [1, -1, 0] }] }],
+    [{ forms: [{ kind: 'quadratic', params: [1, -2, 1] }] }],
+    [{ forms: [{ kind: 'quadratic', params: [1, 0, 1] }] }],
+    [{ forms: [{ kind: 'quadratic', params: [1, -2, -3] }] }],
+    [{ forms: [{ kind: 'quadratic', params: [1, -4, 3] }] }],
+    [{ forms: [{ kind: 'reciprocal', params: [2, 1] }] }],
+    [{ forms: [{ kind: 'reciprocal', params: [4, 0] }] }],
+    [{ forms: [{ kind: 'reciprocal', params: [3, 1] }] }],
+    [{ forms: [{ kind: 'reciprocal', params: [2, 2] }] }],
+    [{ forms: [{ kind: 'reciprocal', params: [3, 2] }] }],
+    [{ forms: [{ kind: 'sine', params: [2, 1, 1] }] }],
+    [{ forms: [{ kind: 'sine', params: [3, 1, 0] }] }],
+    [{ forms: [{ kind: 'sine', params: [2, 2, 1] }] }],
+    [{ forms: [{ kind: 'sine', params: [2, 1, 0] }] }],
+    [{ forms: [{ kind: 'sine', params: [2, 1, 1] }] }],
+    [{ forms: [{ kind: 'exponential', params: [1, 1, 1] }] }],
+    [{ forms: [{ kind: 'exponential', params: [1, 2, 0] }] }],
+    [{ forms: [{ kind: 'exponential', params: [1, 1, 2] }] }],
+    [{ forms: [{ kind: 'exponential', params: [1, 2, 1] }] }],
+    [{ forms: [{ kind: 'sqrt', params: [2, 0, 0] }] }],
+    [{ forms: [{ kind: 'sinAbs', params: [2, 1, 1] }] }],
+    [{ forms: [{ kind: 'cubic', params: [1, 0, -3, 0] }] }],
+    [{ forms: [{ kind: 'recipSq', params: [4, 1] }] }],
+    [{ forms: [{ kind: 'sqrt', params: [1, 0, 1] }, { kind: 'linear', params: [0.5, 1] }] }],
+    [{ forms: [{ kind: 'cubic', params: [1, 0, -3, 0] }, { kind: 'sinAbs', params: [2, 1, 1] }] }],
+    [{ forms: [{ kind: 'cubic', params: [1, 0, -3, 0] }, { kind: 'sinAbs', params: [2, 1, 1] }, { kind: 'recipSq', params: [4, 1] }] }],
   ];
 
   LEVELS.forEach((lv, i) => { lv.solutions = SOLUTIONS[i] || []; });
@@ -990,7 +1030,7 @@
   }
 
   /* eps 让曲线贴着坐标轴走时不会因为浮点抖动被误判 */
-  function inZone(x, y, z, eps = 0.14) {
+  function inZone(x, y, z, eps = ZONE_EPS) {
     if (z.type === 'rect') {
       return x > z.x1 && x < z.x2 && y > z.y1 && y < z.y2;
     }
@@ -1109,6 +1149,7 @@
     state.breached = new Set();
     dom.zoneBlock.open = false;
     state.solutionMatch = null;
+    state.paramSig = '';
     state.targets = level.points.map((p, i) => ({
       x: p.x, y: p.y, hit: false, near: false, label: pt(i),
     }));
@@ -1247,7 +1288,7 @@
     del.type = 'button';
     del.className = 'fc-del';
     del.title = '删除公式';
-    del.setAttribute('aria-label', '删除公式');
+    del.setAttribute('aria-label', t('aria.delete'));
     del.textContent = '\u2715';
     del.addEventListener('click', () => removeForm(form));
 
@@ -1406,7 +1447,8 @@
     input.inputMode = 'decimal';
     input.spellcheck = false;
     input.value = fix(param.value);
-    input.setAttribute('aria-label', `参数 ${param.label}`);
+    input.dataset.label = param.label;
+    input.setAttribute('aria-label', t('aria.param', { name: param.label }));
 
     /* 粘贴整条公式时直接解析成参数，纯数字仍交给浏览器默认粘贴 */
     input.addEventListener('paste', (e) => {
@@ -1457,7 +1499,7 @@
     const stop = document.createElement('button');
     stop.type = 'button';
     stop.className = 'stop';
-    stop.textContent = '停止';
+    stop.textContent = t('param.stop');
     stop.disabled = true;
     stop.addEventListener('click', () => {
       param.dir = 0;
@@ -1482,7 +1524,9 @@
     btn.className = 'step ' + (dir > 0 ? 'up' : 'down');
     btn.dataset.dir = String(dir);
     btn.dataset.active = 'false';
-    btn.setAttribute('aria-label', `${param.label} ${dir > 0 ? '增加' : '减少'}`);
+    btn.dataset.label = param.label;
+    btn.setAttribute('aria-label',
+      t(dir > 0 ? 'aria.increase' : 'aria.decrease', { name: param.label }));
 
     const arrow = document.createElement('i');
     arrow.textContent = dir > 0 ? '\u25b2' : '\u25bc';
@@ -1563,7 +1607,7 @@
 
     dom.paletteTag.textContent = `${openCount} / ${ALL_KINDS.length}`;
     dom.paletteOps.innerHTML = OPS
-      .map((o) => `<span class="op-chip" title="${o.tip}">${o.mark}</span>`)
+      .map((o) => `<span class="op-chip" title="${t(o.tipKey)}">${o.mark}</span>`)
       .join('');
 
     fillPaletteGroup(dom.paletteListBasic, BASIC_KINDS, cleared, fresh);
@@ -2017,10 +2061,27 @@
     ctx.closePath();
   }
 
+  /* 45° 斜纹用 13px 的平铺图案，避免每帧手绘上百条线段 */
+  let hatchTile = null;
+
+  function hatchPattern(ctx) {
+    if (!hatchTile) {
+      hatchTile = document.createElement('canvas');
+      hatchTile.width = 13;
+      hatchTile.height = 13;
+      const g = hatchTile.getContext('2d');
+      g.strokeStyle = 'rgba(255, 104, 124, .13)';
+      g.lineWidth = 1;
+      g.beginPath();
+      g.moveTo(-2, 15);
+      g.lineTo(15, -2);
+      g.stroke();
+    }
+    return ctx.createPattern(hatchTile, 'repeat');
+  }
+
   function drawZones(ctx) {
     if (!state.zones.length) return;
-    const { left, top, size } = view;
-    const span = size * 2;
     const hot = state.violation;
 
     for (const z of state.zones) {
@@ -2028,15 +2089,8 @@
       zonePath(ctx, z);
       ctx.fillStyle = hot ? 'rgba(255, 104, 124, .16)' : 'rgba(255, 104, 124, .07)';
       ctx.fill();
-      ctx.clip();
-      ctx.strokeStyle = 'rgba(255, 104, 124, .13)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      for (let d = -span; d < span; d += 13) {
-        ctx.moveTo(left + d, top);
-        ctx.lineTo(left + d + span, top + span);
-      }
-      ctx.stroke();
+      ctx.fillStyle = hatchPattern(ctx);
+      ctx.fill();
       ctx.restore();
 
       ctx.save();
@@ -2287,9 +2341,9 @@
   function checkWin(dt) {
     if (!view || state.won || state.paused) return;
 
-    const tolPx = Math.max(5, state.level.tol * view.scale);
+    const tolPx = Math.max(MIN_TOL_PX, state.level.tol * view.scale);
     /* 停机阈值比命中阈值更严，停下来的位置更贴近光点中心 */
-    const stopTol = tolPx * 0.65;
+    const stopTol = tolPx * STOP_RATIO;
     const running = hasRunning();
     let all = true;
     let sig = '';
@@ -2314,11 +2368,18 @@
       if (!t.hit) all = false;
     }
 
-    const sol = matchedSolution();
-    if (sol && sol !== state.solutionMatch && running) autoStop = t('toast.matchStop');
-    if (sol !== state.solutionMatch) {
-      state.solutionMatch = sol;
-      renderSolutionMatch();
+    /* 参数签名没变且没有自动增减时，跳过解法匹配的整表遍历 */
+    const paramSig = state.forms
+      .map((f) => `${f.kind}:${f.params.map((p) => p.value.toFixed(2)).join(',')}`)
+      .join('|');
+    if (running || paramSig !== state.paramSig) {
+      state.paramSig = paramSig;
+      const sol = matchedSolution();
+      if (sol && sol !== state.solutionMatch && running) autoStop = t('toast.matchStop');
+      if (sol !== state.solutionMatch) {
+        state.solutionMatch = sol;
+        renderSolutionMatch();
+      }
     }
 
     if (autoStop) {
@@ -2347,7 +2408,7 @@
 
     if (all && !breach) {
       state.hold += dt;
-      if (state.hold > 0.26) triggerWin();
+      if (state.hold > WIN_HOLD) triggerWin();
     } else {
       state.hold = 0;
     }

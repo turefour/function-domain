@@ -1,7 +1,9 @@
 /* 把 index.html / style.css / game.js 打包成单文件 standalone.html
-   用法：node build-standalone.mjs  （在 function-domain 目录或任意位置执行） */
+   用法：node build-standalone.mjs           生成
+        node build-standalone.mjs --check   只校验产物是否与源码一致（CI/提交前用）
+*/
 
-import { readFileSync, writeFileSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, statSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -24,12 +26,21 @@ let out = html
 
 if (out === html) throw new Error('未找到 style.css / game.js 引用，模板结构可能已变更');
 
-out = out.replace(
-  '</head>',
-  `<!-- 单文件构建：${new Date().toISOString().slice(0, 10)} 由 build-standalone.mjs 生成 -->\n</head>`,
-);
+/* 注释不带时间戳，保证 --check 可以做逐字节比较 */
+out = out.replace('</head>', '<!-- 单文件构建：由 build-standalone.mjs 生成，请勿手改 -->\n</head>');
 
 const target = join(root, 'standalone.html');
+
+if (process.argv.includes('--check')) {
+  const current = existsSync(target) ? readFileSync(target, 'utf8') : '';
+  if (current !== out) {
+    console.error('standalone.html 与源码不一致，请先运行 node build-standalone.mjs');
+    process.exit(1);
+  }
+  console.log('standalone.html 已是最新');
+  process.exit(0);
+}
+
 writeFileSync(target, out, 'utf8');
 
 const kb = (n) => (n / 1024).toFixed(1) + ' KB';
