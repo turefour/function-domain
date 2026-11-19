@@ -16,9 +16,13 @@ const block = (re) => {
 };
 const count = (s, re) => (s.match(re) || []).length;
 
-const levels = block(/const LEVELS = \[[\s\S]*?\n  \];/);
+const baseLevels = block(/const LEVELS = \[[\s\S]*?\n  \];/);
+const chLevels = block(/const CHALLENGE_LEVELS = \[[\s\S]*?\n  \];/);
+const sandbox = block(/const SANDBOX_LEVEL = \{[\s\S]*?\n  \};/);
 const sols = block(/const SOLUTIONS = \[[\s\S]*?\n  \];/);
+const chSols = block(/const CHALLENGE_SOLUTIONS = \[[\s\S]*?\n  \];/);
 const levelEn = block(/const LEVEL_EN = \[[\s\S]*?\n  \];/);
+const chEn = block(/const CHALLENGE_EN = \[[\s\S]*?\n  \];/);
 const roman = block(/const ROMAN = \[[\s\S]*?\];/);
 const kinds = block(/const KINDS = \{[\s\S]*?\n  \};/);
 const lessons = block(/const LESSONS = \{[\s\S]*?\n  \};/);
@@ -27,17 +31,24 @@ const lessonEnExt = block(/const LESSON_EN_EXT = \{[\s\S]*?\n  \};/);
 const kindEn = block(/const KIND_EN = \{[\s\S]*?\n  \};/);
 
 const counts = {
-  LEVELS: count(levels, /name: '/g),
-  SOLUTIONS: count(sols, /forms: \[/g),
-  LEVEL_EN: count(levelEn, /name: '/g),
+  BASE: count(baseLevels, /name: '/g),
+  CHALLENGE: count(chLevels, /name: '/g),
+  SANDBOX: count(sandbox, /name: '/g),
+  SOLUTIONS: count(sols, /forms: \[/g) + count(chSols, /forms: \[/g) + 1,
+  LEVEL_EN: count(levelEn, /name: '/g) + count(chEn, /name: '/g) + 1,
   ROMAN: count(roman, /'[^']+'/g),
 };
 
-for (const [key, value] of Object.entries(counts)) {
-  if (value !== counts.LEVELS) {
-    errors.push(`${key} 有 ${value} 条，与 LEVELS(${counts.LEVELS}) 不一致`);
-  }
+/* 两页关卡数量必须一致，解法与英文名覆盖全部关卡 */
+if (counts.CHALLENGE !== counts.BASE) {
+  errors.push(`挑战页 ${counts.CHALLENGE} 关，与基础页 ${counts.BASE} 关不一致`);
 }
+const total = counts.BASE + counts.CHALLENGE + counts.SANDBOX;
+for (const key of ['SOLUTIONS', 'LEVEL_EN']) {
+  if (counts[key] !== total) errors.push(`${key} 有 ${counts[key]} 条，总关卡 ${total} 条`);
+}
+if (counts.SANDBOX !== 1) errors.push(`测试场应为 1 个，实际 ${counts.SANDBOX}`);
+if (counts.ROMAN !== counts.BASE) errors.push(`ROMAN 有 ${counts.ROMAN} 个，基础页 ${counts.BASE} 关`);
 
 const kindKeys = [...kinds.matchAll(/^    (\w+): \{/gm)].map((m) => m[1]);
 const lessonKeys = [...lessons.matchAll(/^    (\w+): \{/gm)].map((m) => m[1]);
@@ -57,14 +68,16 @@ for (const k of kindKeys) {
   if (!new RegExp(`(^|[\\s,])${k}: '`).test(kindEn)) errors.push(`KIND_EN.${k} 缺失`);
 }
 
-for (const m of levels.matchAll(/tol: ([\d.]+)/g)) {
+for (const m of (baseLevels + chLevels + sandbox).matchAll(/tol: ([\d.]+)/g)) {
   const v = parseFloat(m[1]);
-  if (!(v > 0.1 && v < 0.8)) errors.push(`tol=${v} 超出合理范围 (0.1, 0.8)`);
+  if (!(v >= 0.15 && v < 0.8)) errors.push(`tol=${v} 超出合理范围 (0.15, 0.8)`);
 }
 
 /* 函数池硬绑定：每关的 pool 必须存在、无未知函数、且覆盖 seed 与全部解法用到的函数 */
-const levelEntries = levels.split(/\r?\n    \{\r?\n/).slice(1);
-const solEntries = sols.split(/\r?\n    \[/).slice(1);
+const levelEntries = baseLevels.split(/\r?\n    \{\r?\n/).slice(1)
+  .concat(chLevels.split(/\r?\n    \{\r?\n/).slice(1));
+const solEntries = sols.split(/\r?\n    \[/).slice(1)
+  .concat(chSols.split(/\r?\n    \[/).slice(1));
 
 levelEntries.forEach((raw, i) => {
   const n = i + 1;

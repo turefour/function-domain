@@ -19,7 +19,7 @@
   const pt = (c) => String.fromCharCode(65 + c);
 
   /* 版本号单一来源：页面展示、单文件命名、发布说明都读这里 */
-  const VERSION = '1.0.2';
+  const VERSION = '1.1.1';
 
   const COLORS = ['#7bf1c4', '#7cc6ff', '#ffc06a', '#ff9db0'];
 
@@ -520,8 +520,8 @@
     { name: 'Corridor', hint: 'Two zones pinch the path into a narrow corridor.' },
     { name: 'Triple Gate', hint: 'Five points, three zones \u2014 each branch handles different points.' },
     { name: 'Wave', hint: 'A sets the amplitude, B the period, C lifts the wave.' },
-    { name: 'Steep Wave', hint: 'Three points spanning most of a period: find the crest first.' },
-    { name: 'Dense Wave', hint: 'Larger B packs the waves; keep crests out of the top-right zone.' },
+    { name: 'Steep Wave', hint: 'Four points on two rows (y = 3 and y = -3); the outermost one pins the period.' },
+    { name: 'Dense Wave', hint: 'Six points alternate between y = 3 and y = -1; B sets how tightly the waves pack.' },
     { name: 'Long Wave', hint: 'Five points spread across one full period.' },
     { name: 'Wave No-Go', hint: 'Three zones cage the wave; mind the gaps at left and top right.' },
     { name: 'Climb', hint: 'Exponential curves shoot up fast; small changes in B move everything.' },
@@ -626,8 +626,65 @@
         pitfalls: ['Four zones guard the four corners — no extension may touch them.'],
       },
     },
-    { name: 'Sandbox', hint: 'Test level: every function unlocked, up to 10 formulas, view range \u00b120, no zones.' },
+
   ];
+
+  const CHALLENGE_EN = [
+    { name: 'Sigmoid × Quadratic', hint: '2 curves share the work: 5 points, 1 zones.' },
+    { name: 'Linear × Rectified', hint: '2 curves share the work: 5 points, 1 zones.' },
+    { name: 'Cubic × Sigmoid', hint: '2 curves share the work: 5 points, 1 zones.' },
+    { name: 'Cubic × Gaussian', hint: '2 curves share the work: 6 points, 1 zones.' },
+    { name: 'Quartic × Quadratic', hint: '2 curves share the work: 5 points, 1 zones.' },
+    { name: 'Cubic × Sine', hint: '2 curves share the work: 6 points, 1 zones.' },
+    { name: 'Exponential × Sine', hint: '2 curves share the work: 6 points, 1 zones.' },
+    { name: 'Radical × Gaussian', hint: '2 curves share the work: 6 points, 1 zones.' },
+    { name: 'Rectified × Sine', hint: '2 curves share the work: 6 points, 1 zones.' },
+    { name: 'Quartic × Log', hint: '2 curves share the work: 6 points, 1 zones.' },
+    { name: 'Sigmoid × Log', hint: '2 curves share the work: 5 points, 2 zones.' },
+    { name: 'Sigmoid × Rectified', hint: '2 curves share the work: 6 points, 2 zones.' },
+    { name: 'Sigmoid × Reciprocal', hint: '2 curves share the work: 5 points, 2 zones.' },
+    { name: 'Quartic × Exponential', hint: '2 curves share the work: 6 points, 2 zones.' },
+    { name: 'Rectified × Cubic', hint: '2 curves share the work: 5 points, 2 zones.' },
+    { name: 'Exponential × Gaussian', hint: '2 curves share the work: 6 points, 2 zones.' },
+    { name: 'Sine × Linear', hint: '2 curves share the work: 6 points, 2 zones.' },
+    { name: 'Cubic × Log', hint: '2 curves share the work: 6 points, 2 zones.' },
+    { name: 'Quartic × Sine', hint: '2 curves share the work: 7 points, 2 zones.' },
+    { name: 'Sine × Log', hint: '2 curves share the work: 5 points, 2 zones.' },
+    { name: 'Sigmoid × Quadratic × Absolute', hint: '3 curves share the work: 7 points, 2 zones.' },
+    { name: 'Sine × Sigmoid × Cubic', hint: '3 curves share the work: 10 points, 2 zones.' },
+    { name: 'Inverse sq × Reciprocal × Gaussian', hint: '3 curves share the work: 7 points, 2 zones.' },
+    { name: 'Linear × Sigmoid × Sine', hint: '3 curves share the work: 8 points, 2 zones.' },
+    { name: 'Quartic × Cubic × Radical', hint: '3 curves share the work: 8 points, 2 zones.' },
+    { name: 'Exponential × Inverse sq × Sine', hint: '3 curves share the work: 9 points, 2 zones.' },
+    { name: 'Log × Linear × Gaussian', hint: '3 curves share the work: 8 points, 2 zones.' },
+    { name: 'Linear × Sine × Cubic', hint: '3 curves share the work: 7 points, 2 zones.' },
+    { name: 'Cubic × Quartic × Log', hint: '3 curves share the work: 8 points, 2 zones.' },
+    { name: 'Cubic × Quartic × Rectified', hint: '3 curves share the work: 9 points, 2 zones.' },
+    { name: 'Rectified × Sigmoid × Log', hint: '3 curves share the work: 8 points, 3 zones.' },
+    { name: 'Gaussian × Cubic × Sine', hint: '3 curves share the work: 9 points, 3 zones.' },
+    { name: 'Rectified × Quartic × Linear', hint: '3 curves share the work: 8 points, 3 zones.' },
+    { name: 'Log × Quartic × Linear', hint: '3 curves share the work: 8 points, 3 zones.' },
+    { name: 'Linear × Quadratic × Quartic', hint: '3 curves share the work: 7 points, 2 zones.' },
+    { name: 'Sine × Log × Inverse sq', hint: '3 curves share the work: 8 points, 3 zones.' },
+    { name: 'Linear × Quartic × Log', hint: '3 curves share the work: 8 points, 2 zones.' },
+    { name: 'Log × Linear × Quartic', hint: '3 curves share the work: 7 points, 3 zones.' },
+    { name: 'Radical × Linear × Quartic', hint: '3 curves share the work: 8 points, 3 zones.' },
+    { name: 'Sigmoid × Linear × Quadratic × Gaussian', hint: '4 curves share the work: 10 points, 2 zones.' },
+    { name: 'Sigmoid × Sine × Gaussian × Linear', hint: '4 curves share the work: 11 points, 3 zones.' },
+    { name: 'Quadratic × Gaussian × Cubic × Radical', hint: '4 curves share the work: 11 points, 3 zones.' },
+    { name: 'Log × Cubic × Sine × Sine', hint: '4 curves share the work: 11 points, 3 zones.' },
+    { name: 'Sigmoid × Reciprocal × Quadratic × Sine', hint: '4 curves share the work: 11 points, 2 zones.' },
+    { name: 'Absolute × Rectified × Sigmoid × Cubic', hint: '4 curves share the work: 10 points, 3 zones.' },
+    { name: 'Cubic × Quartic × Sine × Linear', hint: '4 curves share the work: 12 points, 2 zones.' },
+    { name: 'Cubic × Sine × Log × Quadratic', hint: '4 curves share the work: 11 points, 2 zones.' },
+    { name: 'Cubic × Quadratic × Absolute × Exponential', hint: '4 curves share the work: 9 points, 2 zones.' },
+    { name: 'Log × Sigmoid × Sigmoid × Reciprocal', hint: '4 curves share the work: 10 points, 3 zones.' },
+  ];
+
+  const SANDBOX_EN = [
+  ];
+
+  LEVEL_EN.push(...CHALLENGE_EN, ...SANDBOX_EN);
 
   const UI_TEXT = {
     zh: {
@@ -637,11 +694,14 @@
       'start.levels': '关卡序列',
       'start.progress': '已通关',
       'start.foot1': '交互式曲线图册',
-      'start.foot2': '拖动或键入参数 · 曲线实时响应',
+      'start.foot2': '按住箭头持续变化 · 也可直接键入数值',
       'levels.title': '关卡序列',
       'levels.desc': '每一关解锁一种新的函数形态。完成当前关卡，下一关才会开启。',
       'levels.back': '返回',
       'levels.cleared': 'CLEARED',
+      'levels.base': '基础关卡',
+      'levels.challenge': '挑战关卡',
+      'start.sandbox': '测试场',
       'state.locked': '锁定',
       'state.cleared': '已通过',
       'state.pending': '待观测',
@@ -681,7 +741,9 @@
       'gh.open': '打开仓库',
       'gh.copy': '复制地址',
       'gh.version': '版本',
-      'fb.title': '反馈 / FEEDBACK',
+      'fb.title': '反馈',
+      'fb.eyebrow': 'FEEDBACK',
+      'fb.open': '反馈',
       'fb.placeholder': '遇到问题或有建议？写在这里（最多 500 字）。',
       'fb.hint': '每分钟最多提交一次；请勿包含广告、脚本或攻击性内容。',
       'fb.send': '提交',
@@ -750,11 +812,14 @@
       'start.levels': 'Level Index',
       'start.progress': 'cleared',
       'start.foot1': 'Interactive atlas of curves',
-      'start.foot2': 'Drag or type parameters · the curve reacts live',
+      'start.foot2': 'Hold the arrows to sweep · or type values directly',
       'levels.title': 'LEVEL INDEX',
       'levels.desc': 'Every level unlocks a new function shape. Clear the current one to open the next.',
       'levels.back': 'Back',
       'levels.cleared': 'CLEARED',
+      'levels.base': 'Basics',
+      'levels.challenge': 'Challenge',
+      'start.sandbox': 'Sandbox',
       'state.locked': 'Locked',
       'state.cleared': 'Cleared',
       'state.pending': 'Open',
@@ -777,7 +842,7 @@
       'switch.guides': 'Guides',
       'switch.target': 'Target curve',
       'form.tip': '▲▼ ±1 per second, click again to pause; paste a whole formula into any field.',
-      'op.note': 'Arrows start a constant ±1/s change, click again to pause. “Stop” freezes the value.',
+      'op.note': 'Arrows start a constant ±1/s change, click again to pause. "Stop" freezes the value.',
       'btn.reset': 'Reset Level',
       'btn.home': 'Home · Levels',
       'btn.remember': 'Got it',
@@ -794,7 +859,9 @@
       'gh.open': 'Open repo',
       'gh.copy': 'Copy URL',
       'gh.version': 'Version',
-      'fb.title': 'FEEDBACK',
+      'fb.title': 'Feedback',
+      'fb.eyebrow': 'FEEDBACK',
+      'fb.open': 'Feedback',
       'fb.placeholder': 'Found a bug or have an idea? Write it here (max 500 chars).',
       'fb.hint': 'One submission per minute; please avoid ads, scripts or abusive language.',
       'fb.send': 'Send',
@@ -892,7 +959,21 @@
     };
   }
 
+  function levelIndexText(i) {
+    const lv = LEVELS[i];
+    if (!lv || lv.test) return '--';
+    if (lv.challenge) return 'C' + String(i - BASE_COUNT + 1).padStart(2, '0');
+    return String(i + 1).padStart(2, '0');
+  }
+
   function levelTitle(lv, i) {
+    if (lv.test) return state.lang === 'en' ? 'Sandbox' : '测试场';
+    if (lv.challenge) {
+      const cn = String(i - BASE_COUNT + 1).padStart(2, '0');
+      return state.lang === 'en'
+        ? `CH${cn} \u00b7 ${levelName(lv, i)}`
+        : `挑战 ${cn} \u00b7 ${levelName(lv, i)}`;
+    }
     return state.lang === 'en'
       ? `LV ${String(i + 1).padStart(2, '0')} \u00b7 ${levelName(lv, i)}`
       : `${ROMAN[i] || ''} \u00b7 ${levelName(lv, i)}`;
@@ -993,49 +1074,49 @@
       name: '初次绘制',
       pool: ['linear', 'abs'],
       hint: '让直线穿过 A 点。a 控制倾斜，b 控制它与 y 轴的交点。',
-      seed: 'linear', maxForms: 1, tol: 0.36,
+      seed: 'linear', maxForms: 1, tol: 0.31,
       points: [{ x: 3, y: 2 }],
     },
     {
       name: '两点之间',
       pool: ['linear', 'abs'],
       hint: '一条直线要同时压住两个光点，斜率必须刚好。',
-      seed: 'linear', maxForms: 1, tol: 0.30,
+      seed: 'linear', maxForms: 1, tol: 0.26,
       points: [{ x: 2, y: 3 }, { x: 5, y: 1 }],
     },
     {
       name: '折角初现',
       pool: ['linear', 'abs'],
       hint: '绝对值函数在顶点折成 V 形，a 决定张口大小，b 决定折点位置。',
-      seed: 'abs', maxForms: 1, tol: 0.29,
+      seed: 'abs', maxForms: 1, tol: 0.25,
       points: [{ x: 0, y: 2 }, { x: 1, y: 0 }, { x: 2, y: 2 }],
     },
     {
       name: '倒悬之 V',
       pool: ['linear', 'abs'],
       hint: 'a 取负值时 V 形倒过来，c 把顶点抬离 x 轴。',
-      seed: 'abs', maxForms: 1, tol: 0.29,
+      seed: 'abs', maxForms: 1, tol: 0.25,
       points: [{ x: -1, y: 0 }, { x: 1, y: 2 }, { x: 3, y: 0 }],
     },
     {
       name: '弯曲',
       pool: ['linear', 'quadratic', 'abs'],
       hint: '三个不共线的点无法被一条直线同时穿过，换抛物线。',
-      seed: 'quadratic', maxForms: 1, tol: 0.29,
+      seed: 'quadratic', maxForms: 1, tol: 0.25,
       points: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 2 }],
     },
     {
       name: '四点共弧',
       pool: ['linear', 'quadratic', 'abs'],
       hint: '四个点落在同一条抛物线上，a、b、c 要一起配合。',
-      seed: 'quadratic', maxForms: 1, tol: 0.27,
+      seed: 'quadratic', maxForms: 1, tol: 0.23,
       points: [{ x: 0, y: 1 }, { x: 1, y: 0 }, { x: 2, y: 1 }, { x: 3, y: 4 }],
     },
     {
       name: '抬高之弧',
       pool: ['linear', 'quadratic', 'abs'],
       hint: 'c 把整条抛物线抬高，顶点离开原点。注意右上角的禁区。',
-      seed: 'quadratic', maxForms: 1, tol: 0.27,
+      seed: 'quadratic', maxForms: 1, tol: 0.23,
       points: [{ x: -2, y: 5 }, { x: 0, y: 1 }, { x: 2, y: 5 }],
       zones: [
         { type: 'rect', x1: 5, y1: 2, x2: 9, y2: 10 },
@@ -1045,7 +1126,7 @@
       name: '双向绕行',
       pool: ['linear', 'quadratic', 'abs'],
       hint: '两处禁区卡在角落，抛物线要从中穿过。',
-      seed: 'quadratic', maxForms: 1, tol: 0.26,
+      seed: 'quadratic', maxForms: 1, tol: 0.22,
       points: [{ x: -1, y: 0 }, { x: 0, y: -3 }, { x: 1, y: -4 }, { x: 3, y: 0 }],
       zones: [
         { type: 'rect', x1: -9, y1: -9, x2: -5, y2: -3 },
@@ -1056,7 +1137,7 @@
       name: '弧线迷阵',
       pool: ['linear', 'quadratic', 'abs'],
       hint: '五个点与两处禁区，抛物线的开口与位置都要算准。',
-      seed: 'quadratic', maxForms: 1, tol: 0.26,
+      seed: 'quadratic', maxForms: 1, tol: 0.22,
       points: [{ x: 0, y: 3 }, { x: 1, y: 0 }, { x: 2, y: -1 }, { x: 3, y: 0 }, { x: 4, y: 3 }],
       zones: [
         { type: 'rect', x1: -10, y1: 6, x2: -6, y2: 12 },
@@ -1067,21 +1148,21 @@
       name: '双曲',
       pool: ['linear', 'quadratic', 'reciprocal', 'abs'],
       hint: '反比例函数在原点两侧分成两支，中间是断裂的。',
-      seed: 'reciprocal', maxForms: 1, tol: 0.26,
+      seed: 'reciprocal', maxForms: 1, tol: 0.22,
       points: [{ x: 1, y: 3 }, { x: 2, y: 2 }, { x: -1, y: -1 }, { x: -2, y: 0 }],
     },
     {
       name: '远端双曲',
       pool: ['linear', 'quadratic', 'reciprocal', 'abs'],
       hint: 'a 越大，曲线离原点越远，两支都向外推。',
-      seed: 'reciprocal', maxForms: 1, tol: 0.26,
+      seed: 'reciprocal', maxForms: 1, tol: 0.22,
       points: [{ x: 1, y: 4 }, { x: 2, y: 2 }, { x: 4, y: 1 }, { x: -2, y: -2 }],
     },
     {
       name: '偏移双曲',
       pool: ['linear', 'quadratic', 'reciprocal', 'abs'],
       hint: 'b 把整条双曲线上下平移，禁区挡在右上。',
-      seed: 'reciprocal', maxForms: 1, tol: 0.24,
+      seed: 'reciprocal', maxForms: 1, tol: 0.20,
       points: [{ x: 1, y: 4 }, { x: 3, y: 2 }, { x: -1, y: -2 }, { x: -3, y: 0 }],
       zones: [
         { type: 'rect', x1: 5, y1: 4, x2: 9, y2: 9 },
@@ -1091,7 +1172,7 @@
       name: '双曲回廊',
       pool: ['linear', 'quadratic', 'reciprocal', 'abs'],
       hint: '两条禁区把可走的空间压成一条窄廊。',
-      seed: 'reciprocal', maxForms: 1, tol: 0.24,
+      seed: 'reciprocal', maxForms: 1, tol: 0.20,
       points: [{ x: 1, y: 4 }, { x: 2, y: 3 }, { x: -1, y: 0 }, { x: -2, y: 1 }],
       zones: [
         { type: 'circle', x: -6, y: 7, r: 1.6 },
@@ -1102,7 +1183,7 @@
       name: '双曲三重门',
       pool: ['linear', 'quadratic', 'reciprocal', 'abs'],
       hint: '五个点、三处禁区，双曲线的两支要分别照顾不同的光点。',
-      seed: 'reciprocal', maxForms: 1, tol: 0.24,
+      seed: 'reciprocal', maxForms: 1, tol: 0.20,
       points: [{ x: 1, y: 5 }, { x: 3, y: 3 }, { x: -1, y: -1 }, { x: -3, y: 1 }, { x: -0.5, y: -4 }],
       zones: [
         { type: 'rect', x1: -11, y1: 6, x2: -6, y2: 11 },
@@ -1114,22 +1195,22 @@
       name: '波动',
       pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs'],
       hint: '振幅 a 拉开波峰，频率 b 决定周期，偏移 c 把整条波抬高。',
-      seed: 'sine', maxForms: 1, tol: 0.27,
+      seed: 'sine', maxForms: 1, tol: 0.23,
       points: [{ x: 0, y: 1 }, { x: 1.5, y: 3 }, { x: 3.1, y: 1.08 }],
     },
     {
       name: '陡波',
       pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs'],
-      hint: '正弦的三点跨越大半个周期，先找到波峰再定 a。',
-      seed: 'sine', maxForms: 1, tol: 0.26,
-      points: [{ x: -1.57, y: -3 }, { x: 0, y: 0 }, { x: 1.57, y: 3 }],
+      hint: '四点分两排：上排 y = 3、下排 y = −3，最外那点用来定 b。',
+      seed: 'sine', maxForms: 1, tol: 0.22,
+      points: [{ x: -4.2, y: 2.61 }, { x: -1.57, y: -3 }, { x: 1.57, y: 3 }, { x: 4.2, y: -2.61 }],
     },
     {
       name: '密波',
       pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs'],
-      hint: 'b 越大波越密，禁区卡在右上，别让波峰扫进去。',
-      seed: 'sine', maxForms: 1, tol: 0.24,
-      points: [{ x: 0, y: 1 }, { x: 0.79, y: 3 }, { x: 1.57, y: 1 }],
+      hint: '六个点交替落在 y = 3 与 y = −1 两排上，b 决定波有多密。',
+      seed: 'sine', maxForms: 1, tol: 0.20,
+      points: [{ x: -3.93, y: -1 }, { x: -2.36, y: 3 }, { x: -0.79, y: -1 }, { x: 0.79, y: 3 }, { x: 2.36, y: -1 }, { x: 3.93, y: 3 }],
       zones: [
         { type: 'rect', x1: 4, y1: 4, x2: 7, y2: 7 },
       ],
@@ -1138,7 +1219,7 @@
       name: '长波',
       pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs'],
       hint: '五个点散布在一个完整周期里，b 决定周期长度。',
-      seed: 'sine', maxForms: 1, tol: 0.24,
+      seed: 'sine', maxForms: 1, tol: 0.20,
       points: [{ x: 0, y: 0 }, { x: 1.57, y: 2 }, { x: 3.14, y: 0 }, { x: 4.71, y: -2 }, { x: 6.28, y: 0 }],
       zones: [
         { type: 'rect', x1: -12, y1: 3, x2: -8, y2: 10 },
@@ -1149,7 +1230,7 @@
       name: '波域禁区',
       pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs'],
       hint: '三处禁区把波形夹在中间，注意左侧和右上的空隙。',
-      seed: 'sine', maxForms: 1, tol: 0.24,
+      seed: 'sine', maxForms: 1, tol: 0.20,
       points: [{ x: -3.14, y: 1 }, { x: -1.57, y: -1 }, { x: 0, y: 1 }, { x: 1.57, y: 3 }],
       zones: [
         { type: 'rect', x1: 5, y1: 4, x2: 9, y2: 9 },
@@ -1161,21 +1242,21 @@
       name: '攀升',
       pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential'],
       hint: '指数曲线增长极快，b 的一点点变化会让整条曲线剧烈偏移。',
-      seed: 'exponential', maxForms: 1, tol: 0.29,
+      seed: 'exponential', maxForms: 1, tol: 0.25,
       points: [{ x: -1, y: 1.5 }, { x: 0, y: 2 }, { x: 1, y: 3 }],
     },
     {
       name: '陡升',
       pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential'],
       hint: 'b 变大后曲线抬升更急，靠 a 与 c 把三点对齐。',
-      seed: 'exponential', maxForms: 1, tol: 0.27,
+      seed: 'exponential', maxForms: 1, tol: 0.23,
       points: [{ x: -1, y: 0.25 }, { x: 0, y: 1 }, { x: 1, y: 4 }],
     },
     {
       name: '攀升禁区',
       pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential'],
       hint: '四点阶梯状上升，左侧有一大片禁区。',
-      seed: 'exponential', maxForms: 2, tol: 0.26,
+      seed: 'exponential', maxForms: 2, tol: 0.22,
       points: [{ x: -1, y: 2.5 }, { x: 0, y: 3 }, { x: 1, y: 4 }, { x: 2, y: 6 }],
       zones: [
         { type: 'rect', x1: -10, y1: 6, x2: -5, y2: 10 },
@@ -1185,7 +1266,7 @@
       name: '高台',
       pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential'],
       hint: '四点顺着指数曲线阶梯上升，右下与右上各有一处禁区。',
-      seed: 'exponential', maxForms: 1, tol: 0.26,
+      seed: 'exponential', maxForms: 1, tol: 0.22,
       points: [{ x: -0.5, y: 1.5 }, { x: 0, y: 2 }, { x: 0.5, y: 3 }, { x: 1, y: 5 }],
       zones: [
         { type: 'circle', x: -8, y: 7, r: 1.6 },
@@ -1196,35 +1277,35 @@
       name: '根号之门',
       pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt'],
       hint: '根式只在 x ≥ b 的地方有图像，左端是曲线的起点。',
-      seed: 'sqrt', maxForms: 1, tol: 0.27,
+      seed: 'sqrt', maxForms: 1, tol: 0.23,
       points: [{ x: 0, y: 0 }, { x: 1, y: 2 }, { x: 4, y: 4 }],
     },
     {
       name: '整流',
       pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs'],
       hint: '绝对值套在正弦上，波谷被压平在一条水平线上。',
-      seed: 'sinAbs', maxForms: 1, tol: 0.26,
+      seed: 'sinAbs', maxForms: 1, tol: 0.22,
       points: [{ x: 0, y: 1 }, { x: 1.57, y: 3 }, { x: 3.14, y: 1 }],
     },
     {
       name: '三次回旋',
       pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic'],
       hint: '三次函数的 S 形要同时照顾两个拐点，四个参数一起调。',
-      seed: 'cubic', maxForms: 2, tol: 0.26,
+      seed: 'cubic', maxForms: 2, tol: 0.22,
       points: [{ x: -2, y: -2 }, { x: -1, y: 2 }, { x: 1, y: -2 }, { x: 2, y: 2 }],
     },
     {
       name: '平方反比',
       pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq'],
       hint: '平方反比对 x 轴对称，两侧都向上张开。',
-      seed: 'recipSq', maxForms: 2, tol: 0.26,
+      seed: 'recipSq', maxForms: 2, tol: 0.22,
       points: [{ x: 1, y: 5 }, { x: 2, y: 2 }, { x: -1, y: 5 }, { x: -2, y: 2 }],
     },
     {
       name: '双线复合',
       pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq'],
       hint: '根式负责右侧，直线负责左侧，右上还有一处禁区。',
-      seed: 'sqrt', maxForms: 3, tol: 0.26,
+      seed: 'sqrt', maxForms: 3, tol: 0.22,
       points: [{ x: 1, y: 2 }, { x: 4, y: 3 }, { x: -2, y: 0 }, { x: 2, y: 2 }],
       zones: [
         { type: 'rect', x1: -12, y1: 6, x2: -7, y2: 12 },
@@ -1234,7 +1315,7 @@
       name: '三线交错',
       pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq'],
       hint: '三次曲线与整流正弦交错，两个禁区各守一角。',
-      seed: 'cubic', maxForms: 3, tol: 0.26,
+      seed: 'cubic', maxForms: 3, tol: 0.22,
       points: [{ x: -1, y: 2 }, { x: 1, y: -2 }, { x: 0, y: 1 }, { x: 1.57, y: 3 }],
       zones: [
         { type: 'rect', x1: -9, y1: 4, x2: -5, y2: 9 },
@@ -1250,7 +1331,7 @@
         steps: ['(−2,−2) 与 (2,2) 关于原点对称，三次曲线 A=1、C=−3 能让两端反向发散。', '(−1,5) 与 (1,5) 在同一高度，交给整流正弦的波峰 A=2、B=1、C=1。', '(0,1) 与 (3.14,1) 由平方反比 A=4、B=1 收尾，注意它关于 y 轴对称。'],
         pitfalls: ['三条曲线都要绕开三处禁区，延长线也别撞进去。'],
       },
-      seed: 'cubic', maxForms: 4, tol: 0.29,
+      seed: 'cubic', maxForms: 4, tol: 0.25,
       points: [{ x: -2, y: -2 }, { x: 2, y: 2 }, { x: 0, y: 1 }, { x: 3.14, y: 1 }, { x: 1, y: 5 }, { x: -1, y: 5 }],
       zones: [
         { type: 'rect', x1: -11, y1: 7, x2: -6, y2: 12 },
@@ -1262,14 +1343,14 @@
       name: '四次起伏',
       pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic'],
       hint: '四次曲线两端同向发散。五个点恰好定死五个参数，先对好中间的低谷。',
-      seed: 'quartic', maxForms: 1, tol: 0.38,
+      seed: 'quartic', maxForms: 1, tol: 0.32,
       points: [{ x: -2, y: 1.2 }, { x: -1, y: 0.2 }, { x: 0, y: 1 }, { x: 1, y: 1.2 }, { x: 2, y: 3.2 }],
     },
     {
       name: '双谷',
       pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic'],
       hint: 'A、C、D 决定两个低谷的位置与深度，左上那处禁区挡住了取巧的直线。',
-      seed: 'quartic', maxForms: 1, tol: 0.36,
+      seed: 'quartic', maxForms: 1, tol: 0.31,
       points: [{ x: -2, y: 0.4 }, { x: -1, y: 0.25 }, { x: 0, y: 1 }, { x: 1, y: 0.85 }, { x: 2, y: 1.6 }],
       zones: [{ type: 'circle', x: -4.5, y: 4, r: 1.2 }],
     },
@@ -1277,7 +1358,7 @@
       name: '多峰',
       pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic'],
       hint: '最后一关。五个点、两处禁区，四次曲线的两端必须绕开左上与右下。',
-      seed: 'quartic', maxForms: 1, tol: 0.36,
+      seed: 'quartic', maxForms: 1, tol: 0.31,
       points: [{ x: -2, y: 0.8 }, { x: -1, y: 0.7 }, { x: 0, y: 1.2 }, { x: 1, y: 1.1 }, { x: 2, y: 1.6 }],
       zones: [
         { type: 'rect', x1: -7, y1: 3, x2: -4, y2: 7 },
@@ -1288,14 +1369,14 @@
       name: '对数之门',
       pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log'],
       hint: '对数只在 x > B 的地方有图像，越往右增长越慢。',
-      seed: 'log', maxForms: 1, tol: 0.38,
+      seed: 'log', maxForms: 1, tol: 0.32,
       points: [{ x: 0.5, y: -1.39 }, { x: 1, y: 0 }, { x: 2, y: 1.39 }, { x: 4, y: 2.77 }],
     },
     {
       name: '对数走廊',
       pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log'],
       hint: 'B 把整条曲线右移，左端有一条看不见的垂直渐近线。',
-      seed: 'log', maxForms: 1, tol: 0.36,
+      seed: 'log', maxForms: 1, tol: 0.31,
       points: [{ x: 2, y: 1 }, { x: 3, y: 1.69 }, { x: 5, y: 2.39 }, { x: 9, y: 3.08 }],
       zones: [
         { type: 'rect', x1: 6, y1: 4, x2: 11, y2: 9 },
@@ -1305,28 +1386,28 @@
       name: '正切之墙',
       pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan'],
       hint: '正切在每个周期的两端冲向无穷，中间那段才是可用的。',
-      seed: 'tan', maxForms: 1, tol: 0.36,
+      seed: 'tan', maxForms: 1, tol: 0.31,
       points: [{ x: -0.6, y: -2.05 }, { x: -0.3, y: -0.93 }, { x: 0, y: 0 }, { x: 0.3, y: 0.93 }, { x: 0.6, y: 2.05 }],
     },
     {
       name: '正切周期',
       pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan'],
       hint: 'C 抬高整段正切；一次只能盯住一个周期，别被旁边的陡坡带走。',
-      seed: 'tan', maxForms: 1, tol: 0.36,
+      seed: 'tan', maxForms: 1, tol: 0.31,
       points: [{ x: -1, y: -0.56 }, { x: -0.5, y: 0.45 }, { x: 0, y: 1 }, { x: 0.5, y: 1.55 }, { x: 1, y: 2.56 }],
     },
     {
       name: '钟形',
       pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss'],
       hint: '高斯曲线左右对称，C 是宽度：越小越尖。',
-      seed: 'gauss', maxForms: 1, tol: 0.38,
+      seed: 'gauss', maxForms: 1, tol: 0.32,
       points: [{ x: -2, y: 0.07 }, { x: -1, y: 1.47 }, { x: 0, y: 4 }, { x: 1, y: 1.47 }, { x: 2, y: 0.07 }],
     },
     {
       name: '偏峰',
       pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss'],
       hint: 'B 把峰的顶点挪开原点，D 把整座山抬高。',
-      seed: 'gauss', maxForms: 1, tol: 0.36,
+      seed: 'gauss', maxForms: 1, tol: 0.31,
       points: [{ x: -1, y: 0.55 }, { x: 0, y: 1.6 }, { x: 1, y: 3.5 }, { x: 2, y: 1.6 }, { x: 3, y: 0.55 }],
       zones: [
         { type: 'rect', x1: -8, y1: -6, x2: -4, y2: -2 },
@@ -1336,14 +1417,14 @@
       name: 'S 形',
       pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss', 'logistic'],
       hint: '逻辑斯蒂从下渐近线爬到上渐近线，中间那一段最陡。',
-      seed: 'logistic', maxForms: 1, tol: 0.38,
+      seed: 'logistic', maxForms: 1, tol: 0.32,
       points: [{ x: -2, y: 0.07 }, { x: -1, y: 0.48 }, { x: 0, y: 2 }, { x: 1, y: 3.52 }, { x: 2, y: 3.93 }],
     },
     {
       name: '缓升',
       pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss', 'logistic'],
       hint: 'B 控制上升的陡峭程度，D 把整条 S 形上下平移。',
-      seed: 'logistic', maxForms: 1, tol: 0.36,
+      seed: 'logistic', maxForms: 1, tol: 0.31,
       points: [{ x: -1, y: -0.64 }, { x: 0, y: -0.19 }, { x: 1, y: 0.5 }, { x: 2, y: 1.19 }, { x: 3, y: 1.64 }],
       zones: [
         { type: 'circle', x: 6, y: -5, r: 1.3 },
@@ -1358,7 +1439,7 @@
         steps: ['(−3,4.4) 与 (−1,2.8) 的斜率是 −0.8，用直线 A=−0.8、B=2 拿下。', '对数三点都在 x>0：A=1.5、B=0，从原点右侧缓慢上升。', '右下禁区在 y<−2 一带，直线延长后会经过，注意别越界。'],
         pitfalls: ['想用一条曲线穿完五点，五次以下基本做不到。'],
       },
-      seed: 'log', maxForms: 2, tol: 0.36,
+      seed: 'log', maxForms: 2, tol: 0.31,
       points: [{ x: 0.5, y: -1.04 }, { x: 1, y: 0 }, { x: 2, y: 1.04 }, { x: -3, y: 4.4 }, { x: -1, y: 2.8 }],
       zones: [
         { type: 'rect', x1: 4, y1: 4, x2: 8, y2: 7 },
@@ -1373,7 +1454,7 @@
         steps: ['正弦 A=2、B=1.5：周期约 4.2，正好覆盖 −1 到 1。', '对数 A=1、B=2：定义域从 x=2 开始，x=3、5、7 三点高度从 1 到 2.85。', '左上圆形与右下矩形禁区都落在两条曲线之外。'],
         pitfalls: ['对数的 B 调到 1 会让定义域提前，曲线往左多长出一段。'],
       },
-      seed: 'sine', maxForms: 2, tol: 0.36,
+      seed: 'sine', maxForms: 2, tol: 0.31,
       points: [{ x: -1, y: -1.99 }, { x: 0, y: 0 }, { x: 1, y: 1.99 }, { x: 3, y: 1 }, { x: 5, y: 2.1 }, { x: 7, y: 2.61 }],
       zones: [
         { type: 'circle', x: -5, y: 6, r: 1.4 },
@@ -1389,7 +1470,7 @@
         steps: ['高斯 A=5、B=0、C=1.2：顶点在原点，x=±1 处高度约 2.5。', '(3,−3) 与 (5,−5) 落在 y=−x 上，用直线 A=−1、B=0。', '左下矩形禁区在两段曲线之外。'],
         pitfalls: ['高斯的 C 调小会让峰变尖，±1 处的高度就对不上了。'],
       },
-      seed: 'gauss', maxForms: 2, tol: 0.36,
+      seed: 'gauss', maxForms: 2, tol: 0.31,
       points: [{ x: -1, y: 2.5 }, { x: 0, y: 5 }, { x: 1, y: 2.5 }, { x: 3, y: -3 }, { x: 5, y: -5 }],
       zones: [
         { type: 'rect', x1: -9, y1: -9, x2: -6, y2: -6 },
@@ -1404,7 +1485,7 @@
         steps: ['逻辑斯蒂 A=3、B=1.2、C=−1：拐点左移到 x=−1，起步更缓。', '抛物线 A=0.25、C=−1：从 (2,0) 开始向上加速。', '两处禁区都在下方，不挡主线。'],
         pitfalls: ['S 形的上下渐近线是 0 和 3，点位超出这个范围就调不到了。'],
       },
-      seed: 'logistic', maxForms: 2, tol: 0.34,
+      seed: 'logistic', maxForms: 2, tol: 0.29,
       points: [{ x: -3, y: 0.25 }, { x: -1, y: 1.5 }, { x: 0, y: 2.31 }, { x: 2, y: 0 }, { x: 3, y: 1.25 }, { x: 4, y: 3 }],
       zones: [
         { type: 'circle', x: -6, y: -5, r: 1.4 },
@@ -1420,7 +1501,7 @@
         steps: ['对数 A=1、B=0：经过 (0.5,−0.69) 与 (1,0)。', '高斯 A=3、B=2.5、C=0.8：峰顶在 (2.5,3)，(3.5,0.65) 在下降段。', '直线 A=0.5、B=−2：负责左下 (−4,−4) 与 (−2,−3)。', '三处禁区分别在右上、左上与下方。'],
         pitfalls: ['高斯与对数在 x≈2 附近会重叠，先想清楚谁负责哪一侧。'],
       },
-      seed: 'log', maxForms: 3, tol: 0.34,
+      seed: 'log', maxForms: 3, tol: 0.29,
       points: [{ x: 0.5, y: -0.69 }, { x: 1, y: 0 }, { x: 2.5, y: 3 }, { x: 3.5, y: 0.63 }, { x: -4, y: -4 }, { x: -2, y: -3 }],
       zones: [
         { type: 'rect', x1: -10, y1: 7, x2: -6, y2: 11 },
@@ -1437,7 +1518,7 @@
         steps: ['正切 A=1、B=1：在 (−1,−1.56) 到 (1,1.56) 之间单调上升。', '逻辑斯蒂 A=2、B=2、C=3、D=1：从 (2,1.24) 爬到 (4,2.76)。', '抛物线 A=−0.4、C=−1：接住左侧 (−2.5,−3.5)、(−2,−2.6) 的下降段。'],
         pitfalls: ['正切分支极多，先对准中段那一条，别被旁边的陡坡带走。'],
       },
-      seed: 'tan', maxForms: 3, tol: 0.34,
+      seed: 'tan', maxForms: 3, tol: 0.29,
       points: [{ x: -1, y: -1.56 }, { x: 0, y: 0 }, { x: 1, y: 1.56 }, { x: 2, y: 1.24 }, { x: 3, y: 2 }, { x: 4, y: 2.76 }, { x: -2.5, y: -3.5 }, { x: -2, y: -2.6 }],
     },
     {
@@ -1449,7 +1530,7 @@
         steps: ['高斯 A=4、B=0、C=1.5：峰在原点，覆盖 −2、0、2 三点。', '对数 A=1.5、B=2.5：只在 x>2.5 有图像，负责右侧两点。', '直线 A=0.5、B=−2：负责左下到中部的两点。', '禁区在四个角落，曲线都不能延长进去。'],
         pitfalls: ['对数左端冲向 −∞，很容易撞到左下的圆形禁区。'],
       },
-      seed: 'gauss', maxForms: 3, tol: 0.32,
+      seed: 'gauss', maxForms: 3, tol: 0.27,
       points: [{ x: -2, y: 0.68 }, { x: 0, y: 4 }, { x: 2, y: 0.68 }, { x: 3, y: -1.04 }, { x: 4.5, y: 1.04 }, { x: 2, y: -1 }, { x: 4, y: 0 }],
       zones: [
         { type: 'rect', x1: -10, y1: 6, x2: -6, y2: 10 },
@@ -1467,7 +1548,7 @@
         steps: ['正弦 A=2、B=1.2：覆盖 (−2,−1.86)、(0,0)、(2,1.86)。', '逻辑斯蒂 A=3、B=1.5、C=4：右侧 (4,2.6)、(5,2.93) 已接近上渐近线。', '高斯 A=3、B=−4、C=1：左上峰顶 (−5,1.1)、(−4,3)。', '直线 A=0.2：串联 (−2.5,−0.5) 与 (2.5,0.5)。'],
         pitfalls: ['四块禁区守在四角，任何一条曲线的延长线都不能碰到。'],
       },
-      seed: 'sine', maxForms: 4, tol: 0.32,
+      seed: 'sine', maxForms: 4, tol: 0.27,
       points: [{ x: -2, y: -1.35 }, { x: 0, y: 0 }, { x: 2, y: 1.35 }, { x: 4, y: 1.5 }, { x: 5, y: 2.45 }, { x: -5, y: 1.1 }, { x: -4, y: 3 }, { x: -2.5, y: -0.5 }, { x: 2.5, y: 0.5 }],
       zones: [
         { type: 'rect', x1: -10, y1: 7, x2: -6, y2: 11 },
@@ -1476,20 +1557,12 @@
         { type: 'circle', x: 8, y: -7, r: 1.5 },
       ],
     },
-    {
-      name: '测试场',
-      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss', 'logistic'],
-      hint: '实验关卡：全部函数直接可用，最多 10 条公式，视窗放大到 ±20，没有禁区。',
-      seed: 'linear', maxForms: 10, tol: 0.60, radius: 20,
-      test: true, allKinds: true,
-      points: [{ x: -8, y: -5 }, { x: 0, y: 6 }, { x: 8, y: -3 }],
-    },
   ];
 
   /* ---------------- 官方解法 ----------------
      label  给玩家看的解法名
      forms  逐条公式；参数与 KINDS 的 params 顺序一致
-     第一组同时被当作“目标图像”，重合时自动停机并可用于对照
+     第一组同时被当作"目标图像"，重合时自动停机并可用于对照
   --------------------------------------------- */
 
       const SOLUTIONS = [
@@ -1542,8 +1615,677 @@
     [{ forms: [{ kind: 'tan', params: [1, 1, 0] }, { kind: 'logistic', params: [2, 2, 3, 1] }, { kind: 'quadratic', params: [-0.4, 0, -1] }] }],
     [{ forms: [{ kind: 'gauss', params: [4, 0, 1.5, 0] }, { kind: 'log', params: [1.5, 2.5, 0] }, { kind: 'linear', params: [0.5, -2] }] }],
     [{ forms: [{ kind: 'sine', params: [2, 1.2, 0] }, { kind: 'logistic', params: [3, 1.5, 4, 0] }, { kind: 'gauss', params: [3, -4, 1, 0] }, { kind: 'linear', params: [0.2, 0] }] }],
+  ];
+
+
+  /* ---------------- 挑战关卡 ----------------
+     第二页：复合函数、更多点位与禁区、更小容差 */
+  const CHALLENGE_LEVELS = [
+    {
+      name: '逻辑斯蒂·二次',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'logistic'],
+      hint: '2 条曲线分工，共 5 点、1 处禁区。',
+      seed: 'logistic', maxForms: 2, tol: 0.26,
+      challenge: true,
+      points: [{ x: -1.6, y: -1.65 }, { x: 0.4, y: 0.71 }, { x: 2.2, y: 2.05 }, { x: -1.8, y: 0.21 }, { x: 2.2, y: 2.16 }],
+      zones: [
+        { type: 'rect', x1: -8, y1: 4.05, x2: -3.6, y2: 8.55 },
+      ],
+    },
+    {
+      name: '一次·整流正弦',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic'],
+      hint: '2 条曲线分工，共 5 点、1 处禁区。',
+      seed: 'linear', maxForms: 2, tol: 0.26,
+      challenge: true,
+      points: [{ x: 1.5, y: -0.95 }, { x: 3.4, y: 0.38 }, { x: -2.2, y: -0.79 }, { x: 0, y: -1.4 }, { x: 2.2, y: -0.79 }],
+      zones: [
+        { type: 'rect', x1: -7, y1: 3.6, x2: -3.2, y2: 7.6 },
+      ],
+    },
+    {
+      name: '三次·逻辑斯蒂',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'logistic'],
+      hint: '2 条曲线分工，共 5 点、1 处禁区。',
+      seed: 'cubic', maxForms: 2, tol: 0.26,
+      challenge: true,
+      points: [{ x: -2.6, y: 0.6 }, { x: 2.4, y: 2.13 }, { x: 1.2, y: 0.65 }, { x: 2.8, y: -1.29 }, { x: 4.2, y: -2.27 }],
+      zones: [
+        { type: 'rect', x1: -12, y1: 5.85, x2: -5.2, y2: 12.35 },
+      ],
+    },
+    {
+      name: '三次·高斯',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'gauss'],
+      hint: '2 条曲线分工，共 6 点、1 处禁区。',
+      seed: 'cubic', maxForms: 2, tol: 0.26,
+      challenge: true,
+      points: [{ x: -3, y: -0.42 }, { x: 1.2, y: -1.28 }, { x: 2.8, y: -0.13 }, { x: -3, y: -0.1 }, { x: -2, y: -1.4 }, { x: -0.8, y: 0.24 }],
+      zones: [
+        { type: 'circle', x: 4.34, y: -3.85, r: 1.12 },
+      ],
+    },
+    {
+      name: '四次·二次',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'quartic'],
+      hint: '2 条曲线分工，共 5 点、1 处禁区。',
+      seed: 'quartic', maxForms: 2, tol: 0.26,
+      challenge: true,
+      points: [{ x: -3, y: -3.03 }, { x: 1.5, y: -0.92 }, { x: 3, y: -3.03 }, { x: -1.8, y: 0.21 }, { x: 2.2, y: 2.16 }],
+      zones: [
+        { type: 'rect', x1: -12, y1: 5.85, x2: -5.2, y2: 12.35 },
+      ],
+    },
+    {
+      name: '三次·正弦',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic'],
+      hint: '2 条曲线分工，共 6 点、1 处禁区。',
+      seed: 'cubic', maxForms: 2, tol: 0.26,
+      challenge: true,
+      points: [{ x: -2.6, y: 0.6 }, { x: 2.4, y: 2.13 }, { x: -2.4, y: -0.56 }, { x: -0.6, y: -0.83 }, { x: 1.4, y: 2.4 }, { x: 2.8, y: 0.52 }],
+      zones: [
+        { type: 'circle', x: -6.2, y: -5.5, r: 1.6 },
+      ],
+    },
+    {
+      name: '指数·正弦',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic'],
+      hint: '2 条曲线分工，共 6 点、1 处禁区。',
+      seed: 'exponential', maxForms: 2, tol: 0.26,
+      challenge: true,
+      points: [{ x: -2, y: -1.32 }, { x: 0.8, y: -0.39 }, { x: 2.4, y: 1.19 }, { x: -1.2, y: -1.38 }, { x: 0.4, y: 0.85 }, { x: 1.8, y: -1.01 }],
+      zones: [
+        { type: 'rect', x1: -7, y1: 3.6, x2: -3.2, y2: 7.6 },
+      ],
+    },
+    {
+      name: '根式·高斯',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'gauss'],
+      hint: '2 条曲线分工，共 6 点、1 处禁区。',
+      seed: 'sqrt', maxForms: 2, tol: 0.26,
+      challenge: true,
+      points: [{ x: -1.4, y: 0.8 }, { x: 0.6, y: 2.12 }, { x: 2.2, y: 2.86 }, { x: -3, y: -0.1 }, { x: -2, y: -1.4 }, { x: -0.8, y: 0.24 }],
+      zones: [
+        { type: 'rect', x1: -10, y1: 4.95, x2: -4.4, y2: 10.45 },
+      ],
+    },
+    {
+      name: '整流正弦·正弦',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic'],
+      hint: '2 条曲线分工，共 6 点、1 处禁区。',
+      seed: 'sinAbs', maxForms: 2, tol: 0.26,
+      challenge: true,
+      points: [{ x: -2.2, y: -0.79 }, { x: 0, y: -1.4 }, { x: 2.2, y: -0.79 }, { x: -1.2, y: -1.38 }, { x: 0.4, y: 0.85 }, { x: 1.8, y: -1.01 }],
+      zones: [
+        { type: 'rect', x1: -6, y1: 3.15, x2: -2.8, y2: 6.65 },
+      ],
+    },
+    {
+      name: '四次·对数',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'quartic', 'log'],
+      hint: '2 条曲线分工，共 6 点、1 处禁区。',
+      seed: 'quartic', maxForms: 2, tol: 0.26,
+      challenge: true,
+      points: [{ x: -3, y: -3.03 }, { x: 1.5, y: -0.92 }, { x: 3, y: -3.03 }, { x: -1.8, y: 0.44 }, { x: 0.6, y: 3.07 }, { x: 2.6, y: 4.13 }],
+      zones: [
+        { type: 'circle', x: 8.68, y: -7.7, r: 2.24 },
+      ],
+    },
+    {
+      name: '逻辑斯蒂·对数',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'log', 'logistic'],
+      hint: '2 条曲线分工，共 5 点、2 处禁区。',
+      seed: 'logistic', maxForms: 2, tol: 0.24,
+      challenge: true,
+      points: [{ x: -1.6, y: -1.65 }, { x: 0.4, y: 0.71 }, { x: 2.2, y: 2.05 }, { x: 2.6, y: 0.81 }, { x: 4.2, y: -0.99 }],
+      zones: [
+        { type: 'rect', x1: -3.52, y1: -10.45, x2: 3.52, y2: -4.95 },
+        { type: 'circle', x: -6.82, y: -6.05, r: 1.76 },
+      ],
+    },
+    {
+      name: '逻辑斯蒂·整流正弦',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'logistic'],
+      hint: '2 条曲线分工，共 6 点、2 处禁区。',
+      seed: 'logistic', maxForms: 2, tol: 0.24,
+      challenge: true,
+      points: [{ x: -1.6, y: -1.65 }, { x: 0.4, y: 0.71 }, { x: 2.2, y: 2.05 }, { x: -2.2, y: -0.79 }, { x: 0, y: -1.4 }, { x: 2.2, y: -0.79 }],
+      zones: [
+        { type: 'circle', x: 5.58, y: -4.95, r: 1.44 },
+        { type: 'circle', x: -5.58, y: -4.95, r: 1.44 },
+      ],
+    },
+    {
+      name: '逻辑斯蒂·反比例',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'logistic'],
+      hint: '2 条曲线分工，共 5 点、2 处禁区。',
+      seed: 'logistic', maxForms: 2, tol: 0.24,
+      challenge: true,
+      points: [{ x: -1.6, y: -1.65 }, { x: 0.4, y: 0.71 }, { x: 2.2, y: 2.05 }, { x: -2.8, y: -0.13 }, { x: 2.6, y: 1.8 }],
+      zones: [
+        { type: 'rect', x1: 3.6, y1: 4.05, x2: 8, y2: 8.55 },
+        { type: 'circle', x: -5.58, y: -4.95, r: 1.44 },
+      ],
+    },
+    {
+      name: '四次·指数',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic'],
+      hint: '2 条曲线分工，共 6 点、2 处禁区。',
+      seed: 'quartic', maxForms: 2, tol: 0.24,
+      challenge: true,
+      points: [{ x: -3, y: -3.03 }, { x: 1.5, y: -0.92 }, { x: 3, y: -3.03 }, { x: -2, y: -1.32 }, { x: 0.8, y: -0.39 }, { x: 2.4, y: 1.19 }],
+      zones: [
+        { type: 'circle', x: -8.06, y: -7.15, r: 2.08 },
+        { type: 'circle', x: 8.06, y: -7.15, r: 2.08 },
+      ],
+    },
+    {
+      name: '整流正弦·三次',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq'],
+      hint: '2 条曲线分工，共 5 点、2 处禁区。',
+      seed: 'sinAbs', maxForms: 2, tol: 0.24,
+      challenge: true,
+      points: [{ x: -2.2, y: -0.79 }, { x: 0, y: -1.4 }, { x: 2.2, y: -0.79 }, { x: -2.6, y: 0.6 }, { x: 2.4, y: 2.13 }],
+      zones: [
+        { type: 'rect', x1: -3.2, y1: -9.5, x2: 3.2, y2: -4.5 },
+        { type: 'circle', x: -6.2, y: -5.5, r: 1.6 },
+      ],
+    },
+    {
+      name: '指数·高斯',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'gauss'],
+      hint: '2 条曲线分工，共 6 点、2 处禁区。',
+      seed: 'exponential', maxForms: 2, tol: 0.24,
+      challenge: true,
+      points: [{ x: -2, y: -1.32 }, { x: 0.8, y: -0.39 }, { x: 2.4, y: 1.19 }, { x: -1, y: 0.81 }, { x: 0.6, y: 3.38 }, { x: 2, y: 0.81 }],
+      zones: [
+        { type: 'rect', x1: -2.56, y1: -7.6, x2: 2.56, y2: -3.6 },
+        { type: 'circle', x: 4.96, y: -4.4, r: 1.28 },
+      ],
+    },
+    {
+      name: '正弦·一次',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq'],
+      hint: '2 条曲线分工，共 6 点、2 处禁区。',
+      seed: 'sine', maxForms: 2, tol: 0.24,
+      challenge: true,
+      points: [{ x: -2.4, y: -0.56 }, { x: -0.6, y: -0.83 }, { x: 1.4, y: 2.4 }, { x: 2.8, y: 0.52 }, { x: 1.5, y: -0.95 }, { x: 3.4, y: 0.38 }],
+      zones: [
+        { type: 'rect', x1: 3.2, y1: 3.6, x2: 7, y2: 7.6 },
+        { type: 'rect', x1: -7, y1: 3.6, x2: -3.2, y2: 7.6 },
+      ],
+    },
+    {
+      name: '三次·对数',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'log'],
+      hint: '2 条曲线分工，共 6 点、2 处禁区。',
+      seed: 'cubic', maxForms: 2, tol: 0.24,
+      challenge: true,
+      points: [{ x: -3, y: -0.42 }, { x: 1.2, y: -1.28 }, { x: 2.8, y: -0.13 }, { x: -1.8, y: 0.44 }, { x: 0.6, y: 3.07 }, { x: 2.6, y: 4.13 }],
+      zones: [
+        { type: 'circle', x: 8.68, y: -7.7, r: 2.24 },
+        { type: 'rect', x1: -13, y1: 6.3, x2: -5.6, y2: 13.3 },
+      ],
+    },
+    {
+      name: '四次·正弦',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic'],
+      hint: '2 条曲线分工，共 7 点、2 处禁区。',
+      seed: 'quartic', maxForms: 2, tol: 0.24,
+      challenge: true,
+      points: [{ x: -3, y: -3.03 }, { x: 1.5, y: -0.92 }, { x: 3, y: -3.03 }, { x: -2.4, y: -0.56 }, { x: -0.6, y: -0.83 }, { x: 1.4, y: 2.4 }, { x: 2.8, y: 0.52 }],
+      zones: [
+        { type: 'rect', x1: -12, y1: 5.85, x2: -5.2, y2: 12.35 },
+        { type: 'rect', x1: 5.2, y1: 5.85, x2: 12, y2: 12.35 },
+      ],
+    },
+    {
+      name: '正弦·对数',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'log'],
+      hint: '2 条曲线分工，共 5 点、2 处禁区。',
+      seed: 'sine', maxForms: 2, tol: 0.24,
+      challenge: true,
+      points: [{ x: -1.2, y: -1.38 }, { x: 0.4, y: 0.85 }, { x: 1.8, y: -1.01 }, { x: 2.6, y: 0.81 }, { x: 4.2, y: -0.99 }],
+      zones: [
+        { type: 'circle', x: 6.82, y: -6.05, r: 1.76 },
+        { type: 'rect', x1: -10, y1: 4.95, x2: -4.4, y2: 10.45 },
+      ],
+    },
+    {
+      name: '逻辑斯蒂·二次·绝对值',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'logistic'],
+      hint: '3 条曲线分工，共 7 点、2 处禁区。',
+      seed: 'logistic', maxForms: 3, tol: 0.22,
+      challenge: true,
+      points: [{ x: -1.6, y: -1.65 }, { x: 0.4, y: 0.71 }, { x: 2.2, y: 2.05 }, { x: -2.5, y: 0.59 }, { x: 2.4, y: 0.42 }, { x: -2.6, y: 2.84 }, { x: 1.4, y: 3.96 }],
+      zones: [
+        { type: 'rect', x1: -3.52, y1: -10.45, x2: 3.52, y2: -4.95 },
+        { type: 'circle', x: 6.82, y: -6.05, r: 1.76 },
+      ],
+    },
+    {
+      name: '正弦·逻辑斯蒂·三次',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'logistic'],
+      hint: '3 条曲线分工，共 10 点、2 处禁区。',
+      seed: 'sine', maxForms: 3, tol: 0.22,
+      challenge: true,
+      points: [{ x: -2.4, y: -0.56 }, { x: -0.6, y: -0.83 }, { x: 1.4, y: 2.4 }, { x: 2.8, y: 0.52 }, { x: -1.6, y: -1.65 }, { x: 0.4, y: 0.71 }, { x: 2.2, y: 2.05 }, { x: -3, y: -0.42 }, { x: 1.2, y: -1.28 }, { x: 2.8, y: -0.13 }],
+      zones: [
+        { type: 'circle', x: -5.58, y: -4.95, r: 1.44 },
+        { type: 'circle', x: 5.58, y: -4.95, r: 1.44 },
+      ],
+    },
+    {
+      name: '平方反比·反比例·高斯',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'gauss'],
+      hint: '3 条曲线分工，共 7 点、2 处禁区。',
+      seed: 'recipSq', maxForms: 3, tol: 0.22,
+      challenge: true,
+      points: [{ x: -2.4, y: -0.04 }, { x: 2.4, y: -0.04 }, { x: -2.8, y: -0.13 }, { x: 2.6, y: 1.8 }, { x: -1, y: 0.81 }, { x: 0.6, y: 3.38 }, { x: 2, y: 0.81 }],
+      zones: [
+        { type: 'rect', x1: -8, y1: 4.05, x2: -3.6, y2: 8.55 },
+        { type: 'rect', x1: 3.6, y1: 4.05, x2: 8, y2: 8.55 },
+      ],
+    },
+    {
+      name: '一次·逻辑斯蒂·正弦',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'logistic'],
+      hint: '3 条曲线分工，共 8 点、2 处禁区。',
+      seed: 'linear', maxForms: 3, tol: 0.22,
+      challenge: true,
+      points: [{ x: 1.5, y: -0.95 }, { x: 3.4, y: 0.38 }, { x: 1.2, y: 0.65 }, { x: 2.8, y: -1.29 }, { x: 4.2, y: -2.27 }, { x: -1.2, y: -1.38 }, { x: 0.4, y: 0.85 }, { x: 1.8, y: -1.01 }],
+      zones: [
+        { type: 'circle', x: 8.06, y: -7.15, r: 2.08 },
+        { type: 'rect', x1: -4.16, y1: -12.35, x2: 4.16, y2: -5.85 },
+      ],
+    },
+    {
+      name: '四次·三次·根式',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic'],
+      hint: '3 条曲线分工，共 8 点、2 处禁区。',
+      seed: 'quartic', maxForms: 3, tol: 0.22,
+      challenge: true,
+      points: [{ x: -3, y: -3.03 }, { x: 1.5, y: -0.92 }, { x: 3, y: -3.03 }, { x: -2.6, y: 0.6 }, { x: 2.4, y: 2.13 }, { x: -1.4, y: 0.8 }, { x: 0.6, y: 2.12 }, { x: 2.2, y: 2.86 }],
+      zones: [
+        { type: 'rect', x1: -4.16, y1: -12.35, x2: 4.16, y2: -5.85 },
+        { type: 'rect', x1: -12, y1: 5.85, x2: -5.2, y2: 12.35 },
+      ],
+    },
+    {
+      name: '指数·平方反比·正弦',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic'],
+      hint: '3 条曲线分工，共 9 点、2 处禁区。',
+      seed: 'exponential', maxForms: 3, tol: 0.22,
+      challenge: true,
+      points: [{ x: -2, y: -1.32 }, { x: 0.8, y: -0.39 }, { x: 2.4, y: 1.19 }, { x: -2.4, y: -0.04 }, { x: 2.4, y: -0.04 }, { x: -2.4, y: -0.56 }, { x: -0.6, y: -0.83 }, { x: 1.4, y: 2.4 }, { x: 2.8, y: 0.52 }],
+      zones: [
+        { type: 'rect', x1: -2.56, y1: -7.6, x2: 2.56, y2: -3.6 },
+        { type: 'rect', x1: -7, y1: 3.6, x2: -3.2, y2: 7.6 },
+      ],
+    },
+    {
+      name: '对数·一次·高斯',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'gauss'],
+      hint: '3 条曲线分工，共 8 点、2 处禁区。',
+      seed: 'log', maxForms: 3, tol: 0.22,
+      challenge: true,
+      points: [{ x: -1.8, y: 0.44 }, { x: 0.6, y: 3.07 }, { x: 2.6, y: 4.13 }, { x: -3.2, y: 4.38 }, { x: -1.4, y: 2.76 }, { x: -1, y: 0.81 }, { x: 0.6, y: 3.38 }, { x: 2, y: 0.81 }],
+      zones: [
+        { type: 'circle', x: -9.92, y: -8.8, r: 2.56 },
+        { type: 'rect', x1: -5.12, y1: -15.2, x2: 5.12, y2: -7.2 },
+      ],
+    },
+    {
+      name: '一次·正弦·三次',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic'],
+      hint: '3 条曲线分工，共 7 点、2 处禁区。',
+      seed: 'linear', maxForms: 3, tol: 0.22,
+      challenge: true,
+      points: [{ x: -3.2, y: 4.38 }, { x: -1.4, y: 2.76 }, { x: -1.2, y: -1.38 }, { x: 0.4, y: 0.85 }, { x: 1.8, y: -1.01 }, { x: -2.6, y: 0.6 }, { x: 2.4, y: 2.13 }],
+      zones: [
+        { type: 'rect', x1: 6.4, y1: 7.2, x2: 15, y2: 15.2 },
+        { type: 'circle', x: -9.92, y: -8.8, r: 2.56 },
+      ],
+    },
+    {
+      name: '三次·四次·对数',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log'],
+      hint: '3 条曲线分工，共 8 点、2 处禁区。',
+      seed: 'cubic', maxForms: 3, tol: 0.22,
+      challenge: true,
+      points: [{ x: -3, y: -0.42 }, { x: 1.2, y: -1.28 }, { x: 2.8, y: -0.13 }, { x: -3, y: -3.03 }, { x: 1.5, y: -0.92 }, { x: 3, y: -3.03 }, { x: 2.6, y: 0.81 }, { x: 4.2, y: -0.99 }],
+      zones: [
+        { type: 'rect', x1: 5.2, y1: 5.85, x2: 12, y2: 12.35 },
+        { type: 'circle', x: -8.06, y: -7.15, r: 2.08 },
+      ],
+    },
+    {
+      name: '三次·四次·整流正弦',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic'],
+      hint: '3 条曲线分工，共 9 点、2 处禁区。',
+      seed: 'cubic', maxForms: 3, tol: 0.22,
+      challenge: true,
+      points: [{ x: -3, y: -0.42 }, { x: 1.2, y: -1.28 }, { x: 2.8, y: -0.13 }, { x: -3, y: -3.03 }, { x: 1.5, y: -0.92 }, { x: 3, y: -3.03 }, { x: -2.2, y: -0.79 }, { x: 0, y: -1.4 }, { x: 2.2, y: -0.79 }],
+      zones: [
+        { type: 'circle', x: -8.06, y: -7.15, r: 2.08 },
+        { type: 'circle', x: 8.06, y: -7.15, r: 2.08 },
+      ],
+    },
+    {
+      name: '整流正弦·逻辑斯蒂·对数',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'logistic'],
+      hint: '3 条曲线分工，共 8 点、3 处禁区。',
+      seed: 'sinAbs', maxForms: 3, tol: 0.20,
+      challenge: true,
+      points: [{ x: -2.2, y: -0.79 }, { x: 0, y: -1.4 }, { x: 2.2, y: -0.79 }, { x: 1.2, y: 0.65 }, { x: 2.8, y: -1.29 }, { x: 4.2, y: -2.27 }, { x: 2.6, y: 0.81 }, { x: 4.2, y: -0.99 }],
+      zones: [
+        { type: 'rect', x1: 5.2, y1: 5.85, x2: 12, y2: 12.35 },
+        { type: 'circle', x: -8.06, y: -7.15, r: 2.08 },
+        { type: 'rect', x1: -12, y1: 5.85, x2: -5.2, y2: 12.35 },
+      ],
+    },
+    {
+      name: '高斯·三次·正弦',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'gauss'],
+      hint: '3 条曲线分工，共 9 点、3 处禁区。',
+      seed: 'gauss', maxForms: 3, tol: 0.20,
+      challenge: true,
+      points: [{ x: -1, y: 0.81 }, { x: 0.6, y: 3.38 }, { x: 2, y: 0.81 }, { x: -2.6, y: 0.6 }, { x: 2.4, y: 2.13 }, { x: -2.4, y: -0.56 }, { x: -0.6, y: -0.83 }, { x: 1.4, y: 2.4 }, { x: 2.8, y: 0.52 }],
+      zones: [
+        { type: 'circle', x: -6.2, y: -5.5, r: 1.6 },
+        { type: 'rect', x1: 4, y1: 4.5, x2: 9, y2: 9.5 },
+        { type: 'rect', x1: -3.2, y1: -9.5, x2: 3.2, y2: -4.5 },
+      ],
+    },
+    {
+      name: '整流正弦·四次·一次',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log'],
+      hint: '3 条曲线分工，共 8 点、3 处禁区。',
+      seed: 'sinAbs', maxForms: 3, tol: 0.20,
+      challenge: true,
+      points: [{ x: -2.2, y: -0.79 }, { x: 0, y: -1.4 }, { x: 2.2, y: -0.79 }, { x: -3, y: -3.03 }, { x: 1.5, y: -0.92 }, { x: 3, y: -3.03 }, { x: -2, y: -0.3 }, { x: 2.6, y: 1.54 }],
+      zones: [
+        { type: 'rect', x1: -4.16, y1: -12.35, x2: 4.16, y2: -5.85 },
+        { type: 'circle', x: 8.06, y: -7.15, r: 2.08 },
+        { type: 'circle', x: -8.06, y: -7.15, r: 2.08 },
+      ],
+    },
+    {
+      name: '对数·四次·一次',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log'],
+      hint: '3 条曲线分工，共 8 点、3 处禁区。',
+      seed: 'log', maxForms: 3, tol: 0.20,
+      challenge: true,
+      points: [{ x: -1.8, y: 0.44 }, { x: 0.6, y: 3.07 }, { x: 2.6, y: 4.13 }, { x: -3, y: -3.03 }, { x: 1.5, y: -0.92 }, { x: 3, y: -3.03 }, { x: -2, y: -0.3 }, { x: 2.6, y: 1.54 }],
+      zones: [
+        { type: 'rect', x1: -13, y1: 6.3, x2: -5.6, y2: 13.3 },
+        { type: 'circle', x: -8.68, y: -7.7, r: 2.24 },
+        { type: 'circle', x: 8.68, y: -7.7, r: 2.24 },
+      ],
+    },
+    {
+      name: '一次·二次·四次',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log'],
+      hint: '3 条曲线分工，共 7 点、2 处禁区。',
+      seed: 'linear', maxForms: 3, tol: 0.20,
+      challenge: true,
+      points: [{ x: 1.5, y: -0.95 }, { x: 3.4, y: 0.38 }, { x: -1.8, y: 0.21 }, { x: 2.2, y: 2.16 }, { x: -3, y: -3.03 }, { x: 1.5, y: -0.92 }, { x: 3, y: -3.03 }],
+      zones: [
+        { type: 'rect', x1: -4.16, y1: -12.35, x2: 4.16, y2: -5.85 },
+        { type: 'rect', x1: -12, y1: 5.85, x2: -5.2, y2: 12.35 },
+      ],
+    },
+    {
+      name: '正弦·对数·平方反比',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log'],
+      hint: '3 条曲线分工，共 8 点、3 处禁区。',
+      seed: 'sine', maxForms: 3, tol: 0.20,
+      challenge: true,
+      points: [{ x: -2.4, y: -0.56 }, { x: -0.6, y: -0.83 }, { x: 1.4, y: 2.4 }, { x: 2.8, y: 0.52 }, { x: 2.6, y: 0.81 }, { x: 4.2, y: -0.99 }, { x: -2.4, y: -0.04 }, { x: 2.4, y: -0.04 }],
+      zones: [
+        { type: 'circle', x: -6.82, y: -6.05, r: 1.76 },
+        { type: 'rect', x1: 4.4, y1: 4.95, x2: 10, y2: 10.45 },
+        { type: 'rect', x1: -10, y1: 4.95, x2: -4.4, y2: 10.45 },
+      ],
+    },
+    {
+      name: '一次·四次·对数',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log'],
+      hint: '3 条曲线分工，共 8 点、2 处禁区。',
+      seed: 'linear', maxForms: 3, tol: 0.20,
+      challenge: true,
+      points: [{ x: 1.5, y: -0.95 }, { x: 3.4, y: 0.38 }, { x: -3, y: -3.03 }, { x: 1.5, y: -0.92 }, { x: 3, y: -3.03 }, { x: -1.8, y: 0.44 }, { x: 0.6, y: 3.07 }, { x: 2.6, y: 4.13 }],
+      zones: [
+        { type: 'rect', x1: -13, y1: 6.3, x2: -5.6, y2: 13.3 },
+        { type: 'circle', x: 8.68, y: -7.7, r: 2.24 },
+      ],
+    },
+    {
+      name: '对数·一次·四次',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log'],
+      hint: '3 条曲线分工，共 7 点、3 处禁区。',
+      seed: 'log', maxForms: 3, tol: 0.20,
+      challenge: true,
+      points: [{ x: 2.6, y: 0.81 }, { x: 4.2, y: -0.99 }, { x: -3.2, y: 4.38 }, { x: -1.4, y: 2.76 }, { x: -3, y: -3.03 }, { x: 1.5, y: -0.92 }, { x: 3, y: -3.03 }],
+      zones: [
+        { type: 'rect', x1: 6.4, y1: 7.2, x2: 15, y2: 15.2 },
+        { type: 'circle', x: -9.92, y: -8.8, r: 2.56 },
+        { type: 'rect', x1: -5.12, y1: -15.2, x2: 5.12, y2: -7.2 },
+      ],
+    },
+    {
+      name: '根式·一次·四次',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log'],
+      hint: '3 条曲线分工，共 8 点、3 处禁区。',
+      seed: 'sqrt', maxForms: 3, tol: 0.20,
+      challenge: true,
+      points: [{ x: -1.4, y: 0.8 }, { x: 0.6, y: 2.12 }, { x: 2.2, y: 2.86 }, { x: -3.2, y: 4.38 }, { x: -1.4, y: 2.76 }, { x: -3, y: -3.03 }, { x: 1.5, y: -0.92 }, { x: 3, y: -3.03 }],
+      zones: [
+        { type: 'rect', x1: 6.4, y1: 7.2, x2: 15, y2: 15.2 },
+        { type: 'rect', x1: -5.12, y1: -15.2, x2: 5.12, y2: -7.2 },
+        { type: 'circle', x: -9.92, y: -8.8, r: 2.56 },
+      ],
+    },
+    {
+      name: '逻辑斯蒂·一次·二次·高斯',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss', 'logistic'],
+      hint: '4 条曲线分工，共 10 点、2 处禁区。',
+      seed: 'logistic', maxForms: 4, tol: 0.18,
+      challenge: true,
+      points: [{ x: 1.2, y: 0.65 }, { x: 2.8, y: -1.29 }, { x: 4.2, y: -2.27 }, { x: 1.5, y: -0.95 }, { x: 3.4, y: 0.38 }, { x: -1.8, y: 0.21 }, { x: 2.2, y: 2.16 }, { x: -1, y: 0.81 }, { x: 0.6, y: 3.38 }, { x: 2, y: 0.81 }],
+      zones: [
+        { type: 'rect', x1: -12, y1: 5.85, x2: -5.2, y2: 12.35 },
+        { type: 'rect', x1: -4.16, y1: -12.35, x2: 4.16, y2: -5.85 },
+      ],
+    },
+    {
+      name: '逻辑斯蒂·正弦·高斯·一次',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss', 'logistic'],
+      hint: '4 条曲线分工，共 11 点、3 处禁区。',
+      seed: 'logistic', maxForms: 4, tol: 0.18,
+      challenge: true,
+      points: [{ x: -1.6, y: -1.65 }, { x: 0.4, y: 0.71 }, { x: 2.2, y: 2.05 }, { x: -1.2, y: -1.38 }, { x: 0.4, y: 0.85 }, { x: 1.8, y: -1.01 }, { x: -1, y: 0.81 }, { x: 0.6, y: 3.38 }, { x: 2, y: 0.81 }, { x: -3.2, y: 4.38 }, { x: -1.4, y: 2.76 }],
+      zones: [
+        { type: 'circle', x: -9.92, y: -8.8, r: 2.56 },
+        { type: 'rect', x1: 6.4, y1: 7.2, x2: 15, y2: 15.2 },
+        { type: 'rect', x1: -5.12, y1: -15.2, x2: 5.12, y2: -7.2 },
+      ],
+    },
+    {
+      name: '二次·高斯·三次·根式',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss', 'logistic'],
+      hint: '4 条曲线分工，共 11 点、3 处禁区。',
+      seed: 'quadratic', maxForms: 4, tol: 0.18,
+      challenge: true,
+      points: [{ x: -2.5, y: 0.59 }, { x: 2.4, y: 0.42 }, { x: -3, y: -0.1 }, { x: -2, y: -1.4 }, { x: -0.8, y: 0.24 }, { x: -3, y: -0.42 }, { x: 1.2, y: -1.28 }, { x: 2.8, y: -0.13 }, { x: -1.4, y: 0.8 }, { x: 0.6, y: 2.12 }, { x: 2.2, y: 2.86 }],
+      zones: [
+        { type: 'circle', x: -6.82, y: -6.05, r: 1.76 },
+        { type: 'circle', x: 6.82, y: -6.05, r: 1.76 },
+        { type: 'rect', x1: -3.52, y1: -10.45, x2: 3.52, y2: -4.95 },
+      ],
+    },
+    {
+      name: '对数·三次·正弦·正弦',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss', 'logistic'],
+      hint: '4 条曲线分工，共 11 点、3 处禁区。',
+      seed: 'log', maxForms: 4, tol: 0.18,
+      challenge: true,
+      points: [{ x: 2.6, y: 0.81 }, { x: 4.2, y: -0.99 }, { x: -2.6, y: 0.6 }, { x: 2.4, y: 2.13 }, { x: -2.4, y: -0.56 }, { x: -0.6, y: -0.83 }, { x: 1.4, y: 2.4 }, { x: 2.8, y: 0.52 }, { x: -1.2, y: -1.38 }, { x: 0.4, y: 0.85 }, { x: 1.8, y: -1.01 }],
+      zones: [
+        { type: 'rect', x1: -3.52, y1: -10.45, x2: 3.52, y2: -4.95 },
+        { type: 'rect', x1: 4.4, y1: 4.95, x2: 10, y2: 10.45 },
+        { type: 'circle', x: -6.82, y: -6.05, r: 1.76 },
+      ],
+    },
+    {
+      name: '逻辑斯蒂·反比例·二次·正弦',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss', 'logistic'],
+      hint: '4 条曲线分工，共 11 点、2 处禁区。',
+      seed: 'logistic', maxForms: 4, tol: 0.18,
+      challenge: true,
+      points: [{ x: -1.6, y: -1.65 }, { x: 0.4, y: 0.71 }, { x: 2.2, y: 2.05 }, { x: -2.8, y: -0.13 }, { x: 2.6, y: 1.8 }, { x: -2.5, y: 0.59 }, { x: 2.4, y: 0.42 }, { x: -2.4, y: -0.56 }, { x: -0.6, y: -0.83 }, { x: 1.4, y: 2.4 }, { x: 2.8, y: 0.52 }],
+      zones: [
+        { type: 'circle', x: 5.58, y: -4.95, r: 1.44 },
+        { type: 'circle', x: -5.58, y: -4.95, r: 1.44 },
+      ],
+    },
+    {
+      name: '绝对值·整流正弦·逻辑斯蒂·三次',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss', 'logistic'],
+      hint: '4 条曲线分工，共 10 点、3 处禁区。',
+      seed: 'abs', maxForms: 4, tol: 0.18,
+      challenge: true,
+      points: [{ x: -2.6, y: 2.84 }, { x: 1.4, y: 3.96 }, { x: -2.2, y: -0.79 }, { x: 0, y: -1.4 }, { x: 2.2, y: -0.79 }, { x: 1.2, y: 0.65 }, { x: 2.8, y: -1.29 }, { x: 4.2, y: -2.27 }, { x: -2.6, y: 0.6 }, { x: 2.4, y: 2.13 }],
+      zones: [
+        { type: 'circle', x: -8.06, y: -7.15, r: 2.08 },
+        { type: 'rect', x1: -4.16, y1: -12.35, x2: 4.16, y2: -5.85 },
+        { type: 'circle', x: 8.06, y: -7.15, r: 2.08 },
+      ],
+    },
+    {
+      name: '三次·四次·正弦·一次',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss', 'logistic'],
+      hint: '4 条曲线分工，共 12 点、2 处禁区。',
+      seed: 'cubic', maxForms: 4, tol: 0.18,
+      challenge: true,
+      points: [{ x: -3, y: -0.42 }, { x: 1.2, y: -1.28 }, { x: 2.8, y: -0.13 }, { x: -3, y: -3.03 }, { x: 1.5, y: -0.92 }, { x: 3, y: -3.03 }, { x: -2.4, y: -0.56 }, { x: -0.6, y: -0.83 }, { x: 1.4, y: 2.4 }, { x: 2.8, y: 0.52 }, { x: 1.5, y: -0.95 }, { x: 3.4, y: 0.38 }],
+      zones: [
+        { type: 'rect', x1: -12, y1: 5.85, x2: -5.2, y2: 12.35 },
+        { type: 'circle', x: 8.06, y: -7.15, r: 2.08 },
+      ],
+    },
+    {
+      name: '三次·正弦·对数·二次',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss', 'logistic'],
+      hint: '4 条曲线分工，共 11 点、2 处禁区。',
+      seed: 'cubic', maxForms: 4, tol: 0.18,
+      challenge: true,
+      points: [{ x: -2.6, y: 0.6 }, { x: 2.4, y: 2.13 }, { x: -2.4, y: -0.56 }, { x: -0.6, y: -0.83 }, { x: 1.4, y: 2.4 }, { x: 2.8, y: 0.52 }, { x: -1.8, y: 0.44 }, { x: 0.6, y: 3.07 }, { x: 2.6, y: 4.13 }, { x: -2.5, y: 0.59 }, { x: 2.4, y: 0.42 }],
+      zones: [
+        { type: 'circle', x: 8.68, y: -7.7, r: 2.24 },
+        { type: 'circle', x: -8.68, y: -7.7, r: 2.24 },
+      ],
+    },
+    {
+      name: '三次·二次·绝对值·指数',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss', 'logistic'],
+      hint: '4 条曲线分工，共 9 点、2 处禁区。',
+      seed: 'cubic', maxForms: 4, tol: 0.18,
+      challenge: true,
+      points: [{ x: -2.6, y: 0.6 }, { x: 2.4, y: 2.13 }, { x: -2.5, y: 0.59 }, { x: 2.4, y: 0.42 }, { x: -2.6, y: 2.84 }, { x: 1.4, y: 3.96 }, { x: -2, y: -1.32 }, { x: 0.8, y: -0.39 }, { x: 2.4, y: 1.19 }],
+      zones: [
+        { type: 'circle', x: -6.82, y: -6.05, r: 1.76 },
+        { type: 'rect', x1: -3.52, y1: -10.45, x2: 3.52, y2: -4.95 },
+      ],
+    },
+    {
+      name: '对数·逻辑斯蒂·逻辑斯蒂·反比例',
+      pool: ['linear', 'abs', 'quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss', 'logistic'],
+      hint: '4 条曲线分工，共 10 点、3 处禁区。',
+      seed: 'log', maxForms: 4, tol: 0.18,
+      challenge: true,
+      points: [{ x: 2.6, y: 0.81 }, { x: 4.2, y: -0.99 }, { x: -1.6, y: -1.65 }, { x: 0.4, y: 0.71 }, { x: 2.2, y: 2.05 }, { x: 1.2, y: 0.65 }, { x: 2.8, y: -1.29 }, { x: 4.2, y: -2.27 }, { x: -2.8, y: -0.13 }, { x: 2.6, y: 1.8 }],
+      zones: [
+        { type: 'circle', x: 8.06, y: -7.15, r: 2.08 },
+        { type: 'circle', x: -8.06, y: -7.15, r: 2.08 },
+        { type: 'rect', x1: 5.2, y1: 5.85, x2: 12, y2: 12.35 },
+      ],
+    },
+  ];
+
+  const SANDBOX_LEVEL = {
+      name: '测试场',
+      pool: ['linear', 'quadratic', 'reciprocal', 'sine', 'abs', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss', 'logistic'],
+      hint: '实验关卡：全部函数直接可用，最多 10 条公式，视窗放大到 ±20，没有禁区。',
+      seed: 'linear', maxForms: 10, tol: 0.60, radius: 20,
+      test: true, allKinds: true,
+      points: [{ x: -8, y: -5 }, { x: 0, y: 6 }, { x: 8, y: -3 }],
+  };
+
+  /* 基础页在前、挑战页居中、测试场固定最后（不进列表，由主页按钮进入） */
+  const BASE_COUNT = LEVELS.length;
+  LEVELS.push(...CHALLENGE_LEVELS, SANDBOX_LEVEL);
+  const CHALLENGE_COUNT = CHALLENGE_LEVELS.length;
+  const SANDBOX_INDEX = LEVELS.length - 1;
+
+
+  const CHALLENGE_SOLUTIONS = [
+    [{ forms: [{ kind: 'logistic', params: [4.2, 1.5, 0, -2] }, { kind: 'quadratic', params: [-0.28, 0.6, 2.2] }] }],
+    [{ forms: [{ kind: 'linear', params: [0.7, -2] }, { kind: 'sinAbs', params: [2.2, 1.3, -1.4] }] }],
+    [{ forms: [{ kind: 'cubic', params: [-0.12, 0.2, 1.1, 0] }, { kind: 'logistic', params: [-3.4, 1.8, 2.4, 1] }] }],
+    [{ forms: [{ kind: 'cubic', params: [0.16, 0, -1.3, 0] }, { kind: 'gauss', params: [-2.6, -2, 1.2, 1.2] }] }],
+    [{ forms: [{ kind: 'quartic', params: [0.07, 0, -1.1, 0, 1.2] }, { kind: 'quadratic', params: [-0.28, 0.6, 2.2] }] }],
+    [{ forms: [{ kind: 'cubic', params: [-0.12, 0.2, 1.1, 0] }, { kind: 'sine', params: [2, 1.1, 0.4] }] }],
+    [{ forms: [{ kind: 'exponential', params: [0.8, 0.75, -1.6] }, { kind: 'sine', params: [1.6, 2, -0.3] }] }],
+    [{ forms: [{ kind: 'sqrt', params: [1.8, -2.4, -1] }, { kind: 'gauss', params: [-2.6, -2, 1.2, 1.2] }] }],
+    [{ forms: [{ kind: 'sinAbs', params: [2.2, 1.3, -1.4] }, { kind: 'sine', params: [1.6, 2, -0.3] }] }],
+    [{ forms: [{ kind: 'quartic', params: [0.07, 0, -1.1, 0, 1.2] }, { kind: 'log', params: [2.4, -3, 0] }] }],
+    [{ forms: [{ kind: 'logistic', params: [4.2, 1.5, 0, -2] }, { kind: 'log', params: [-2, 1.5, 1] }] }],
+    [{ forms: [{ kind: 'logistic', params: [4.2, 1.5, 0, -2] }, { kind: 'sinAbs', params: [2.2, 1.3, -1.4] }] }],
+    [{ forms: [{ kind: 'logistic', params: [4.2, 1.5, 0, -2] }, { kind: 'reciprocal', params: [2.6, 0.8] }] }],
+    [{ forms: [{ kind: 'quartic', params: [0.07, 0, -1.1, 0, 1.2] }, { kind: 'exponential', params: [0.8, 0.75, -1.6] }] }],
+    [{ forms: [{ kind: 'sinAbs', params: [2.2, 1.3, -1.4] }, { kind: 'cubic', params: [-0.12, 0.2, 1.1, 0] }] }],
+    [{ forms: [{ kind: 'exponential', params: [0.8, 0.75, -1.6] }, { kind: 'gauss', params: [3.8, 0.5, 1.4, -0.4] }] }],
+    [{ forms: [{ kind: 'sine', params: [2, 1.1, 0.4] }, { kind: 'linear', params: [0.7, -2] }] }],
+    [{ forms: [{ kind: 'cubic', params: [0.16, 0, -1.3, 0] }, { kind: 'log', params: [2.4, -3, 0] }] }],
+    [{ forms: [{ kind: 'quartic', params: [0.07, 0, -1.1, 0, 1.2] }, { kind: 'sine', params: [2, 1.1, 0.4] }] }],
+    [{ forms: [{ kind: 'sine', params: [1.6, 2, -0.3] }, { kind: 'log', params: [-2, 1.5, 1] }] }],
+    [{ forms: [{ kind: 'logistic', params: [4.2, 1.5, 0, -2] }, { kind: 'quadratic', params: [0.35, 0, -1.6] }, { kind: 'abs', params: [1.4, -1, 0.6] }] }],
+    [{ forms: [{ kind: 'sine', params: [2, 1.1, 0.4] }, { kind: 'logistic', params: [4.2, 1.5, 0, -2] }, { kind: 'cubic', params: [0.16, 0, -1.3, 0] }] }],
+    [{ forms: [{ kind: 'recipSq', params: [3.2, -0.6] }, { kind: 'reciprocal', params: [2.6, 0.8] }, { kind: 'gauss', params: [3.8, 0.5, 1.4, -0.4] }] }],
+    [{ forms: [{ kind: 'linear', params: [0.7, -2] }, { kind: 'logistic', params: [-3.4, 1.8, 2.4, 1] }, { kind: 'sine', params: [1.6, 2, -0.3] }] }],
+    [{ forms: [{ kind: 'quartic', params: [0.07, 0, -1.1, 0, 1.2] }, { kind: 'cubic', params: [-0.12, 0.2, 1.1, 0] }, { kind: 'sqrt', params: [1.8, -2.4, -1] }] }],
+    [{ forms: [{ kind: 'exponential', params: [0.8, 0.75, -1.6] }, { kind: 'recipSq', params: [3.2, -0.6] }, { kind: 'sine', params: [2, 1.1, 0.4] }] }],
+    [{ forms: [{ kind: 'log', params: [2.4, -3, 0] }, { kind: 'linear', params: [-0.9, 1.5] }, { kind: 'gauss', params: [3.8, 0.5, 1.4, -0.4] }] }],
+    [{ forms: [{ kind: 'linear', params: [-0.9, 1.5] }, { kind: 'sine', params: [1.6, 2, -0.3] }, { kind: 'cubic', params: [-0.12, 0.2, 1.1, 0] }] }],
+    [{ forms: [{ kind: 'cubic', params: [0.16, 0, -1.3, 0] }, { kind: 'quartic', params: [0.07, 0, -1.1, 0, 1.2] }, { kind: 'log', params: [-2, 1.5, 1] }] }],
+    [{ forms: [{ kind: 'cubic', params: [0.16, 0, -1.3, 0] }, { kind: 'quartic', params: [0.07, 0, -1.1, 0, 1.2] }, { kind: 'sinAbs', params: [2.2, 1.3, -1.4] }] }],
+    [{ forms: [{ kind: 'sinAbs', params: [2.2, 1.3, -1.4] }, { kind: 'logistic', params: [-3.4, 1.8, 2.4, 1] }, { kind: 'log', params: [-2, 1.5, 1] }] }],
+    [{ forms: [{ kind: 'gauss', params: [3.8, 0.5, 1.4, -0.4] }, { kind: 'cubic', params: [-0.12, 0.2, 1.1, 0] }, { kind: 'sine', params: [2, 1.1, 0.4] }] }],
+    [{ forms: [{ kind: 'sinAbs', params: [2.2, 1.3, -1.4] }, { kind: 'quartic', params: [0.07, 0, -1.1, 0, 1.2] }, { kind: 'linear', params: [0.4, 0.5] }] }],
+    [{ forms: [{ kind: 'log', params: [2.4, -3, 0] }, { kind: 'quartic', params: [0.07, 0, -1.1, 0, 1.2] }, { kind: 'linear', params: [0.4, 0.5] }] }],
+    [{ forms: [{ kind: 'linear', params: [0.7, -2] }, { kind: 'quadratic', params: [-0.28, 0.6, 2.2] }, { kind: 'quartic', params: [0.07, 0, -1.1, 0, 1.2] }] }],
+    [{ forms: [{ kind: 'sine', params: [2, 1.1, 0.4] }, { kind: 'log', params: [-2, 1.5, 1] }, { kind: 'recipSq', params: [3.2, -0.6] }] }],
+    [{ forms: [{ kind: 'linear', params: [0.7, -2] }, { kind: 'quartic', params: [0.07, 0, -1.1, 0, 1.2] }, { kind: 'log', params: [2.4, -3, 0] }] }],
+    [{ forms: [{ kind: 'log', params: [-2, 1.5, 1] }, { kind: 'linear', params: [-0.9, 1.5] }, { kind: 'quartic', params: [0.07, 0, -1.1, 0, 1.2] }] }],
+    [{ forms: [{ kind: 'sqrt', params: [1.8, -2.4, -1] }, { kind: 'linear', params: [-0.9, 1.5] }, { kind: 'quartic', params: [0.07, 0, -1.1, 0, 1.2] }] }],
+    [{ forms: [{ kind: 'logistic', params: [-3.4, 1.8, 2.4, 1] }, { kind: 'linear', params: [0.7, -2] }, { kind: 'quadratic', params: [-0.28, 0.6, 2.2] }, { kind: 'gauss', params: [3.8, 0.5, 1.4, -0.4] }] }],
+    [{ forms: [{ kind: 'logistic', params: [4.2, 1.5, 0, -2] }, { kind: 'sine', params: [1.6, 2, -0.3] }, { kind: 'gauss', params: [3.8, 0.5, 1.4, -0.4] }, { kind: 'linear', params: [-0.9, 1.5] }] }],
+    [{ forms: [{ kind: 'quadratic', params: [0.35, 0, -1.6] }, { kind: 'gauss', params: [-2.6, -2, 1.2, 1.2] }, { kind: 'cubic', params: [0.16, 0, -1.3, 0] }, { kind: 'sqrt', params: [1.8, -2.4, -1] }] }],
+    [{ forms: [{ kind: 'log', params: [-2, 1.5, 1] }, { kind: 'cubic', params: [-0.12, 0.2, 1.1, 0] }, { kind: 'sine', params: [2, 1.1, 0.4] }, { kind: 'sine', params: [1.6, 2, -0.3] }] }],
+    [{ forms: [{ kind: 'logistic', params: [4.2, 1.5, 0, -2] }, { kind: 'reciprocal', params: [2.6, 0.8] }, { kind: 'quadratic', params: [0.35, 0, -1.6] }, { kind: 'sine', params: [2, 1.1, 0.4] }] }],
+    [{ forms: [{ kind: 'abs', params: [1.4, -1, 0.6] }, { kind: 'sinAbs', params: [2.2, 1.3, -1.4] }, { kind: 'logistic', params: [-3.4, 1.8, 2.4, 1] }, { kind: 'cubic', params: [-0.12, 0.2, 1.1, 0] }] }],
+    [{ forms: [{ kind: 'cubic', params: [0.16, 0, -1.3, 0] }, { kind: 'quartic', params: [0.07, 0, -1.1, 0, 1.2] }, { kind: 'sine', params: [2, 1.1, 0.4] }, { kind: 'linear', params: [0.7, -2] }] }],
+    [{ forms: [{ kind: 'cubic', params: [-0.12, 0.2, 1.1, 0] }, { kind: 'sine', params: [2, 1.1, 0.4] }, { kind: 'log', params: [2.4, -3, 0] }, { kind: 'quadratic', params: [0.35, 0, -1.6] }] }],
+    [{ forms: [{ kind: 'cubic', params: [-0.12, 0.2, 1.1, 0] }, { kind: 'quadratic', params: [0.35, 0, -1.6] }, { kind: 'abs', params: [1.4, -1, 0.6] }, { kind: 'exponential', params: [0.8, 0.75, -1.6] }] }],
+    [{ forms: [{ kind: 'log', params: [-2, 1.5, 1] }, { kind: 'logistic', params: [4.2, 1.5, 0, -2] }, { kind: 'logistic', params: [-3.4, 1.8, 2.4, 1] }, { kind: 'reciprocal', params: [2.6, 0.8] }] }],
+  ];
+
+  const SANDBOX_SOLUTIONS = [
     [{ forms: [{ kind: 'quadratic', params: [-0.15625, 0.125, 6] }] }],
   ];
+
+  SOLUTIONS.push(...CHALLENGE_SOLUTIONS, ...SANDBOX_SOLUTIONS);
 
   LEVELS.forEach((lv, i) => { lv.solutions = SOLUTIONS[i] || []; });
 
@@ -1552,7 +2294,7 @@
     '拾壹', '拾贰', '拾叁', '拾肆', '拾伍', '拾陆', '拾柒', '拾捌', '拾玖', '贰拾',
     '贰拾壹', '贰拾贰', '贰拾叁', '贰拾肆', '贰拾伍', '贰拾陆', '贰拾柒', '贰拾捌', '贰拾玖', '叁拾',
     '叁拾壹', '叁拾贰', '叁拾叁', '叁拾肆', '叁拾伍', '叁拾陆', '叁拾柒', '叁拾捌', '叁拾玖', '肆拾',
-    '肆拾壹', '肆拾贰', '肆拾叁', '肆拾肆', '肆拾伍', '肆拾陆', '肆拾柒', '肆拾捌', '肆拾玖', '伍拾'];
+    '肆拾壹', '肆拾贰', '肆拾叁', '肆拾肆', '肆拾伍', '肆拾陆', '肆拾柒', '肆拾捌', '肆拾玖'];
 
   /* ---------------- DOM ---------------- */
 
@@ -1608,6 +2350,11 @@
     fbText: $('#fb-text'),
     fbSend: $('#fb-send'),
     fbCount: $('#fb-count'),
+    fbOverlay: $('#fb-overlay'),
+    fbClose: $('#fb-close'),
+    btnFeedback: $('#btn-feedback'),
+    btnFeedbackHome: $('#btn-feedback-home'),
+    startCurve: $('#start-curve'),
     errOverlay: $('#err-overlay'),
     errMsg: $('#err-msg'),
     errMeta: $('#err-meta'),
@@ -1648,6 +2395,7 @@
     opts: { grid: true, ticks: true, guides: true, target: false },
     solutionMatch: null,
     lang: 'zh',
+    page: 'base',
   };
 
   let view = null;
@@ -1674,7 +2422,7 @@
       save = { unlocked: 1, cleared: [], seen: 0, lessons: [] };
     }
     while (save.cleared.length < LEVELS.length) save.cleared.push(false);
-    /* 进度一致性：可进入的关卡永远不超过“已通关数 + 1” */
+    /* 进度一致性：可进入的关卡永远不超过"已通关数 + 1" */
   }
 
   function persist() {
@@ -1869,7 +2617,7 @@
     }));
 
     dom.formList.innerHTML = '';
-    dom.lvNumber.textContent = String(index + 1).padStart(2, '0');
+    dom.lvNumber.textContent = levelIndexText(index);
     dom.lvName.textContent = levelTitle(level, index);
     dom.lvHint.textContent = levelHint(level, index);
     dom.btnPause.textContent = t('game.pause');
@@ -2271,12 +3019,42 @@
 
     btn.append(arrow);
 
-    /* 恒定 1/s 匀速；再次点击同一方向即暂停 */
-    btn.addEventListener('click', () => {
-      param.dir = param.dir === dir ? 0 : dir;
+    /* 按住持续增减，松开（或移出、失焦）立即停；恒定 1/s */
+    const begin = () => {
+      param.dir = dir;
       param.mode = 0;
       syncParam(form, param);
+    };
+    const end = () => {
+      if (param.dir !== dir) return;
+      param.dir = 0;
+      syncParam(form, param);
+    };
+
+    btn.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      e.preventDefault();
+      /* 捕获指针，保证松手一定回到这个按钮上 */
+      if (btn.setPointerCapture) {
+        try { btn.setPointerCapture(e.pointerId); } catch (err) { /* 忽略 */ }
+      }
+      begin();
     });
+    btn.addEventListener('pointerup', end);
+    btn.addEventListener('pointercancel', end);
+    btn.addEventListener('lostpointercapture', end);
+
+    /* 键盘：按住 Enter / 空格同样持续变化 */
+    btn.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      e.preventDefault();
+      begin();
+    });
+    btn.addEventListener('keyup', (e) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      end();
+    });
+    btn.addEventListener('blur', end);
 
     return btn;
   }
@@ -2391,7 +3169,7 @@
     const full = !state.level || state.forms.length >= state.level.maxForms;
     [dom.paletteListBasic, dom.paletteListAdvanced].forEach((list) => {
       list.querySelectorAll('.palette-item').forEach((b) => {
-        /* 满额时只做弱化，仍可点击，由 addForm 给出“已达上限”的提示 */
+        /* 满额时只做弱化，仍可点击，由 addForm 给出"已达上限"的提示 */
         b.classList.toggle('is-full', full && !b.classList.contains('is-locked'));
       });
     });
@@ -2845,7 +3623,7 @@
       hatchTile.width = 13;
       hatchTile.height = 13;
       const g = hatchTile.getContext('2d');
-      g.strokeStyle = 'rgba(255, 104, 124, .13)';
+      g.strokeStyle = 'rgba(255, 104, 124, .24)';
       g.lineWidth = 1;
       g.beginPath();
       g.moveTo(-2, 15);
@@ -2862,10 +3640,16 @@
     for (const z of state.zones) {
       ctx.save();
       zonePath(ctx, z);
-      ctx.fillStyle = hot ? 'rgba(255, 104, 124, .16)' : 'rgba(255, 104, 124, .07)';
+      /* 底色更实，违规时进一步加深 */
+      ctx.fillStyle = hot ? 'rgba(255, 92, 112, .3)' : 'rgba(255, 104, 124, .13)';
       ctx.fill();
       ctx.fillStyle = hatchPattern(ctx);
       ctx.fill();
+
+      /* 明确的边界线，让禁区和普通背景一眼分开 */
+      ctx.strokeStyle = hot ? 'rgba(255, 138, 152, .95)' : 'rgba(255, 104, 124, .55)';
+      ctx.lineWidth = hot ? 2 : 1.4;
+      ctx.stroke();
       ctx.restore();
 
       ctx.save();
@@ -3257,6 +4041,122 @@
     }
   }
 
+  /* ---------------- 主页装饰曲线 ----------------
+     每 5 秒换一条随机函数曲线，切换时用 1.6s 交叉淡入淡出，
+     期间首个参数做轻微「呼吸」，看起来一直在缓慢变化。
+     ---------------------------------------------- */
+
+  const START_SAMPLES = [
+    { kind: 'sine', params: [2, 1.2, 0] },
+    { kind: 'sine', params: [1.6, 2.1, 0] },
+    { kind: 'sinAbs', params: [2.2, 1.4, -1.6] },
+    { kind: 'quadratic', params: [0.42, 0, -2.4] },
+    { kind: 'cubic', params: [0.1, 0, -1.1, 0] },
+    { kind: 'quartic', params: [0.05, 0, -0.8, 0, 1.1] },
+    { kind: 'gauss', params: [3.6, 0, 1.5, -0.6] },
+    { kind: 'logistic', params: [4.6, 1.6, 0, -2.3] },
+    { kind: 'log', params: [2.2, -3, 0] },
+    { kind: 'recipSq', params: [2.6, 0.4] },
+    { kind: 'exponential', params: [0.9, 0.85, -1.4] },
+    { kind: 'tan', params: [1.4, 0.8, 0] },
+  ];
+
+  const START_SWAP_MS = 5000;
+  const START_FADE = 1.6;
+
+  const startState = { cur: null, prev: null, switchedAt: 0, nextAt: 0 };
+  let startView = null;
+  let startCtx = null;
+
+  function resizeStartCurve() {
+    const c = dom.startCurve;
+    if (!c) return;
+    const rect = c.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    c.width = Math.round(rect.width * dpr);
+    c.height = Math.round(rect.height * dpr);
+    startView = { W: rect.width, H: rect.height, dpr, R: 6 };
+  }
+
+  function pickStartSample(exclude) {
+    for (let i = 0; i < 8; i++) {
+      const s = START_SAMPLES[Math.floor(Math.random() * START_SAMPLES.length)];
+      if (!exclude || s.kind !== exclude.kind) return s;
+    }
+    return START_SAMPLES[0];
+  }
+
+  function drawStartCurve(time) {
+    if (!startCtx || !startView) return;
+    const { W, H, dpr, R } = startView;
+    const ctx = startCtx;
+    const now = time * 1000;
+
+    if (!startState.cur) {
+      startState.cur = pickStartSample(null);
+      startState.prev = null;
+      startState.switchedAt = now;
+      startState.nextAt = now + START_SWAP_MS;
+    }
+    if (now >= startState.nextAt) {
+      startState.prev = startState.cur;
+      startState.cur = pickStartSample(startState.prev);
+      startState.switchedAt = now;
+      startState.nextAt = now + START_SWAP_MS;
+    }
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+
+    const pad = 4;
+    const size = Math.min(W, H) - pad * 2;
+    const ox = (W - size) / 2;
+    const oy = (H - size) / 2;
+    const scale = size / (2 * R);
+    const wobble = 1 + Math.sin(time * 0.7) * 0.07;
+
+    const strokeOne = (sample, alpha) => {
+      if (!sample || alpha <= 0.02) return;
+      const fn = KINDS[sample.kind].f;
+      const params = sample.params.map((v, i) => (i === 0 ? v * wobble : v));
+
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.strokeStyle = 'rgba(123, 241, 196, .92)';
+      ctx.lineWidth = 1.6;
+      ctx.lineCap = 'round';
+      ctx.shadowColor = 'rgba(123, 241, 196, .55)';
+      ctx.shadowBlur = 8;
+      ctx.beginPath();
+
+      let pen = false;
+      for (let px = 0; px <= size; px += 2) {
+        const x = (px - size / 2) / scale;
+        let y;
+        try {
+          y = fn(x, params);
+        } catch (e) {
+          y = NaN;
+        }
+        if (!Number.isFinite(y) || Math.abs(y) > R * 1.35) {
+          pen = false;
+          continue;
+        }
+        const gx = ox + px;
+        const gy = oy + size / 2 - y * scale;
+        if (pen) ctx.lineTo(gx, gy);
+        else { ctx.moveTo(gx, gy); pen = true; }
+      }
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    const t = clamp((now - startState.switchedAt) / (START_FADE * 1000), 0, 1);
+    strokeOne(startState.prev, 1 - t);
+    strokeOne(startState.cur, t);
+  }
+
   function drawBg(time) {
     const { w, h, dpr } = bgSize;
     if (!w || !h) return;
@@ -3308,35 +4208,58 @@
   /* 全部关卡开放：续玩优先回到第一个未通关的关卡 */
   function nextPlayable() {
     for (let i = 0; i < LEVELS.length; i++) {
+      if (LEVELS[i].test) continue;
       if (!save.cleared[i]) return i;
     }
     return 0;
   }
 
   function renderStartProgress() {
-    const cleared = save.cleared.filter(Boolean).length;
-    dom.startProgress.textContent = `${String(cleared).padStart(2, '0')} / ${LEVELS.length} ${t('start.progress')}`;
+    /* 测试场不计入通关进度 */
+    const total = BASE_COUNT + CHALLENGE_COUNT;
+    const cleared = save.cleared.slice(0, total).filter(Boolean).length;
+    dom.startProgress.textContent = `${String(cleared).padStart(2, '0')} / ${total} ${t('start.progress')}`;
     dom.startTrack.innerHTML = LEVELS
+      .slice(0, total)
       .map((_, i) => `<i class="${save.cleared[i] ? 'on' : ''}"></i>`)
       .join('');
   }
 
   function renderLevels() {
-    const cleared = save.cleared.filter(Boolean).length;
-    dom.levelsCount.textContent = `${String(cleared).padStart(2, '0')} / ${LEVELS.length} CLEARED`;
-    dom.levelsGrid.innerHTML = '';
-
+    const page = state.page === 'challenge' ? 'challenge' : 'base';
+    /* 测试场不列在分页里，只从主页按钮进入 */
+    const list = [];
     LEVELS.forEach((lv, i) => {
-      /* 所有关卡开放，任意选择 */
+      if (lv.test) return;
+      if (page === 'challenge' ? !lv.challenge : lv.challenge) return;
+      list.push({ lv, i });
+    });
+
+    const doneCount = list.filter(({ i }) => save.cleared[i]).length;
+    dom.levelsCount.textContent = `${String(doneCount).padStart(2, '0')} / ${list.length} CLEARED`;
+
+    document.querySelectorAll('.pager-tab').forEach((tab) => {
+      const on = tab.dataset.page === page;
+      tab.classList.toggle('is-active', on);
+      tab.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+
+    dom.levelsGrid.innerHTML = '';
+    list.forEach(({ lv, i }, pos) => {
       const done = !!save.cleared[i];
       const card = document.createElement('button');
       card.type = 'button';
-      card.className = 'level-card' + (done ? ' is-cleared' : '');
-      card.style.animationDelay = `${Math.min(i * 0.018, 0.4)}s`;
-      const badge = lv.test ? 'LAB' : lv.maxForms > 1 ? 'MIX' : (KINDS[lv.seed] || KINDS.linear).short;
+      card.className = 'level-card'
+        + (done ? ' is-cleared' : '')
+        + (lv.challenge ? ' is-challenge' : '');
+      card.style.animationDelay = `${Math.min(pos * 0.018, 0.4)}s`;
+      const badge = lv.maxForms > 1 ? 'MIX' : (KINDS[lv.seed] || KINDS.linear).short;
       const zc = (lv.zones || []).length;
+      const indexText = lv.challenge
+        ? `C${String(pos + 1).padStart(2, '0')}`
+        : String(pos + 1).padStart(2, '0');
       card.innerHTML =
-        `<span class="lc-index">${String(i + 1).padStart(2, '0')}</span>` +
+        `<span class="lc-index">${indexText}</span>` +
         `<span class="lc-name">${levelName(lv, i)}</span>` +
         `<span class="lc-kinds"><i class="lc-kind">${badge}</i><i class="lc-kind">\u00d7${lv.maxForms}</i>`
         + `<i class="lc-kind">${lv.points.length}P</i>`
@@ -3354,6 +4277,17 @@
      走同源 POST /api/feedback，服务端落 feedback.csv。
      file:// 打开时没有后端，直接提示无法提交。
      -------------------------------------- */
+
+  function openFeedback() {
+    if (!dom.fbOverlay) return;
+    dom.fbOverlay.hidden = false;
+    updateFbCount();
+    if (dom.fbText) dom.fbText.focus();
+  }
+
+  function closeFeedback() {
+    if (dom.fbOverlay) dom.fbOverlay.hidden = true;
+  }
 
   function updateFbCount() {
     if (!dom.fbCount || !dom.fbText) return;
@@ -3409,6 +4343,7 @@
         updateFbCount();
         try { localStorage.setItem(FB_KEY, String(Date.now())); } catch (e) { /* 忽略 */ }
         toast(t(data.quarantined ? 'fb.review' : 'fb.ok'), true);
+        closeFeedback();
       } else if (res.status === 429) {
         toast(t('fb.limit', { s: data.retryAfter || 60 }));
       } else {
@@ -3575,6 +4510,20 @@
       showScreen('start');
     });
 
+    /* 关卡分页：基础 / 挑战 */
+    document.querySelectorAll('.pager-tab').forEach((tab) => {
+      tab.addEventListener('click', () => {
+        state.page = tab.dataset.page === 'challenge' ? 'challenge' : 'base';
+        renderLevels();
+      });
+    });
+
+    /* 测试场独立入口，不在关卡列表里 */
+    const sandboxBtn = document.querySelector('#btn-sandbox');
+    if (sandboxBtn) {
+      sandboxBtn.addEventListener('click', () => startLevel(SANDBOX_INDEX));
+    }
+
     $('#btn-hint').addEventListener('click', showHint);
     $('#btn-stop-all').addEventListener('click', () => {
       stopAll();
@@ -3637,6 +4586,15 @@
         window.open(REPO_URL, '_blank', 'noopener');
       });
     }
+    if (dom.btnFeedback) dom.btnFeedback.addEventListener('click', openFeedback);
+    if (dom.btnFeedbackHome) dom.btnFeedbackHome.addEventListener('click', openFeedback);
+    if (dom.fbClose) dom.fbClose.addEventListener('click', closeFeedback);
+    if (dom.fbOverlay) {
+      dom.fbOverlay.addEventListener('click', (e) => {
+        if (e.target === dom.fbOverlay) closeFeedback();
+      });
+    }
+
     if (dom.fbSend) dom.fbSend.addEventListener('click', submitFeedback);
     if (dom.fbText) {
       dom.fbText.addEventListener('input', updateFbCount);
@@ -3697,7 +4655,10 @@
     dom.optTarget.addEventListener('change', () => { state.opts.target = dom.optTarget.checked; });
 
     /* 背景画布跟着窗口走；图像区交给 ResizeObserver，避免一次缩放算两遍 */
-    window.addEventListener('resize', resizeBg);
+    window.addEventListener('resize', () => {
+      resizeBg();
+      resizeStartCurve();
+    });
 
     if (window.ResizeObserver) {
       new ResizeObserver(() => {
@@ -3708,6 +4669,7 @@
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         if (dom.errOverlay && !dom.errOverlay.hidden) { closeErrorCard(); return; }
+        if (dom.fbOverlay && !dom.fbOverlay.hidden) { closeFeedback(); return; }
         if (!dom.lesson.hidden) { closeLesson(); return; }
         if (dom.winOverlay.classList.contains('is-open')) return;
         if (state.screen === 'game') {
@@ -3748,6 +4710,7 @@
         checkWin(dt);
       } else {
         drawBg(time);
+        drawStartCurve(time);
       }
     } catch (e) {
       /* 单帧异常不应终止整个动画循环；只打印前几次，避免刷屏 */
@@ -3773,6 +4736,10 @@
     bindUI();
     bindErrorHandlers();
     setPanel('forms');
+    if (dom.startCurve) {
+      startCtx = dom.startCurve.getContext('2d');
+      resizeStartCurve();
+    }
     resizeBg();
     renderStartProgress();
     requestAnimationFrame(frame);

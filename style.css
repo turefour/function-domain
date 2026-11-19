@@ -409,6 +409,34 @@ ul { list-style: none; padding: 0; }
 }
 .levels-head > p { font-size: 10px; letter-spacing: .18em; }
 
+/* ---------- 关卡分页（基础 / 挑战） ---------- */
+.levels-pager {
+  display: flex;
+  gap: 6px;
+  margin: 16px 0 12px;
+}
+.pager-tab {
+  flex: 1 1 0;
+  padding: 10px 12px;
+  border: 1px solid var(--line-soft);
+  background: rgba(255, 255, 255, .02);
+  color: var(--dim-2);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .14em;
+  cursor: pointer;
+  transition: .2s var(--ease);
+}
+.pager-tab:hover { border-color: rgba(123, 241, 196, .4); color: var(--dim); }
+.pager-tab.is-active {
+  color: #04140f;
+  background: var(--mint);
+  border-color: var(--mint);
+  box-shadow: 0 0 16px rgba(123, 241, 196, .28);
+}
+.level-card.is-challenge { border-color: rgba(255, 192, 106, .2); }
+.level-card.is-challenge .lc-index { color: var(--amber); }
+
 .levels-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(172px, 1fr));
@@ -1248,48 +1276,100 @@ input.num:focus {
 .zone-list .zl-mark { color: rgba(255, 150, 164, .75); }
 .zone-list li.is-hot .zl-mark { color: var(--rose); }
 
-/* ---------- 反馈 ---------- */
-.feedback-block {
-  margin-top: 6px;
-  border: 1px solid rgba(123, 241, 196, .14);
-  background: rgba(123, 241, 196, .022);
+/* ---------- 反馈弹窗（主页与游戏内共用） ---------- */
+.fb-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 94;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(2, 6, 7, .82);
+  backdrop-filter: blur(6px);
 }
-.github-block + .feedback-block { margin-top: 6px; }
-.feedback-title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 5px 8px;
-  font-family: var(--mono);
-  font-size: 8px;
-  letter-spacing: .16em;
-  color: rgba(123, 241, 196, .7);
-  cursor: pointer;
-  list-style: none;
-}
-.feedback-title::-webkit-details-marker { display: none; }
-.feedback-title::after { content: '+'; opacity: .7; }
-.feedback-block[open] .feedback-title::after { content: '\2212'; }
+.fb-overlay[hidden] { display: none; }
 
-.feedback-body {
+.fb-card {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 0 8px 8px;
+  gap: 7px;
+  width: min(460px, 100%);
+  padding: 22px 24px 20px;
+  border: 1px solid rgba(123, 241, 196, .24);
+  background: rgba(7, 15, 16, .97);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .6);
+  animation: rise .26s var(--ease) both;
 }
+.fb-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(123, 241, 196, .22);
+  background: transparent;
+  color: var(--dim);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  transition: .2s var(--ease);
+}
+.fb-close:hover {
+  color: var(--mint);
+  border-color: rgba(123, 241, 196, .6);
+  background: rgba(123, 241, 196, .08);
+}
+.fb-eyebrow {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 8.5px;
+  letter-spacing: .22em;
+  color: rgba(123, 241, 196, .7);
+}
+.fb-modal-title {
+  margin: 0 0 4px;
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* 主页脚注里的反馈入口：做成小号 chip，方便点中 */
+.link-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 26px;
+  padding: 5px 10px;
+  border: 1px solid rgba(123, 241, 196, .2);
+  background: rgba(123, 241, 196, .05);
+  color: rgba(123, 241, 196, .88);
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: .1em;
+  cursor: pointer;
+  transition: .2s var(--ease);
+}
+.link-btn:hover {
+  color: var(--mint);
+  border-color: rgba(123, 241, 196, .55);
+  background: rgba(123, 241, 196, .1);
+}
+
 .fb-text {
   width: 100%;
-  min-height: 56px;
-  max-height: 140px;
+  min-height: 96px;
+  max-height: 180px;
   resize: vertical;
-  padding: 6px 8px;
+  padding: 8px 10px;
   border: 1px solid rgba(123, 241, 196, .18);
   background: rgba(3, 10, 11, .55);
   color: var(--ink);
   font-family: var(--mono);
-  font-size: 10px;
-  line-height: 1.6;
+  font-size: 11.5px;
+  line-height: 1.7;
 }
 .fb-text:focus {
   outline: none;
@@ -2146,15 +2226,16 @@ html[lang="en"] .brand-en {
     grid-template-rows: auto minmax(0, 1fr);
     grid-auto-rows: auto;
     align-content: stretch;
-    /* 只露出一个分区，控制台压矮，把高度让给图像 */
-    height: clamp(190px, 30vh, 280px);
+    /* 只露出一个分区；按钮放大后需要多一点高度，仍把主要空间留给图像 */
+    height: clamp(220px, 33vh, 300px);
     padding: 7px 9px 9px;
     gap: 5px;
     overflow: hidden;
   }
 
-  .panel-tab { padding: 7px 6px; }
-  .panel-head { padding: 7px 9px 6px; }
+  /* 触屏目标整体放大：标签页、箭头、停止键、关闭键都提到 34px 上下 */
+  .panel-tab { padding: 10px 8px; font-size: 11px; }
+  .panel-head { padding: 8px 10px 7px; }
 
   .console .panel {
     display: none;
@@ -2172,17 +2253,30 @@ html[lang="en"] .brand-en {
   /* 右侧留出固定语言按钮的位置，空间不够时统计区自动换行 */
   .stage-head { padding: 8px 44px 6px 0; flex-wrap: wrap; row-gap: 6px; }
   .stage-stats { margin-left: auto; }
-  .lang-switch { top: 8px; right: 8px; min-width: 36px; padding: 4px 7px; font-size: 9px; }
+  .lang-switch { top: 8px; right: 8px; min-width: 44px; padding: 7px 10px; font-size: 10px; }
   .form-tip { display: none; }
 
-  /* 手机上把公式卡压紧一点，两张参数行尽量一屏看完 */
-  .form-list { padding: 6px; gap: 6px; }
-  .form-card { padding: 7px 9px 8px; }
-  .fc-expr { margin: 2px 0 1px; font-size: 12.5px; }
-  .fc-params { gap: 4px; }
-  .param { padding-top: 3px; gap: 3px; }
-  .step { height: 24px; }
-  .stop { height: 15px; font-size: 8px; letter-spacing: .08em; }
+  /* 手机上把公式卡排得松一点，触控目标整体放大 */
+  .form-list { padding: 7px; gap: 7px; }
+  .form-card { padding: 8px 10px 9px; }
+  .fc-expr { margin: 3px 0 2px; font-size: 13px; }
+  .fc-params { gap: 5px; }
+  .param {
+    grid-template-columns: minmax(0, 1fr) 34px 34px;
+    padding-top: 4px;
+    gap: 5px;
+  }
+  .step { height: 34px; }
+  .step i { font-size: 13px; }
+  .stop { height: 22px; font-size: 9.5px; letter-spacing: .06em; }
+  .fc-del { width: 26px; height: 26px; font-size: 13px; }
+  .chip { padding: 8px 12px; font-size: 11px; }
+  .mini-btn { padding: 7px 12px; font-size: 10.5px; }
+  .sol-apply { padding: 8px 12px; font-size: 10.5px; }
+  .lesson-close-x { width: 32px; height: 32px; font-size: 14px; }
+  .err-actions .btn { padding: 11px 16px; font-size: 12px; }
+  .link-btn { min-height: 34px; padding: 8px 13px; font-size: 10.5px; }
+  .fb-close { width: 32px; height: 32px; font-size: 14px; }
 }
 
 @media (max-width: 640px) {

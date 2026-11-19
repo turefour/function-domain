@@ -20,7 +20,7 @@
 <section class="screen screen-start is-active" id="screen-start">
   <div class="start-wrap">
     <div class="start-copy">
-      <p class="eyebrow"><span class="pip"></span>INTERACTIVE ATLAS OF CURVES <span class="sl">/</span> <span class="mono" data-version>V1.0.2</span></p>
+      <p class="eyebrow"><span class="pip"></span>INTERACTIVE ATLAS OF CURVES <span class="sl">/</span> <span class="mono" data-version>V1.1.1</span></p>
       <h1 class="brand">
         <span class="brand-cn">函数域</span>
         <span class="brand-en">FUNCTION <em>DOMAIN</em></span>
@@ -29,12 +29,14 @@
       <div class="start-actions">
         <button class="btn btn-primary" id="btn-start" type="button"><span data-i18n="start.begin">开始观测</span><kbd>↵</kbd></button>
         <button class="btn btn-ghost" id="btn-open-levels" type="button"><span data-i18n="start.levels">关卡序列</span></button>
+        <button class="btn btn-ghost" id="btn-sandbox" type="button"><span data-i18n="start.sandbox">测试场</span></button>
       </div>
       <div class="start-foot">
         <div class="track" id="start-track"></div>
         <div class="foot-row">
-          <span class="mono" id="start-progress">00 / 50 已通关</span>
-          <span class="dim note" data-i18n="start.foot2">点击箭头启动增长 · 也可直接键入数值</span>
+          <span class="mono" id="start-progress">00 / 98 已通关</span>
+          <span class="dim note" data-i18n="start.foot2">按住箭头持续变化 · 也可直接键入数值</span>
+          <button class="link-btn" id="btn-feedback-home" type="button" data-i18n="fb.open">反馈</button>
         </div>
       </div>
     </div>
@@ -45,9 +47,7 @@
         <span class="ax ax-v"></span>
         <span class="q q1">Ⅰ</span><span class="q q2">Ⅱ</span>
         <span class="q q3">Ⅲ</span><span class="q q4">Ⅳ</span>
-        <svg class="curve" viewBox="0 0 320 320" preserveAspectRatio="none">
-          <path class="curve-path" d="M2 160 C 40 160 40 60 80 60 S 120 260 160 260 S 200 60 240 60 S 280 160 318 160" />
-        </svg>
+        <canvas class="curve" id="start-curve" aria-hidden="true"></canvas>
         <span class="orbit"><i></i></span>
       </div>
       <p class="deco-cap mono">FIG. 01 — A CURVE SEEKING ITS POINTS</p>
@@ -64,8 +64,12 @@
         <p class="eyebrow">SEQUENCE</p>
         <h2 data-i18n="levels.title">关卡序列</h2>
       </div>
-      <p class="mono dim" id="levels-count">00 / 50 CLEARED</p>
+      <p class="mono dim" id="levels-count">00 / 49 CLEARED</p>
     </header>
+    <div class="levels-pager" role="tablist" aria-label="关卡分组">
+      <button class="pager-tab is-active" type="button" role="tab" data-page="base" aria-selected="true" data-i18n="levels.base">基础关卡</button>
+      <button class="pager-tab" type="button" role="tab" data-page="challenge" aria-selected="false" data-i18n="levels.challenge">挑战关卡</button>
+    </div>
     <div class="levels-grid" id="levels-grid"></div>
     <p class="levels-note" data-i18n="levels.desc">每一关解锁一种新的函数形态。完成当前关卡，下一关才会开启。</p>
   </div>
@@ -182,7 +186,7 @@
             </div>
             <div class="gh-row">
               <span class="gh-label" data-i18n="gh.version">版本</span>
-              <span class="gh-value mono" data-version>V1.0.2</span>
+              <span class="gh-value mono" data-version>V1.1.1</span>
             </div>
             <p class="gh-hint" data-i18n="gh.hint">在 GitHub 搜索 turefour/function-domain 即可找到源码与单文件版本。</p>
             <div class="gh-actions">
@@ -191,17 +195,7 @@
             </div>
           </div>
         </details>
-        <details class="feedback-block" id="feedback-block">
-          <summary class="feedback-title mono" data-i18n="fb.title">反馈 / FEEDBACK</summary>
-          <div class="feedback-body">
-            <textarea class="fb-text" id="fb-text" rows="3" maxlength="500" placeholder="遇到问题或有建议？写在这里。" data-i18n-ph="fb.placeholder"></textarea>
-            <div class="fb-foot">
-              <span class="fb-count mono" id="fb-count">0 / 500</span>
-              <button class="mini-btn" id="fb-send" type="button" data-i18n="fb.send">提交</button>
-            </div>
-            <p class="fb-hint" data-i18n="fb.hint">每分钟最多提交一次；请勿包含广告、脚本或攻击性内容。</p>
-          </div>
-        </details>
+        <button class="mini-btn fb-open" id="btn-feedback" type="button" data-i18n="fb.open">反馈 / FEEDBACK</button>
         <p class="op-note" data-i18n="op.note">箭头启动匀速增减（每秒 ±1），再点暂停；「停止」键定格；输入框可粘贴整条公式。</p>
         <div class="settings-actions">
           <button class="btn btn-line" id="btn-reset" type="button" data-i18n="btn.reset">重置本关</button>
@@ -244,6 +238,20 @@
     <div class="lesson-actions">
       <button class="btn btn-primary" id="lesson-close" type="button" data-i18n="btn.remember">记住了</button>
     </div>
+  </div>
+</div>
+
+<div class="fb-overlay" id="fb-overlay" hidden>
+  <div class="fb-card" role="dialog" aria-modal="true" aria-labelledby="fb-modal-title">
+    <button class="fb-close" id="fb-close" type="button" aria-label="关闭">✕</button>
+    <p class="fb-eyebrow mono" data-i18n="fb.eyebrow">FEEDBACK</p>
+    <h2 class="fb-modal-title" id="fb-modal-title" data-i18n="fb.title">反馈</h2>
+    <textarea class="fb-text" id="fb-text" rows="4" maxlength="500" placeholder="遇到问题或有建议？写在这里。" data-i18n-ph="fb.placeholder"></textarea>
+    <div class="fb-foot">
+      <span class="fb-count mono" id="fb-count">0 / 500</span>
+      <button class="mini-btn" id="fb-send" type="button" data-i18n="fb.send">提交</button>
+    </div>
+    <p class="fb-hint" data-i18n="fb.hint">每分钟最多提交一次；请勿包含广告、脚本或攻击性内容。</p>
   </div>
 </div>
 
