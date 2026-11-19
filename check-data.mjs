@@ -22,6 +22,9 @@ const levelEn = block(/const LEVEL_EN = \[[\s\S]*?\n  \];/);
 const roman = block(/const ROMAN = \[[\s\S]*?\];/);
 const kinds = block(/const KINDS = \{[\s\S]*?\n  \};/);
 const lessons = block(/const LESSONS = \{[\s\S]*?\n  \};/);
+const lessonEn = block(/const LESSON_EN = \{[\s\S]*?\n  \};/);
+const lessonEnExt = block(/const LESSON_EN_EXT = \{[\s\S]*?\n  \};/);
+const kindEn = block(/const KIND_EN = \{[\s\S]*?\n  \};/);
 
 const counts = {
   LEVELS: count(levels, /name: '/g),
@@ -40,6 +43,19 @@ const kindKeys = [...kinds.matchAll(/^    (\w+): \{/gm)].map((m) => m[1]);
 const lessonKeys = [...lessons.matchAll(/^    (\w+): \{/gm)].map((m) => m[1]);
 for (const k of kindKeys) if (!lessonKeys.includes(k)) errors.push(`KINDS.${k} 缺少 LESSONS 条目`);
 for (const k of lessonKeys) if (!kindKeys.includes(k)) errors.push(`LESSONS.${k} 没有对应的 KINDS`);
+
+/* 教学五件套 + 英文三处映射，新增函数时最容易漏这里 */
+const LESSON_FIELDS = ['sample', 'concept', 'steps', 'pitfalls', 'points'];
+for (const k of kindKeys) {
+  const seg = lessons.match(new RegExp(`\\n    ${k}: \\{([\\s\\S]*?)\\r?\\n    \\},`));
+  if (!seg) { errors.push(`LESSONS.${k} 段落无法解析`); continue; }
+  for (const f of LESSON_FIELDS) {
+    if (!seg[1].includes(`${f}:`)) errors.push(`LESSONS.${k} 缺少 ${f}`);
+  }
+  if (!new RegExp(`\\n    ${k}: \\{`).test(lessonEnExt)) errors.push(`LESSON_EN_EXT.${k} 缺失`);
+  if (!new RegExp(`\\n    ${k}: \\[`).test(lessonEn)) errors.push(`LESSON_EN.${k} 缺失`);
+  if (!new RegExp(`(^|[\\s,])${k}: '`).test(kindEn)) errors.push(`KIND_EN.${k} 缺失`);
+}
 
 for (const m of levels.matchAll(/tol: ([\d.]+)/g)) {
   const v = parseFloat(m[1]);

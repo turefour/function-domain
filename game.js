@@ -117,6 +117,58 @@
       f: (x, p) => (Math.abs(x) < 1e-4 ? NaN : p[0] / (x * x) + p[1]),
       expr: (p) => `y = ${fix(p[0])} / x\u00b2 ${sgn(p[1])}`,
     },
+    quartic: {
+      name: '四次函数', short: 'QUART', unlock: 30,
+      form: 'y = A x⁴ + B x³ + C x² + D x + E',
+      params: ['A', 'B', 'C', 'D', 'E'], defaults: [1, 0, 0, 0, 0],
+      f: (x, p) => p[0] * x * x * x * x + p[1] * x * x * x + p[2] * x * x + p[3] * x + p[4],
+      expr: (p) => `y = ${fix(p[0])}x\u2074 ${sgn(p[1])}x\u00b3 ${sgn(p[2])}x\u00b2 ${sgn(p[3])}x ${sgn(p[4])}`,
+    },
+    log: {
+      name: '对数函数', short: 'LOG', unlock: 34,
+      form: 'y = A ln(x \u2212 B) + C',
+      params: ['A', 'B', 'C'], defaults: [1, 0, 0],
+      /* 定义域 x > B，边界留一点余量避免采样缝隙 */
+      f: (x, p) => (x - p[1] < 0.005 ? NaN : p[0] * Math.log(x - p[1]) + p[2]),
+      expr: (p) => {
+        const b = p[1];
+        const inner = Math.abs(b) < 0.005 ? 'x' : b > 0 ? `x \u2212 ${fix(b)}` : `x + ${fix(-b)}`;
+        return `y = ${fix(p[0])} ln(${inner}) ${sgn(p[2])}`;
+      },
+    },
+    tan: {
+      name: '正切函数', short: 'TAN', unlock: 36,
+      form: 'y = A tan(B x) + C',
+      params: ['A', 'B', 'C'], defaults: [1, 1, 0],
+      f: (x, p) => p[0] * Math.tan(p[1] * x) + p[2],
+      expr: (p) => `y = ${fix(p[0])}\u00b7tan(${fix(p[1])}x) ${sgn(p[2])}`,
+    },
+    gauss: {
+      name: '高斯函数', short: 'GAUSS', unlock: 38,
+      form: 'y = A e^(\u2212(x\u2212B)\u00b2/C\u00b2) + D',
+      params: ['A', 'B', 'C', 'D'], defaults: [1, 0, 1, 0],
+      f: (x, p) => {
+        const c = Math.abs(p[2]) < 1e-4 ? 1e-4 : p[2];
+        const t = (x - p[1]) / c;
+        return p[0] * Math.exp(-t * t) + p[3];
+      },
+      expr: (p) => {
+        const b = p[1];
+        const inner = Math.abs(b) < 0.005 ? 'x' : b > 0 ? `x \u2212 ${fix(b)}` : `x + ${fix(-b)}`;
+        return `y = ${fix(p[0])}e^(\u2212(${inner})\u00b2/${fix(p[2])}\u00b2) ${sgn(p[3])}`;
+      },
+    },
+    logistic: {
+      name: '逻辑斯蒂', short: 'SIGMOID', unlock: 40,
+      form: 'y = A / (1 + e^(\u2212B(x\u2212C))) + D',
+      params: ['A', 'B', 'C', 'D'], defaults: [1, 1, 0, 0],
+      f: (x, p) => p[0] / (1 + Math.exp(-p[1] * (x - p[2]))) + p[3],
+      expr: (p) => {
+        const c = p[2];
+        const inner = Math.abs(c) < 0.005 ? 'x' : c > 0 ? `x \u2212 ${fix(c)}` : `x + ${fix(-c)}`;
+        return `y = ${fix(p[0])}/(1+e^(\u2212${fix(p[1])}(${inner}))) ${sgn(p[3])}`;
+      },
+    },
   };
 
   const ALL_KINDS = Object.keys(KINDS);
@@ -129,6 +181,9 @@
   const LESSONS = {
     linear: {
       sample: [1.6, 1],
+      concept: '一次函数刻画的是一定速度的匀速变化：x 每增加 1，y 就改变 A。',
+      steps: ['A 是斜率，等于任意两点之间的平均变化率 (Δy / Δx)。', '令 x = 0，得到与 y 轴的交点 (0, B)，这就是截距。'],
+      pitfalls: ['把 B 当成斜率——B 是截距，决定直线的高低位置。', 'A 为负时直线下降，不要误以为只是"变平"。'],
       points: [
         'a 是斜率，|a| 越大直线越陡',
         'b 是曲线与 y 轴的交点',
@@ -137,6 +192,9 @@
     },
     abs: {
       sample: [1.6, -1, 0],
+      concept: '绝对值把负数翻成正数，所以图像在折点处折成 V 形。',
+      steps: ['先看 B：折点（顶点）落在 x = B。', '再看 A：|A| 决定两臂张开的角度，符号决定朝上还是朝下。'],
+      pitfalls: ['折点在 x = B 处，不是原点。', '|A| 越大张口越窄，与二次函数的"越陡"直觉相反。'],
       points: [
         '曲线在顶点处折成 V 形，顶点坐标 (b, c)',
         'a 的正负决定开口朝上还是朝下',
@@ -145,6 +203,9 @@
     },
     quadratic: {
       sample: [0.8, 0, -1],
+      concept: '二次函数描述均匀加速的变化，图像是抛物线。',
+      steps: ['对称轴位置由 x = −B / 2A 决定，顶点就落在这条线上。', '令 x = 0 得 (0, C)，这是与 y 轴的交点。'],
+      pitfalls: ['对称轴写成 B / 2A，漏掉负号。', 'A 的符号决定开口方向，不是"开口大小"。'],
       points: [
         'a 决定开口方向，|a| 越大开口越窄',
         '对称轴在 x = −b / 2a，顶点落在对称轴上',
@@ -153,6 +214,9 @@
     },
     reciprocal: {
       sample: [2, 1],
+      concept: '反比例描述乘积恒定（x·y = A）的关系，图像是两支双曲线。',
+      steps: ['x = 0 是断点，左右各有一支，永不与 y 轴相交。', 'B 是水平渐近线：x 趋于无穷时曲线贴近 y = B。'],
+      pitfalls: ['以为曲线会穿过 x = 0。', '忽略 B 造成的整体上下平移。'],
       points: [
         '在 x = 0 处断开，分成互不相连的两支',
         'a 的符号决定曲线落在哪两个象限',
@@ -161,6 +225,9 @@
     },
     sine: {
       sample: [2, 1.4, 0],
+      concept: '正弦描述匀速圆周运动的投影，随时间周期性地上下往复。',
+      steps: ['A 是振幅，即波峰到中线 y = C 的距离。', 'B 决定周期：每 2π / |B| 重复一次。'],
+      pitfalls: ['周期写成 2π·B，实际是 2π / B。', '把 C 当成相位移动——C 只是上下平移。'],
       points: [
         'a 是振幅，即波峰到中线的距离',
         'b 决定周期，周期 = 2π / b',
@@ -169,6 +236,9 @@
     },
     exponential: {
       sample: [1, 0.9, -1],
+      concept: '指数函数描述"按固定倍率增长"的过程，速度越来越快。',
+      steps: ['底数固定为 2，B 控制每单位 x 增长多少倍。', 'C 是水平渐近线：x 趋于 −∞ 时曲线贴近 y = C。'],
+      pitfalls: ['以为曲线会碰到 y = C，其实永远只靠近。', 'B 为负时是衰减，不是增长。'],
       points: [
         'a 为正时曲线始终在 y = c 之上',
         'b 越大，曲线抬升越急',
@@ -177,6 +247,9 @@
     },
     sqrt: {
       sample: [2, -1, 0],
+      concept: '根式是平方运算的逆运算，只取非负的那一支。',
+      steps: ['定义域从 x = B 开始，左侧完全没有图像。', '起点是 (B, C)，之后增长越来越慢。'],
+      pitfalls: ['在 x < B 的区域找图像，那里是空白。', '以为根式会加速增长，实际上越来越平。'],
       points: [
         '只有 x ≥ b 的部分有图像，其余是空白',
         '起点坐标 (b, c)，之后增长越来越慢',
@@ -185,6 +258,9 @@
     },
     sinAbs: {
       sample: [2, 1, 0.5],
+      concept: '整流正弦把正弦的下半波翻到中线上方，得到脉动的波形。',
+      steps: ['所有波谷都压在 y = C 这条线上。', '相邻波峰之间的距离是 π / |B|，是正弦周期的一半。'],
+      pitfalls: ['把峰间距当成 2π / |B|。', '忽略 C 对整体高度的抬升。'],
       points: [
         '绝对值把正弦的下半波翻到中线上方',
         '波谷全部压平在同一条 y = c 上',
@@ -193,6 +269,9 @@
     },
     cubic: {
       sample: [0.25, 0, -1.2, 0],
+      concept: '三次函数两端朝相反方向发散，是典型的 S 形曲线。',
+      steps: ['A 决定右端的走向：A > 0 向上，A < 0 向下。', 'B、C 一起决定两个拐点的位置与弯曲程度。'],
+      pitfalls: ['以为两端同向发散，那是四次函数。', '只调 A 而忽略 B、C 对拐点的影响。'],
       points: [
         '两端朝相反方向发散，一高一低',
         'a 的符号决定右端上升还是下降',
@@ -201,11 +280,53 @@
     },
     recipSq: {
       sample: [3, 0.5],
+      concept: '平方反比描述"距离越远衰减越快"的关系，如引力与光照。',
+      steps: ['图像关于 y 轴对称，是偶函数。', 'x = 0 处断开；A > 0 时两侧都向上张开。'],
+      pitfalls: ['说成关于 x 轴对称——那是反比例函数的错觉。', '以为曲线会穿过原点。'],
       points: [
         '关于 y 轴对称，是偶函数',
         'x = 0 处断开，a 为正时两侧都向上张开',
         '曲线最终贴近水平渐近线 y = b',
       ],
+    },
+    quartic: {
+      sample: [0.25, 0, -1.5, 0, 1],
+      concept: '四次函数两端朝同一方向发散，可以有两个谷或两个峰。',
+      steps: ['首项 A 决定两端同向上或同向下。', '五个参数恰好能确定任意五个点，所以五点解通常唯一。'],
+      pitfalls: ['与二次函数混淆，忘了可能有两个谷。', '忽略 B、D 带来的左右不对称。'],
+      points: [
+        '最高次项让两端朝同一方向发散',
+        'B、D 打破左右对称，C 控制中间的起伏',
+        '五个参数可以精确穿过任意五个点',
+      ],
+    },
+    log: {
+      sample: [2, 0, 0],
+      concept: '对数函数是指数函数的反函数，描述"增长越来越慢"的过程。',
+      steps: ['定义域从 x = B 开始，左侧没有图像，x = B 是垂直渐近线。', 'A 是纵向拉伸：|A| 越大，曲线越陡。', 'C 把整条曲线上下平移。'],
+      pitfalls: ['在 x ≤ B 的地方找图像，那里是空白。', '把 B 当成水平渐近线——它是垂直渐近线。'],
+      points: ['只有 x > B 的部分有图像，其余是空白', '起点附近上升极快，越往右越平缓', 'A 为负时曲线从渐近线向右下方延伸'],
+    },
+    tan: {
+      sample: [1.2, 1, 0],
+      concept: '正切等于"斜率本身"，在每个周期内从 −∞ 冲到 +∞。',
+      steps: ['周期是 π / |B|，比正弦短一半。', '渐近线出现在 Bx = π/2 + kπ 处，曲线在这些位置断开。'],
+      pitfalls: ['以为曲线是连续的，其实每个周期之间断开。', '只看一个周期，忽略旁边还有无数支。'],
+      points: ['每个周期内单调递增，两端冲向无穷', '周期为 π / |B|，比正弦短一半', 'C 把整条曲线上下平移'],
+    },
+    gauss: {
+      sample: [4, 0, 1.2, 0],
+      concept: '高斯函数是钟形曲线，描述"集中在均值附近"的分布。',
+      steps: ['峰值 A 出现在 x = B，也就是钟形的中心。', 'C 是宽度：C 越小越尖锐，越大越平缓。', 'D 把整座钟形上下平移。'],
+      pitfalls: ['把 C 当成峰值高度，实际峰值是 A + D。', '以为两端会在有限处相交，其实只在无穷远趋近 D。'],
+      points: ['关于 x = B 完全对称', 'C 控制宽度，越小越尖', '两端都趋于水平渐近线 y = D'],
+    },
+    logistic: {
+      sample: [4, 1.2, 0, 0],
+      concept: '逻辑斯蒂描述"先慢、后快、再慢"的 S 形增长，常用于人口与神经网络。',
+      steps: ['上渐近线是 A + D，下渐近线是 D。', '拐点在 x = C，那里斜率最大。', 'B 控制上升的陡峭程度。'],
+      pitfalls: ['以为曲线会超过上渐近线，其实只是无限接近。', '把 B 当成左右平移——B 只改陡峭程度。'],
+      points: ['从下渐近线平滑爬到上渐近线', '拐点 x = C 处最陡', 'B 越大，中间那段越陡'],
     },
   };
 
@@ -220,6 +341,8 @@
     linear: 'Linear', quadratic: 'Quadratic', reciprocal: 'Reciprocal', sine: 'Sine',
     abs: 'Absolute value', exponential: 'Exponential', sqrt: 'Radical',
     sinAbs: 'Rectified sine', cubic: 'Cubic', recipSq: 'Inverse square',
+    quartic: 'Quartic',
+    log: 'Logarithm', tan: 'Tangent', gauss: 'Gaussian', logistic: 'Logistic',
   };
 
   const LESSON_EN = {
@@ -273,6 +396,110 @@
       'Breaks at x = 0; with A > 0 both sides open upward.',
       'Approaches the horizontal asymptote y = B.',
     ],
+    quartic: [
+      'The leading term sends both ends the same way.',
+      'B and D break the left-right symmetry; C shapes the middle.',
+      'Five parameters fit exactly five points.',
+    ],
+    log: [
+      'Only exists for x > B; the left edge is a vertical asymptote.',
+      'Rises fast near the start, then flattens out.',
+      'Negative A sends the curve down to the right.',
+    ],
+    tan: [
+      'Monotonic inside each period, exploding at both ends.',
+      'Period is π / |B|, half of the sine period.',
+      'C shifts the whole curve up or down.',
+    ],
+    gauss: [
+      'Perfectly symmetric about x = B.',
+      'C is the width: smaller means sharper.',
+      'Both tails approach the horizontal asymptote y = D.',
+    ],
+    logistic: [
+      'Climbs smoothly from the lower to the upper asymptote.',
+      'Steepest at the inflection point x = C.',
+      'Larger B makes the middle section steeper.',
+    ],
+  };
+
+  /* 英文的详细教学：概念 / 步骤 / 常见错误 */
+  const LESSON_EN_EXT = {
+    linear: {
+      concept: 'A linear function describes a constant rate: y changes by A for every unit of x.',
+      steps: ['A is the slope — the average rate Δy / Δx between any two points.', 'Setting x = 0 gives the y-intercept (0, B).'],
+      pitfalls: ['Mistaking B for the slope.', 'A negative A makes the line fall, not just flatten.'],
+    },
+    abs: {
+      concept: 'Absolute value flips negatives to positives, so the graph folds into a V.',
+      steps: ['B places the vertex at x = B.', '|A| controls how wide the V opens; the sign flips it.'],
+      pitfalls: ['The vertex is at x = B, not at the origin.', 'Larger |A| makes the V narrower.'],
+    },
+    quadratic: {
+      concept: 'A quadratic models uniformly accelerating change; its graph is a parabola.',
+      steps: ['The axis of symmetry is x = −B / 2A, and the vertex sits on it.', 'x = 0 gives the intercept (0, C).'],
+      pitfalls: ['Writing the axis as B / 2A and losing the minus sign.', 'A sets the opening direction, not the width alone.'],
+    },
+    reciprocal: {
+      concept: 'A reciprocal keeps the product x·y = A constant; the graph is two branches.',
+      steps: ['x = 0 is a break: two branches, never touching the y-axis.', 'B is the horizontal asymptote as x → ∞.'],
+      pitfalls: ['Expecting the curve to pass through x = 0.', 'Ignoring the vertical shift caused by B.'],
+    },
+    sine: {
+      concept: 'A sine wave is the projection of uniform circular motion — periodic up and down.',
+      steps: ['A is the amplitude above and below the midline y = C.', 'B sets the period: one cycle every 2π / |B|.'],
+      pitfalls: ['Writing the period as 2π·B instead of 2π / B.', 'Treating C as a phase shift — it only moves the wave up or down.'],
+    },
+    exponential: {
+      concept: 'An exponential grows by a fixed factor, so it speeds up as it goes.',
+      steps: ['The base is fixed at 2; B sets how many times it multiplies per unit x.', 'C is the horizontal asymptote as x → −∞.'],
+      pitfalls: ['Expecting the curve to touch y = C; it only approaches it.', 'Negative B means decay, not growth.'],
+    },
+    sqrt: {
+      concept: 'A radical is the inverse of squaring, keeping only the non-negative branch.',
+      steps: ['The domain starts at x = B; nothing exists to the left.', 'It starts at (B, C) and grows ever more slowly.'],
+      pitfalls: ['Looking for the graph left of x = B.', 'Assuming the growth accelerates — it actually flattens.'],
+    },
+    sinAbs: {
+      concept: 'Rectifying a sine flips its lower half upward, producing a pulsing wave.',
+      steps: ['Every trough sits on the line y = C.', 'Adjacent crests are π / |B| apart — half the sine period.'],
+      pitfalls: ['Using 2π / |B| for the crest spacing.', 'Forgetting that C lifts the whole wave.'],
+    },
+    cubic: {
+      concept: 'A cubic sends its two ends in opposite directions — the classic S-shape.',
+      steps: ['A decides the right end: up for A > 0, down for A < 0.', 'B and C together shape the two bends.'],
+      pitfalls: ['Assuming both ends leave in the same direction (that is a quartic).', 'Tuning only A and ignoring B and C.'],
+    },
+    recipSq: {
+      concept: 'Inverse square describes decay that accelerates with distance — gravity, light.',
+      steps: ['Symmetric about the y-axis: an even function.', 'Breaks at x = 0; with A > 0 both sides open upward.'],
+      pitfalls: ['Calling it symmetric about the x-axis.', 'Expecting the curve to pass through the origin.'],
+    },
+    quartic: {
+      concept: 'A quartic sends both ends the same way and can have two valleys or two peaks.',
+      steps: ['The leading term A decides whether both ends rise or fall.', 'Five parameters pin down exactly five points.'],
+      pitfalls: ['Confusing it with a quadratic that has only one valley.', 'Ignoring the left-right asymmetry from B and D.'],
+    },
+    log: {
+      concept: 'A logarithm is the inverse of an exponential: it grows ever more slowly.',
+      steps: ['The domain starts at x = B; x = B is a vertical asymptote.', 'A stretches vertically, C shifts the whole curve.'],
+      pitfalls: ['Looking for the graph at x ≤ B.', 'Treating B as a horizontal asymptote — it is vertical.'],
+    },
+    tan: {
+      concept: 'Tangent is the slope itself: inside each period it runs from −∞ to +∞.',
+      steps: ['The period is π / |B|, half of a sine period.', 'Asymptotes appear where Bx = π/2 + kπ.'],
+      pitfalls: ['Assuming the curve is continuous across periods.', 'Watching one branch and forgetting the others.'],
+    },
+    gauss: {
+      concept: 'A Gaussian is the bell curve: values cluster around a mean.',
+      steps: ['The peak A sits at x = B, the centre of the bell.', 'C is the width: smaller is sharper.'],
+      pitfalls: ['Taking C as the height; the height is A + D.', 'Expecting the tails to meet at a finite point.'],
+    },
+    logistic: {
+      concept: 'A logistic curve grows slowly, then fast, then slowly again — an S-shape.',
+      steps: ['The upper asymptote is A + D, the lower one is D.', 'The inflection point is x = C, where it is steepest.'],
+      pitfalls: ['Expecting the curve to exceed the upper asymptote.', 'Treating B as a horizontal shift — it only changes steepness.'],
+    },
   };
 
   const LEVEL_EN = [
@@ -306,6 +533,26 @@
     { name: 'Composite Pair', hint: 'Radical at right, line at left; a zone sits at the top left.' },
     { name: 'Triple Weave', hint: 'Cubic and rectified sine interleave, one zone guarding each corner.' },
     { name: 'Convergence', hint: 'Final level: cubic, rectified sine and inverse square \u2014 six points, three zones.' },
+    { name: 'Quartic Undulation', hint: 'Both ends of a quartic leave in the same direction. Five points pin down its five parameters.' },
+    { name: 'Twin Valleys', hint: 'A, C and D place the two troughs; a circle zone blocks the lazy straight line.' },
+    { name: 'Multi Peak', hint: 'Five points and two zones \u2014 the quartic has to thread between them.' },
+    { name: 'Logarithm Gate', hint: 'A logarithm only lives for x > B, and it rises ever more slowly.' },
+    { name: 'Log Corridor', hint: 'B shifts the whole curve right; the left edge is a vertical asymptote.' },
+    { name: 'Tangent Wall', hint: 'Tangent shoots to infinity at both ends of each period; only the middle is usable.' },
+    { name: 'Tangent Cycle', hint: 'C lifts the whole branch. Stay on one period, ignore the neighbouring cliff.' },
+    { name: 'Bell Curve', hint: 'A Gaussian is symmetric; C is its width, the smaller the sharper.' },
+    { name: 'Shifted Peak', hint: 'B moves the summit away from the origin, D lifts the whole hill.' },
+    { name: 'Sigmoid Rise', hint: 'A sigmoid climbs from one asymptote to the other; the middle is steepest.' },
+    { name: 'Gentle Rise', hint: 'B sets how steep the climb is, D shifts the whole S-curve.' },
+    { name: 'Log and Line', hint: 'Two curves share the work: the log climbs slowly on the right, the line descends on the left.' },
+    { name: 'Sine and Log', hint: 'Sine on the left, logarithm on the right, two zones pinching the middle.' },
+    { name: 'Bell and Line', hint: 'A Gaussian summit paired with a descending line; mind the lower-left block.' },
+    { name: 'S-curve and Arc', hint: 'The sigmoid starts slow on the left, the parabola takes over the climb.' },
+    { name: 'Three Layers', hint: 'Log, Gaussian and a line each own a stretch of the path.' },
+    { name: 'Mixed Curves', hint: 'Tangent in the middle, sigmoid on the right, parabola filling the left.' },
+    { name: 'Zone Maze', hint: 'Four zones carve the plane into corridors; thread the curve through the gaps.' },
+    { name: 'Finale', hint: 'Final level: four curves, four zones \u2014 everything you have learned.' },
+    { name: 'Sandbox', hint: 'Test level: every function unlocked, up to 10 formulas, view range \u00b120, no zones.' },
   ];
 
   const UI_TEXT = {
@@ -332,6 +579,9 @@
       'panel.forms': '公式区',
       'panel.palette': '公式选择区',
       'panel.settings': '设置区',
+      'tab.forms': '公式',
+      'tab.palette': '选择',
+      'tab.settings': '设置',
       'panel.stopAll': '全部停止',
       'panel.basics': '基础运算 · BASICS',
       'panel.advanced': '进阶函数 · ADVANCED',
@@ -415,6 +665,9 @@
       'panel.forms': 'Formulas',
       'panel.palette': 'Formula Library',
       'panel.settings': 'Settings',
+      'tab.forms': 'Formula',
+      'tab.palette': 'Library',
+      'tab.settings': 'Settings',
       'panel.stopAll': 'Stop All',
       'panel.basics': 'BASICS',
       'panel.advanced': 'ADVANCED',
@@ -498,8 +751,17 @@
     return state.lang === 'en' ? (LEVEL_EN[i]?.hint || lv.hint) : lv.hint;
   }
 
-  function lessonPoints(kind) {
-    return state.lang === 'en' ? (LESSON_EN[kind] || []) : (LESSONS[kind]?.points || []);
+  /* 教学数据：中文用 LESSONS，英文合并 LESSON_EN_EXT 与 LESSON_EN */
+  function lessonData(kind) {
+    const zh = LESSONS[kind] || {};
+    if (state.lang !== 'en') return zh;
+    const en = LESSON_EN_EXT[kind] || {};
+    return {
+      concept: en.concept || zh.concept || '',
+      steps: en.steps || zh.steps || [],
+      pitfalls: en.pitfalls || zh.pitfalls || [],
+      points: LESSON_EN[kind] || zh.points || [],
+    };
   }
 
   function levelTitle(lv, i) {
@@ -578,7 +840,8 @@
 
   /* 公式选择区按通关进度解锁：基础组一开始就有，进阶组逐关开放 */
   const BASIC_KINDS = ['linear', 'abs'];
-  const ADVANCED_KINDS = ['quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs', 'cubic', 'recipSq'];
+  const ADVANCED_KINDS = ['quadratic', 'reciprocal', 'sine', 'exponential', 'sqrt', 'sinAbs',
+    'cubic', 'recipSq', 'quartic', 'log', 'tan', 'gauss', 'logistic'];
   const OPS = [
     { mark: '+', tipKey: 'op.add' },
     { mark: '\u2212', tipKey: 'op.sub' },
@@ -828,6 +1091,172 @@
         { type: 'circle', x: -6, y: -9, r: 1.5 },
       ],
     },
+    {
+      name: '四次起伏',
+      hint: '四次曲线两端同向发散。五个点恰好定死五个参数，先对好中间的低谷。',
+      seed: 'quartic', maxForms: 1, tol: 0.38,
+      points: [{ x: -2, y: 1.2 }, { x: -1, y: 0.2 }, { x: 0, y: 1 }, { x: 1, y: 1.2 }, { x: 2, y: 3.2 }],
+    },
+    {
+      name: '双谷',
+      hint: 'A、C、D 决定两个低谷的位置与深度，左上那处禁区挡住了取巧的直线。',
+      seed: 'quartic', maxForms: 1, tol: 0.36,
+      points: [{ x: -2, y: 0.4 }, { x: -1, y: 0.25 }, { x: 0, y: 1 }, { x: 1, y: 0.85 }, { x: 2, y: 1.6 }],
+      zones: [{ type: 'circle', x: -4.5, y: 4, r: 1.2 }],
+    },
+    {
+      name: '多峰',
+      hint: '最后一关。五个点、两处禁区，四次曲线的两端必须绕开左上与右下。',
+      seed: 'quartic', maxForms: 1, tol: 0.36,
+      points: [{ x: -2, y: 0.8 }, { x: -1, y: 0.7 }, { x: 0, y: 1.2 }, { x: 1, y: 1.1 }, { x: 2, y: 1.6 }],
+      zones: [
+        { type: 'rect', x1: -7, y1: 3, x2: -4, y2: 7 },
+        { type: 'circle', x: 4, y: -3, r: 1.4 },
+      ],
+    },
+    {
+      name: '对数之门',
+      hint: '对数只在 x > B 的地方有图像，越往右增长越慢。',
+      seed: 'log', maxForms: 1, tol: 0.38,
+      points: [{ x: 0.5, y: -1.39 }, { x: 1, y: 0 }, { x: 2, y: 1.39 }, { x: 4, y: 2.77 }],
+    },
+    {
+      name: '对数走廊',
+      hint: 'B 把整条曲线右移，左端有一条看不见的垂直渐近线。',
+      seed: 'log', maxForms: 1, tol: 0.36,
+      points: [{ x: 2, y: 1 }, { x: 3, y: 1.69 }, { x: 5, y: 2.39 }, { x: 9, y: 3.08 }],
+      zones: [
+        { type: 'rect', x1: 6, y1: 4, x2: 11, y2: 9 },
+      ],
+    },
+    {
+      name: '正切之墙',
+      hint: '正切在每个周期的两端冲向无穷，中间那段才是可用的。',
+      seed: 'tan', maxForms: 1, tol: 0.36,
+      points: [{ x: -0.6, y: -2.05 }, { x: -0.3, y: -0.93 }, { x: 0, y: 0 }, { x: 0.3, y: 0.93 }, { x: 0.6, y: 2.05 }],
+    },
+    {
+      name: '正切周期',
+      hint: 'C 抬高整段正切；一次只能盯住一个周期，别被旁边的陡坡带走。',
+      seed: 'tan', maxForms: 1, tol: 0.36,
+      points: [{ x: -1, y: -0.56 }, { x: -0.5, y: 0.45 }, { x: 0, y: 1 }, { x: 0.5, y: 1.55 }, { x: 1, y: 2.56 }],
+    },
+    {
+      name: '钟形',
+      hint: '高斯曲线左右对称，C 是宽度：越小越尖。',
+      seed: 'gauss', maxForms: 1, tol: 0.38,
+      points: [{ x: -2, y: 0.07 }, { x: -1, y: 1.47 }, { x: 0, y: 4 }, { x: 1, y: 1.47 }, { x: 2, y: 0.07 }],
+    },
+    {
+      name: '偏峰',
+      hint: 'B 把峰的顶点挪开原点，D 把整座山抬高。',
+      seed: 'gauss', maxForms: 1, tol: 0.36,
+      points: [{ x: -1, y: 0.55 }, { x: 0, y: 1.6 }, { x: 1, y: 3.5 }, { x: 2, y: 1.6 }, { x: 3, y: 0.55 }],
+      zones: [
+        { type: 'rect', x1: -8, y1: -6, x2: -4, y2: -2 },
+      ],
+    },
+    {
+      name: 'S 形',
+      hint: '逻辑斯蒂从下渐近线爬到上渐近线，中间那一段最陡。',
+      seed: 'logistic', maxForms: 1, tol: 0.38,
+      points: [{ x: -2, y: 0.07 }, { x: -1, y: 0.48 }, { x: 0, y: 2 }, { x: 1, y: 3.52 }, { x: 2, y: 3.93 }],
+    },
+    {
+      name: '缓升',
+      hint: 'B 控制上升的陡峭程度，D 把整条 S 形上下平移。',
+      seed: 'logistic', maxForms: 1, tol: 0.36,
+      points: [{ x: -1, y: -0.64 }, { x: 0, y: -0.19 }, { x: 1, y: 0.5 }, { x: 2, y: 1.19 }, { x: 3, y: 1.64 }],
+      zones: [
+        { type: 'circle', x: 6, y: -5, r: 1.3 },
+      ],
+    },
+    {
+      name: '对数与弦',
+      hint: '两条曲线分工：对数负责右侧缓慢上升，直线负责左侧下行。',
+      seed: 'log', maxForms: 2, tol: 0.36,
+      points: [{ x: 0.5, y: -1.04 }, { x: 1, y: 0 }, { x: 2, y: 1.04 }, { x: -3, y: 4.4 }, { x: -1, y: 2.8 }],
+      zones: [
+        { type: 'rect', x1: 4, y1: 4, x2: 8, y2: 7 },
+      ],
+    },
+    {
+      name: '三角与对数',
+      hint: '正弦在左，对数在右，两处禁区把中间的路挤窄了。',
+      seed: 'sine', maxForms: 2, tol: 0.36,
+      points: [{ x: -1, y: -1.99 }, { x: 0, y: 0 }, { x: 1, y: 1.99 }, { x: 3, y: 1 }, { x: 5, y: 2.1 }, { x: 7, y: 2.61 }],
+      zones: [
+        { type: 'circle', x: -5, y: 6, r: 1.4 },
+        { type: 'rect', x1: 1, y1: 4, x2: 4, y2: 7 },
+      ],
+    },
+    {
+      name: '钟形与弦',
+      hint: '高斯峰顶配合一条下降的直线，注意左下角的方块。',
+      seed: 'gauss', maxForms: 2, tol: 0.36,
+      points: [{ x: -1, y: 2.5 }, { x: 0, y: 5 }, { x: 1, y: 2.5 }, { x: 3, y: -3 }, { x: 5, y: -5 }],
+      zones: [
+        { type: 'rect', x1: -9, y1: -9, x2: -6, y2: -6 },
+      ],
+    },
+    {
+      name: 'S 形与弧',
+      hint: 'S 形在左侧缓慢起步，抛物线接管右侧上升。',
+      seed: 'logistic', maxForms: 2, tol: 0.34,
+      points: [{ x: -3, y: 0.25 }, { x: -1, y: 1.5 }, { x: 0, y: 2.31 }, { x: 2, y: 0 }, { x: 3, y: 1.25 }, { x: 4, y: 3 }],
+      zones: [
+        { type: 'circle', x: -6, y: -5, r: 1.4 },
+        { type: 'rect', x1: -3, y1: -8, x2: 3, y2: -3 },
+      ],
+    },
+    {
+      name: '三层',
+      hint: '对数、高斯、直线各管一段，三条曲线拼出完整路径。',
+      seed: 'log', maxForms: 3, tol: 0.34,
+      points: [{ x: 0.5, y: -0.69 }, { x: 1, y: 0 }, { x: 2.5, y: 3 }, { x: 3.5, y: 0.63 }, { x: -4, y: -4 }, { x: -2, y: -3 }],
+      zones: [
+        { type: 'rect', x1: -10, y1: 7, x2: -6, y2: 11 },
+        { type: 'circle', x: 5, y: -6, r: 1.3 },
+        { type: 'rect', x1: -2, y1: -9, x2: 2, y2: -6 },
+      ],
+    },
+    {
+      name: '混合曲线',
+      hint: '正切负责中段，逻辑斯蒂接管右侧，抛物线补齐左侧。',
+      seed: 'tan', maxForms: 3, tol: 0.34,
+      points: [{ x: -1, y: -1.56 }, { x: 0, y: 0 }, { x: 1, y: 1.56 }, { x: 2, y: 1.24 }, { x: 3, y: 2 }, { x: 4, y: 2.76 }, { x: -2.5, y: -3.5 }, { x: -2, y: -2.6 }],
+    },
+    {
+      name: '禁区迷阵',
+      hint: '四块禁区把图面切成走廊，曲线必须从缝里穿过。',
+      seed: 'gauss', maxForms: 3, tol: 0.32,
+      points: [{ x: -2, y: 0.68 }, { x: 0, y: 4 }, { x: 2, y: 0.68 }, { x: 3, y: -1.04 }, { x: 4.5, y: 1.04 }, { x: 2, y: -1 }, { x: 4, y: 0 }],
+      zones: [
+        { type: 'rect', x1: -10, y1: 6, x2: -6, y2: 10 },
+        { type: 'rect', x1: 5, y1: 6, x2: 9, y2: 10 },
+        { type: 'circle', x: -8, y: -8, r: 1.2 },
+        { type: 'circle', x: 7, y: -6, r: 1.5 },
+      ],
+    },
+    {
+      name: '终章',
+      hint: '最后一关：四条曲线、四处禁区，把学过的一切都用上。',
+      seed: 'sine', maxForms: 4, tol: 0.32,
+      points: [{ x: -2, y: -1.35 }, { x: 0, y: 0 }, { x: 2, y: 1.35 }, { x: 4, y: 1.5 }, { x: 5, y: 2.45 }, { x: -5, y: 1.1 }, { x: -4, y: 3 }, { x: -2.5, y: -0.5 }, { x: 2.5, y: 0.5 }],
+      zones: [
+        { type: 'rect', x1: -10, y1: 7, x2: -6, y2: 11 },
+        { type: 'rect', x1: 6, y1: 7, x2: 10, y2: 11 },
+        { type: 'circle', x: -8, y: -7, r: 1.5 },
+        { type: 'circle', x: 8, y: -7, r: 1.5 },
+      ],
+    },
+    {
+      name: '测试场',
+      hint: '实验关卡：全部函数直接可用，最多 10 条公式，视窗放大到 ±20，没有禁区。',
+      seed: 'linear', maxForms: 10, tol: 0.60, radius: 20,
+      test: true, allKinds: true,
+      points: [{ x: -8, y: -5 }, { x: 0, y: 6 }, { x: 8, y: -3 }],
+    },
   ];
 
   /* ---------------- 官方解法 ----------------
@@ -867,6 +1296,26 @@
     [{ forms: [{ kind: 'sqrt', params: [1, 0, 1] }, { kind: 'linear', params: [0.5, 1] }] }],
     [{ forms: [{ kind: 'cubic', params: [1, 0, -3, 0] }, { kind: 'sinAbs', params: [2, 1, 1] }] }],
     [{ forms: [{ kind: 'cubic', params: [1, 0, -3, 0] }, { kind: 'sinAbs', params: [2, 1, 1] }, { kind: 'recipSq', params: [4, 1] }] }],
+    [{ forms: [{ kind: 'quartic', params: [0.2, 0, -0.5, 0.5, 1] }] }],
+    [{ forms: [{ kind: 'quartic', params: [0.15, 0, -0.6, 0.3, 1] }] }],
+    [{ forms: [{ kind: 'quartic', params: [0.1, 0, -0.4, 0.2, 1.2] }] }],
+    [{ forms: [{ kind: 'log', params: [2, 0, 0] }] }],
+    [{ forms: [{ kind: 'log', params: [1, 1, 1] }] }],
+    [{ forms: [{ kind: 'tan', params: [3, 1, 0] }] }],
+    [{ forms: [{ kind: 'tan', params: [1, 1, 1] }] }],
+    [{ forms: [{ kind: 'gauss', params: [4, 0, 1, 0] }] }],
+    [{ forms: [{ kind: 'gauss', params: [3, 1, 1, 0.5] }] }],
+    [{ forms: [{ kind: 'logistic', params: [4, 2, 0, 0] }] }],
+    [{ forms: [{ kind: 'logistic', params: [3, 1, 1, -1] }] }],
+    [{ forms: [{ kind: 'log', params: [1.5, 0, 0] }, { kind: 'linear', params: [-0.8, 2] }] }],
+    [{ forms: [{ kind: 'sine', params: [2, 1.5, 0] }, { kind: 'log', params: [1, 2, 1] }] }],
+    [{ forms: [{ kind: 'gauss', params: [5, 0, 1.2, 0] }, { kind: 'linear', params: [-1, 0] }] }],
+    [{ forms: [{ kind: 'logistic', params: [3, 1.2, -1, 0] }, { kind: 'quadratic', params: [0.25, 0, -1] }] }],
+    [{ forms: [{ kind: 'log', params: [1, 0, 0] }, { kind: 'gauss', params: [3, 2.5, 0.8, 0] }, { kind: 'linear', params: [0.5, -2] }] }],
+    [{ forms: [{ kind: 'tan', params: [1, 1, 0] }, { kind: 'logistic', params: [2, 2, 3, 1] }, { kind: 'quadratic', params: [-0.4, 0, -1] }] }],
+    [{ forms: [{ kind: 'gauss', params: [4, 0, 1.5, 0] }, { kind: 'log', params: [1.5, 2.5, 0] }, { kind: 'linear', params: [0.5, -2] }] }],
+    [{ forms: [{ kind: 'sine', params: [2, 1.2, 0] }, { kind: 'logistic', params: [3, 1.5, 4, 0] }, { kind: 'gauss', params: [3, -4, 1, 0] }, { kind: 'linear', params: [0.2, 0] }] }],
+    [{ forms: [{ kind: 'quadratic', params: [-0.15625, 0.125, 6] }] }],
   ];
 
   LEVELS.forEach((lv, i) => { lv.solutions = SOLUTIONS[i] || []; });
@@ -874,7 +1323,9 @@
   /* 30 关的中文序号 */
   const ROMAN = ['壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖', '拾',
     '拾壹', '拾贰', '拾叁', '拾肆', '拾伍', '拾陆', '拾柒', '拾捌', '拾玖', '贰拾',
-    '贰拾壹', '贰拾贰', '贰拾叁', '贰拾肆', '贰拾伍', '贰拾陆', '贰拾柒', '贰拾捌', '贰拾玖', '叁拾'];
+    '贰拾壹', '贰拾贰', '贰拾叁', '贰拾肆', '贰拾伍', '贰拾陆', '贰拾柒', '贰拾捌', '贰拾玖', '叁拾',
+    '叁拾壹', '叁拾贰', '叁拾叁', '叁拾肆', '叁拾伍', '叁拾陆', '叁拾柒', '叁拾捌', '叁拾玖', '肆拾',
+    '肆拾壹', '肆拾贰', '肆拾叁', '肆拾肆', '肆拾伍', '肆拾陆', '肆拾柒', '肆拾捌', '肆拾玖', '伍拾'];
 
   /* ---------------- DOM ---------------- */
 
@@ -927,8 +1378,11 @@
     lessonEyebrow: $('#lesson-eyebrow'),
     lessonTitle: $('#lesson-title'),
     lessonForm: $('#lesson-form'),
+    lessonConcept: $('#lesson-concept'),
     lessonCanvas: $('#lesson-canvas'),
+    lessonSteps: $('#lesson-steps'),
     lessonPoints: $('#lesson-points'),
+    lessonPitfalls: $('#lesson-pitfalls'),
     lessonClose: $('#lesson-close'),
     lessonCloseX: $('#lesson-close-x'),
   };
@@ -1021,7 +1475,8 @@
   /* ---------------- 视图计算 ---------------- */
 
   function viewRadius(level) {
-    /* 视窗只由目标点决定，禁区坐标在关卡设计时已保证落在视窗内 */
+    /* 测试场可以直接指定半径，普通关卡由目标点决定 */
+    if (level.radius) return level.radius;
     let m = 0;
     for (const p of level.points) m = Math.max(m, Math.abs(p.x) + Math.abs(p.y));
     return Math.max(6, Math.ceil(m * 2));
@@ -1219,6 +1674,27 @@
 
   /* ---------------- 公式 ---------------- */
 
+  /* ---------------- 移动端分区切换 ---------------- */
+
+  const TAB_QUERY = window.matchMedia('(max-width: 820px)');
+
+  function setPanel(name) {
+    document.querySelectorAll('.panel-tab').forEach((tab) => {
+      const on = tab.dataset.panel === name;
+      tab.classList.toggle('is-active', on);
+      tab.setAttribute('aria-selected', on ? 'true' : 'false');
+      tab.tabIndex = on ? 0 : -1;
+    });
+    document.querySelectorAll('.console .panel').forEach((panel) => {
+      panel.classList.toggle('is-active', panel.dataset.panel === name);
+    });
+  }
+
+  /* 只在标签页布局下自动切换，桌面三栏保持原样 */
+  function focusPanel(name) {
+    if (TAB_QUERY.matches) setPanel(name);
+  }
+
   function addForm(kind, preset) {
     const level = state.level;
     if (!level) return;
@@ -1258,6 +1734,8 @@
     refreshPaletteState();
     updateStats();
     renderHud();
+    /* 手机上添加公式后直接回到参数页，省一次手动切换 */
+    focusPanel('forms');
   }
 
   function removeForm(form) {
@@ -1613,7 +2091,8 @@
     if (!state.level) return;
     const cleared = clearedCount();
     const fresh = state.fresh || [];
-    const openCount = ALL_KINDS.filter((k) => cleared >= unlockLevelOf(k)).length;
+    const allOpen = !!(state.level && state.level.allKinds);
+    const openCount = allOpen ? ALL_KINDS.length : ALL_KINDS.filter((k) => cleared >= unlockLevelOf(k)).length;
 
     dom.paletteTag.textContent = `${openCount} / ${ALL_KINDS.length}`;
     dom.paletteOps.innerHTML = OPS
@@ -1630,7 +2109,7 @@
     kinds.forEach((kind) => {
       const def = KINDS[kind];
       const at = unlockLevelOf(kind);
-      const unlocked = cleared >= at;
+      const unlocked = (state.level && state.level.allKinds) || cleared >= at;
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.dataset.kind = kind;
@@ -1804,9 +2283,24 @@
       ? `${KIND_EN[kind] || def.name}  ${def.short}`
       : `${def.name}  ${def.short}`;
     dom.lessonForm.textContent = def.form;
-    dom.lessonPoints.innerHTML = lessonPoints(kind)
+
+    const data = lessonData(kind);
+    dom.lessonConcept.textContent = data.concept || '';
+    dom.lessonConcept.hidden = !data.concept;
+
+    dom.lessonSteps.innerHTML = (data.steps || [])
+      .map((text, i) => `<li><b>${i + 1}</b><span>${text}</span></li>`)
+      .join('');
+    dom.lessonSteps.hidden = !(data.steps || []).length;
+
+    dom.lessonPoints.innerHTML = (data.points || [])
       .map((text) => `<li><span>${text}</span></li>`)
       .join('');
+
+    dom.lessonPitfalls.innerHTML = (data.pitfalls || [])
+      .map((text) => `<li><span>${text}</span></li>`)
+      .join('');
+    dom.lessonPitfalls.hidden = !(data.pitfalls || []).length;
   }
 
   function openLesson(kind, isNew) {
@@ -2558,14 +3052,14 @@
     dom.levelsGrid.innerHTML = '';
 
     LEVELS.forEach((lv, i) => {
-      const locked = i >= save.unlocked;
+      const locked = !lv.test && i >= save.unlocked;
       const done = !!save.cleared[i];
       const card = document.createElement('button');
       card.type = 'button';
       card.disabled = locked;
       card.className = 'level-card' + (locked ? ' is-locked' : '') + (done ? ' is-cleared' : '');
       card.style.animationDelay = `${Math.min(i * 0.018, 0.4)}s`;
-      const badge = lv.maxForms > 1 ? 'MIX' : (KINDS[lv.seed] || KINDS.linear).short;
+      const badge = lv.test ? 'LAB' : lv.maxForms > 1 ? 'MIX' : (KINDS[lv.seed] || KINDS.linear).short;
       const zc = (lv.zones || []).length;
       card.innerHTML =
         `<span class="lc-index">${String(i + 1).padStart(2, '0')}</span>` +
@@ -2637,6 +3131,20 @@
     if (dom.langSwitch) {
       dom.langSwitch.addEventListener('click', () => setLang(state.lang === 'zh' ? 'en' : 'zh'));
     }
+
+    /* 移动端分区标签页 */
+    const tabButtons = [...document.querySelectorAll('.panel-tab')];
+    tabButtons.forEach((tab) => {
+      tab.addEventListener('click', () => setPanel(tab.dataset.panel));
+      tab.addEventListener('keydown', (e) => {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        const i = tabButtons.indexOf(tab);
+        const next = tabButtons[(i + (e.key === 'ArrowRight' ? 1 : tabButtons.length - 1)) % tabButtons.length];
+        e.preventDefault();
+        setPanel(next.dataset.panel);
+        next.focus();
+      });
+    });
 
     if (dom.btnOpenRepo) {
       dom.btnOpenRepo.addEventListener('click', () => {
@@ -2752,6 +3260,7 @@
       el.textContent = `V${VERSION}`;
     });
     bindUI();
+    setPanel('forms');
     resizeBg();
     renderStartProgress();
     requestAnimationFrame(frame);
