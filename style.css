@@ -1576,6 +1576,133 @@ input.num:focus {
 .lesson-actions .btn { padding: 10px 24px; }
 
 /* ============================================================
+   交互增强：等宽数字、按压反馈、涟漪、对话框细节
+   —— 全部走 transform/opacity 合成层，单次点击只新增一个节点
+   ============================================================ */
+
+/* 数值类文本使用等宽数字，滚动时不会左右抖动 */
+.num,
+.stat b,
+.hud-foot,
+.win-stats b,
+.tag,
+.lc-index,
+.lv-id b { font-variant-numeric: tabular-nums; }
+
+/* 大标题避免孤字 */
+.brand-cn,
+.lesson-title,
+.win-card h2 { text-wrap: balance; }
+
+/* 涟漪容器：裁剪到元素内，避免溢出 */
+.btn,
+.chip,
+.mini-btn,
+.step,
+.stop,
+.sol-apply,
+.fc-del,
+.level-card,
+.palette-item,
+.lang-switch {
+  position: relative;
+  overflow: hidden;
+}
+
+/* 按下反馈 */
+.btn:active { transform: translateY(1px) scale(.995); }
+.chip:active,
+.mini-btn:active,
+.stop:active,
+.sol-apply:active,
+.fc-del:active,
+.lang-switch:active,
+.palette-item:active { transform: translateY(1px) scale(.97); }
+.step:active { transform: translateY(1px) scale(.94); }
+
+/* 键盘焦点可见 */
+.btn:focus-visible,
+.chip:focus-visible,
+.mini-btn:focus-visible,
+.step:focus-visible,
+.stop:focus-visible,
+.sol-apply:focus-visible,
+.fc-del:focus-visible,
+.lang-switch:focus-visible,
+.level-card:focus-visible,
+.palette-item:focus-visible,
+.lesson-close-x:focus-visible {
+  outline: 1px solid rgba(123, 241, 196, .75);
+  outline-offset: 2px;
+}
+
+/* 主按钮的光泽扫过 */
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(104deg, transparent 32%, rgba(255, 255, 255, .3) 47%, transparent 62%);
+  transform: translateX(-130%);
+  transition: transform .55s var(--ease);
+  pointer-events: none;
+}
+.btn-primary:hover::after { transform: translateX(130%); }
+
+/* 点击涟漪 */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(123, 241, 196, .42), rgba(123, 241, 196, 0) 62%);
+  transform: scale(0);
+  animation: rippleOut .52s var(--ease) forwards;
+}
+.btn-primary .ripple,
+.lesson-close-x .ripple {
+  background: radial-gradient(circle, rgba(4, 18, 14, .24), rgba(4, 18, 14, 0) 62%);
+}
+@keyframes rippleOut {
+  to { transform: scale(1); opacity: 0; }
+}
+
+/* 数值正在自动增减时的呼吸高亮 */
+.num.is-live {
+  color: var(--mint);
+  text-shadow: 0 0 10px rgba(123, 241, 196, .45);
+}
+
+/* 教学卡片右上角关闭 */
+.lesson-close-x {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(123, 241, 196, .22);
+  background: transparent;
+  color: var(--dim);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  transition: .2s var(--ease);
+}
+.lesson-close-x:hover {
+  color: var(--mint);
+  border-color: rgba(123, 241, 196, .6);
+  background: rgba(123, 241, 196, .08);
+}
+
+/* 胜利面板统计逐项浮现 */
+.win-stats div { opacity: 0; animation: rise .42s var(--ease) both; }
+.win-stats div:nth-child(1) { animation-delay: .06s; }
+.win-stats div:nth-child(2) { animation-delay: .12s; }
+.win-stats div:nth-child(3) { animation-delay: .18s; }
+.win-stats div:nth-child(4) { animation-delay: .24s; }
+.win-stats div:nth-child(5) { animation-delay: .3s; }
+
+/* ============================================================
    Toast
    ============================================================ */
 /* ---------- 语言切换 ---------- */

@@ -925,6 +925,7 @@
     lessonCanvas: $('#lesson-canvas'),
     lessonPoints: $('#lesson-points'),
     lessonClose: $('#lesson-close'),
+    lessonCloseX: $('#lesson-close-x'),
   };
 
   /* ---------------- 状态 ---------------- */
@@ -1105,6 +1106,8 @@
     document.querySelectorAll('.screen').forEach((el) => {
       el.classList.toggle('is-active', el.id === `screen-${name}`);
     });
+    /* 切屏时把没来得及结束的点击涟漪清掉，避免隐藏屏里留下节点 */
+    document.querySelectorAll('.ripple').forEach((el) => el.remove());
     state.screen = name;
     dom.bg.style.opacity = name === 'game' ? '0' : '1';
     if (name === 'game') {
@@ -1553,6 +1556,8 @@
       btn.setAttribute('aria-pressed', active ? 'true' : 'false');
     }
     stop.disabled = param.dir === 0;
+    /* 自动增减时给数值加呼吸高亮 */
+    param.el.input.classList.toggle('is-live', param.dir !== 0);
   }
 
   function stopAll() {
@@ -2646,9 +2651,37 @@
     }
 
     dom.lessonClose.addEventListener('click', closeLesson);
+    if (dom.lessonCloseX) dom.lessonCloseX.addEventListener('click', closeLesson);
     dom.lesson.addEventListener('click', (e) => {
       if (e.target === dom.lesson) closeLesson();
     });
+
+    /* 点击涟漪：每次只新增一个节点，动画结束立即回收，不驻留内存 */
+    const RIPPLE_HOSTS = '.btn, .chip, .mini-btn, .step, .stop, .sol-apply, .fc-del,'
+      + '.level-card, .palette-item, .lang-switch, .lesson-close-x';
+    document.addEventListener('pointerdown', (e) => {
+      const host = e.target.closest(RIPPLE_HOSTS);
+      if (!host || host.disabled) return;
+      const rect = host.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height) * 1.9;
+      const dot = document.createElement('span');
+      dot.className = 'ripple';
+      dot.style.width = `${size}px`;
+      dot.style.height = `${size}px`;
+      dot.style.left = `${e.clientX - rect.left - size / 2}px`;
+      dot.style.top = `${e.clientY - rect.top - size / 2}px`;
+      host.appendChild(dot);
+      let dropped = false;
+      const drop = () => {
+        if (dropped) return;
+        dropped = true;
+        dot.remove();
+      };
+      /* 切屏/关面板时元素会被隐藏，动画可能既不发 end 也不发 cancel，加一个兜底 */
+      dot.addEventListener('animationend', drop, { once: true });
+      dot.addEventListener('animationcancel', drop, { once: true });
+      setTimeout(drop, 700);
+    }, { passive: true });
 
     dom.optGrid.addEventListener('change', () => { state.opts.grid = dom.optGrid.checked; });
     dom.optTicks.addEventListener('change', () => { state.opts.ticks = dom.optTicks.checked; });

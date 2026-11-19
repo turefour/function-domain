@@ -9,7 +9,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2305090a'/%3E%3Cpath d='M3 25 C 9 25 9 7 16 7 S 23 25 29 25' stroke='%237bf1c4' stroke-width='2' fill='none'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,600&family=IBM+Plex+Mono:wght@300;400;500;600&family=Noto+Serif+SC:wght@400;600;900&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700;9..144,900&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@400;600;900&display=swap" rel="stylesheet" />
 <style>
 @charset "UTF-8";
 
@@ -1589,6 +1589,133 @@ input.num:focus {
 .lesson-actions .btn { padding: 10px 24px; }
 
 /* ============================================================
+   交互增强：等宽数字、按压反馈、涟漪、对话框细节
+   —— 全部走 transform/opacity 合成层，单次点击只新增一个节点
+   ============================================================ */
+
+/* 数值类文本使用等宽数字，滚动时不会左右抖动 */
+.num,
+.stat b,
+.hud-foot,
+.win-stats b,
+.tag,
+.lc-index,
+.lv-id b { font-variant-numeric: tabular-nums; }
+
+/* 大标题避免孤字 */
+.brand-cn,
+.lesson-title,
+.win-card h2 { text-wrap: balance; }
+
+/* 涟漪容器：裁剪到元素内，避免溢出 */
+.btn,
+.chip,
+.mini-btn,
+.step,
+.stop,
+.sol-apply,
+.fc-del,
+.level-card,
+.palette-item,
+.lang-switch {
+  position: relative;
+  overflow: hidden;
+}
+
+/* 按下反馈 */
+.btn:active { transform: translateY(1px) scale(.995); }
+.chip:active,
+.mini-btn:active,
+.stop:active,
+.sol-apply:active,
+.fc-del:active,
+.lang-switch:active,
+.palette-item:active { transform: translateY(1px) scale(.97); }
+.step:active { transform: translateY(1px) scale(.94); }
+
+/* 键盘焦点可见 */
+.btn:focus-visible,
+.chip:focus-visible,
+.mini-btn:focus-visible,
+.step:focus-visible,
+.stop:focus-visible,
+.sol-apply:focus-visible,
+.fc-del:focus-visible,
+.lang-switch:focus-visible,
+.level-card:focus-visible,
+.palette-item:focus-visible,
+.lesson-close-x:focus-visible {
+  outline: 1px solid rgba(123, 241, 196, .75);
+  outline-offset: 2px;
+}
+
+/* 主按钮的光泽扫过 */
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(104deg, transparent 32%, rgba(255, 255, 255, .3) 47%, transparent 62%);
+  transform: translateX(-130%);
+  transition: transform .55s var(--ease);
+  pointer-events: none;
+}
+.btn-primary:hover::after { transform: translateX(130%); }
+
+/* 点击涟漪 */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(123, 241, 196, .42), rgba(123, 241, 196, 0) 62%);
+  transform: scale(0);
+  animation: rippleOut .52s var(--ease) forwards;
+}
+.btn-primary .ripple,
+.lesson-close-x .ripple {
+  background: radial-gradient(circle, rgba(4, 18, 14, .24), rgba(4, 18, 14, 0) 62%);
+}
+@keyframes rippleOut {
+  to { transform: scale(1); opacity: 0; }
+}
+
+/* 数值正在自动增减时的呼吸高亮 */
+.num.is-live {
+  color: var(--mint);
+  text-shadow: 0 0 10px rgba(123, 241, 196, .45);
+}
+
+/* 教学卡片右上角关闭 */
+.lesson-close-x {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(123, 241, 196, .22);
+  background: transparent;
+  color: var(--dim);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  transition: .2s var(--ease);
+}
+.lesson-close-x:hover {
+  color: var(--mint);
+  border-color: rgba(123, 241, 196, .6);
+  background: rgba(123, 241, 196, .08);
+}
+
+/* 胜利面板统计逐项浮现 */
+.win-stats div { opacity: 0; animation: rise .42s var(--ease) both; }
+.win-stats div:nth-child(1) { animation-delay: .06s; }
+.win-stats div:nth-child(2) { animation-delay: .12s; }
+.win-stats div:nth-child(3) { animation-delay: .18s; }
+.win-stats div:nth-child(4) { animation-delay: .24s; }
+.win-stats div:nth-child(5) { animation-delay: .3s; }
+
+/* ============================================================
    Toast
    ============================================================ */
 /* ---------- 语言切换 ---------- */
@@ -1908,6 +2035,7 @@ html[lang="en"] .brand-en {
 <!-- ==================== 函数教学 ==================== -->
 <div class="lesson" id="lesson" hidden>
   <div class="lesson-card">
+    <button class="lesson-close-x" id="lesson-close-x" type="button" aria-label="关闭">✕</button>
     <p class="lesson-eyebrow mono" id="lesson-eyebrow">NEW FUNCTION</p>
     <h2 class="lesson-title" id="lesson-title">一次函数</h2>
     <p class="lesson-form mono" id="lesson-form">y = A x + B</p>
@@ -2853,6 +2981,7 @@ html[lang="en"] .brand-en {
     lessonCanvas: $('#lesson-canvas'),
     lessonPoints: $('#lesson-points'),
     lessonClose: $('#lesson-close'),
+    lessonCloseX: $('#lesson-close-x'),
   };
 
   /* ---------------- 状态 ---------------- */
@@ -3033,6 +3162,8 @@ html[lang="en"] .brand-en {
     document.querySelectorAll('.screen').forEach((el) => {
       el.classList.toggle('is-active', el.id === `screen-${name}`);
     });
+    /* 切屏时把没来得及结束的点击涟漪清掉，避免隐藏屏里留下节点 */
+    document.querySelectorAll('.ripple').forEach((el) => el.remove());
     state.screen = name;
     dom.bg.style.opacity = name === 'game' ? '0' : '1';
     if (name === 'game') {
@@ -3481,6 +3612,8 @@ html[lang="en"] .brand-en {
       btn.setAttribute('aria-pressed', active ? 'true' : 'false');
     }
     stop.disabled = param.dir === 0;
+    /* 自动增减时给数值加呼吸高亮 */
+    param.el.input.classList.toggle('is-live', param.dir !== 0);
   }
 
   function stopAll() {
@@ -4574,9 +4707,37 @@ html[lang="en"] .brand-en {
     }
 
     dom.lessonClose.addEventListener('click', closeLesson);
+    if (dom.lessonCloseX) dom.lessonCloseX.addEventListener('click', closeLesson);
     dom.lesson.addEventListener('click', (e) => {
       if (e.target === dom.lesson) closeLesson();
     });
+
+    /* 点击涟漪：每次只新增一个节点，动画结束立即回收，不驻留内存 */
+    const RIPPLE_HOSTS = '.btn, .chip, .mini-btn, .step, .stop, .sol-apply, .fc-del,'
+      + '.level-card, .palette-item, .lang-switch, .lesson-close-x';
+    document.addEventListener('pointerdown', (e) => {
+      const host = e.target.closest(RIPPLE_HOSTS);
+      if (!host || host.disabled) return;
+      const rect = host.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height) * 1.9;
+      const dot = document.createElement('span');
+      dot.className = 'ripple';
+      dot.style.width = `${size}px`;
+      dot.style.height = `${size}px`;
+      dot.style.left = `${e.clientX - rect.left - size / 2}px`;
+      dot.style.top = `${e.clientY - rect.top - size / 2}px`;
+      host.appendChild(dot);
+      let dropped = false;
+      const drop = () => {
+        if (dropped) return;
+        dropped = true;
+        dot.remove();
+      };
+      /* 切屏/关面板时元素会被隐藏，动画可能既不发 end 也不发 cancel，加一个兜底 */
+      dot.addEventListener('animationend', drop, { once: true });
+      dot.addEventListener('animationcancel', drop, { once: true });
+      setTimeout(drop, 700);
+    }, { passive: true });
 
     dom.optGrid.addEventListener('change', () => { state.opts.grid = dom.optGrid.checked; });
     dom.optTicks.addEventListener('change', () => { state.opts.ticks = dom.optTicks.checked; });
