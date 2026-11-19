@@ -25,7 +25,7 @@
 
   /* 判定与手感相关的固定数值，集中在这里方便统一调整 */
   const MIN_TOL_PX = 5;        // 命中判定允许的最小像素容差
-  const STOP_RATIO = 0.65;     // 自动停机阈值 = 命中阈值 × 该比例
+  /* 自动停机与命中判定共用同一个阈值，避免冲过容差圈 */
   const ZONE_EPS = 0.14;       // 禁区判定容差（世界单位）
   const SQRT_MARGIN = 0.3;     // 根式定义域向左留白，避免起点落进采样缝隙
   const WIN_HOLD = 0.26;       // 全部命中后需要保持的秒数
@@ -1687,10 +1687,16 @@
     const W = Math.max(160, Math.floor(rect.width));
     const H = Math.max(160, Math.floor(rect.height));
     const dpr = Math.min(2, window.devicePixelRatio || 1);
-    dom.plot.width = Math.floor(W * dpr);
-    dom.plot.height = Math.floor(H * dpr);
-    dom.plot.style.width = W + 'px';
-    dom.plot.style.height = H + 'px';
+    const bw = Math.floor(W * dpr);
+    const bh = Math.floor(H * dpr);
+
+    /* 只有画布尺寸真的变了才重设，否则会把内容清空、看起来像闪了一下 */
+    if (dom.plot.width !== bw || dom.plot.height !== bh) {
+      dom.plot.width = bw;
+      dom.plot.height = bh;
+    }
+    if (dom.plot.style.width !== `${W}px`) dom.plot.style.width = `${W}px`;
+    if (dom.plot.style.height !== `${H}px`) dom.plot.style.height = `${H}px`;
 
     const pad = Math.max(8, Math.min(26, Math.min(W, H) * 0.055));
     const size = Math.max(140, Math.min(W - pad * 2, H - pad * 2, 820));
@@ -3021,30 +3027,28 @@
     if (!view || state.won || state.paused) return;
 
     const tolPx = Math.max(MIN_TOL_PX, state.level.tol * view.scale);
-    /* 停机阈值比命中阈值更严，停下来的位置更贴近光点中心 */
-    const stopTol = tolPx * STOP_RATIO;
     const running = hasRunning();
     let all = true;
     let sig = '';
     let autoStop = '';
 
-    for (const t of state.targets) {
-      const px = sx(t.x);
-      const py = sy(t.y);
+    /* 注意：循环变量不能叫 t，否则会遮蔽翻译函数 t() */
+    const tr = t;
+    for (const target of state.targets) {
+      const px = sx(target.x);
+      const py = sy(target.y);
       let best = Infinity;
       for (const c of state.segments) {
         if (!c.segs.length) continue;
         best = Math.min(best, minDist(c.segs, px, py));
         if (best <= tolPx) break;
       }
-      const wasNear = t.near;
-      t.hit = best <= tolPx;
-      /* 自动增减时曲线扫到光点就立刻停住，避免惯性冲过头 */
-      const near = best <= stopTol;
-      if (near && !wasNear && running) autoStop = t('toast.hitStop');
-      t.near = near;
-      sig += t.hit ? '1' : '0';
-      if (!t.hit) all = false;
+      const wasHit = target.hit;
+      target.hit = best <= tolPx;
+      /* 命中即停：阈值与过关判定一致，避免自动增减一口气冲过整个容差圈 */
+      if (target.hit && !wasHit && running) autoStop = tr('toast.hitStop');
+      sig += target.hit ? '1' : '0';
+      if (!target.hit) all = false;
     }
 
     /* 参数签名没变且没有自动增减时，跳过解法匹配的整表遍历 */
@@ -3086,6 +3090,8 @@
     }
 
     if (all && !breach) {
+      /* 全部命中后立刻停表，否则最后一个点可能在 hold 累积期间被冲出去 */
+      if (running) stopAll();
       state.hold += dt;
       if (state.hold > WIN_HOLD) triggerWin();
     } else {
@@ -3458,10 +3464,8 @@
     dom.optGuides.addEventListener('change', () => { state.opts.guides = dom.optGuides.checked; });
     dom.optTarget.addEventListener('change', () => { state.opts.target = dom.optTarget.checked; });
 
-    window.addEventListener('resize', () => {
-      resizeBg();
-      if (state.screen === 'game') computeView();
-    });
+    /* 背景画布跟着窗口走；图像区交给 ResizeObserver，避免一次缩放算两遍 */
+    window.addEventListener('resize', resizeBg);
 
     if (window.ResizeObserver) {
       new ResizeObserver(() => {
@@ -3491,17 +3495,27 @@
 
   let lastTs = performance.now();
 
+  let frameErrors = 0;
+
   function frame(ts) {
     const dt = clamp((ts - lastTs) / 1000, 0, 0.06);
     lastTs = ts;
     const time = ts / 1000;
 
-    if (state.screen === 'game') {
-      if (!state.paused && !state.won) updateParams(dt);
-      renderPlot(time);
-      checkWin(dt);
-    } else {
-      drawBg(time);
+    try {
+      if (state.screen === 'game') {
+        if (!state.paused && !state.won) updateParams(dt);
+        renderPlot(time);
+        checkWin(dt);
+      } else {
+        drawBg(time);
+      }
+    } catch (e) {
+      /* 单帧异常不应终止整个动画循环；只打印前几次，避免刷屏 */
+      if (frameErrors < 5) {
+        frameErrors += 1;
+        console.error('[frame]', e && e.message ? e.message : e);
+      }
     }
 
     requestAnimationFrame(frame);
