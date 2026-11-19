@@ -2311,6 +2311,62 @@ html[lang="en"] .brand-en {
   .win-stats { gap: 16px; }
 }
 
+/* ============================================================
+   自定义滚动条：替换浏览器默认样式
+   —— 方角细条 + 薄荷渐变滑块，与深色终端面板同一套语言
+   ============================================================ */
+
+/* Firefox 专用：Chromium 一旦读到标准属性就会忽略下面的 WebKit 伪元素，
+   所以这里用 @supports 隔离，保证两套浏览器各走各的 */
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(123, 241, 196, .32) rgba(123, 241, 196, .04);
+  }
+}
+
+/* WebKit / Blink */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(123, 241, 196, .035);
+  box-shadow: inset 1px 0 0 rgba(123, 241, 196, .1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(123, 241, 196, .42), rgba(123, 241, 196, .14));
+  border: 1px solid rgba(123, 241, 196, .2);
+  border-radius: 1px;
+  min-height: 32px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(123, 241, 196, .7), rgba(123, 241, 196, .3));
+  border-color: rgba(123, 241, 196, .48);
+  box-shadow: 0 0 9px rgba(123, 241, 196, .34);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: var(--mint);
+  border-color: var(--mint);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* 弹窗内的滚动条再收窄一点 */
+.lesson::-webkit-scrollbar,
+.err-card::-webkit-scrollbar,
+.err-stack::-webkit-scrollbar,
+.fb-text::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: .001ms !important;
@@ -2329,7 +2385,7 @@ html[lang="en"] .brand-en {
 <section class="screen screen-start is-active" id="screen-start">
   <div class="start-wrap">
     <div class="start-copy">
-      <p class="eyebrow"><span class="pip"></span>INTERACTIVE ATLAS OF CURVES <span class="sl">/</span> <span class="mono" data-version>V1.1.1</span></p>
+      <p class="eyebrow"><span class="pip"></span>INTERACTIVE ATLAS OF CURVES <span class="sl">/</span> <span class="mono" data-version>V1.1.2</span></p>
       <h1 class="brand">
         <span class="brand-cn">函数域</span>
         <span class="brand-en">FUNCTION <em>DOMAIN</em></span>
@@ -2495,7 +2551,7 @@ html[lang="en"] .brand-en {
             </div>
             <div class="gh-row">
               <span class="gh-label" data-i18n="gh.version">版本</span>
-              <span class="gh-value mono" data-version>V1.1.1</span>
+              <span class="gh-value mono" data-version>V1.1.2</span>
             </div>
             <p class="gh-hint" data-i18n="gh.hint">在 GitHub 搜索 turefour/function-domain 即可找到源码与单文件版本。</p>
             <div class="gh-actions">
@@ -2606,9 +2662,47 @@ html[lang="en"] .brand-en {
   const pt = (c) => String.fromCharCode(65 + c);
 
   /* 版本号单一来源：页面展示、单文件命名、发布说明都读这里 */
-  const VERSION = '1.1.1';
+  const VERSION = '1.1.2';
 
   const COLORS = ['#7bf1c4', '#7cc6ff', '#ffc06a', '#ff9db0'];
+
+  /* ---------------- 关卡主题色 ----------------
+     只影响图像区的底色光晕、网格线与边框，纯视觉，不参与任何判定
+     -------------------------------------------- */
+
+  const THEMES = {
+    mint:   { glow: '43, 146, 118',  line: '123, 241, 196' },
+    azure:  { glow: '34, 88, 140',   line: '124, 198, 255' },
+    amber:  { glow: '132, 92, 32',   line: '255, 192, 106' },
+    violet: { glow: '82, 62, 142',   line: '170, 152, 255' },
+    rose:   { glow: '132, 54, 72',   line: '255, 125, 140' },
+    slate:  { glow: '64, 82, 86',    line: '196, 220, 214' },
+  };
+
+  const THEME_BY_KIND = {
+    linear: 'mint', abs: 'mint', sqrt: 'mint',
+    quadratic: 'azure', cubic: 'azure', quartic: 'azure',
+    reciprocal: 'amber', recipSq: 'amber', exponential: 'amber', log: 'amber',
+    sine: 'violet', sinAbs: 'violet', tan: 'violet',
+    gauss: 'rose', logistic: 'rose',
+  };
+
+  /* 同色系之间再按关卡序号做一点明暗差，避免同类关长得一模一样 */
+  function themeOf(level, index) {
+    let key = 'mint';
+    if (level) {
+      if (level.test) key = 'slate';
+      else if (level.challenge) key = 'violet';
+      else key = THEME_BY_KIND[level.seed] || 'mint';
+    }
+    const base = THEMES[key] || THEMES.mint;
+    const idx = Number.isFinite(index) ? index : 0;
+    const shade = 0.86 + ((idx * 3) % 5) * 0.07;
+    return { key, glow: base.glow, line: base.line, shade };
+  }
+
+  const DEFAULT_THEME = { key: 'mint', glow: '43, 146, 118', line: '123, 241, 196', shade: 1 };
+  const themeNow = () => state.theme || DEFAULT_THEME;
 
   /* 判定与手感相关的固定数值，集中在这里方便统一调整 */
   const MIN_TOL_PX = 5;        // 命中判定允许的最小像素容差
@@ -4983,6 +5077,7 @@ html[lang="en"] .brand-en {
     solutionMatch: null,
     lang: 'zh',
     page: 'base',
+    theme: null,
   };
 
   let view = null;
@@ -5185,6 +5280,7 @@ html[lang="en"] .brand-en {
     hideWin();
     state.levelIndex = index;
     state.level = level;
+    state.theme = themeOf(level, index);
     state.forms = [];
     state.won = false;
     state.paused = false;
@@ -6133,8 +6229,14 @@ html[lang="en"] .brand-en {
     ctx.rect(left, top, size, size);
     ctx.clip();
 
-    const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, size * 0.72);
-    glow.addColorStop(0, 'rgba(32, 96, 82, 0.26)');
+    const th = themeNow();
+
+    /* 一层薄薄的关卡主色，让每关的底色能直接看出来 */
+    ctx.fillStyle = `rgba(${th.glow}, ${(0.1 * th.shade).toFixed(3)})`;
+    ctx.fillRect(left, top, size, size);
+
+    const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, size * 0.62);
+    glow.addColorStop(0, `rgba(${th.glow}, ${(0.34 * th.shade).toFixed(3)})`);
     glow.addColorStop(1, 'rgba(4, 10, 11, 0)');
     ctx.fillStyle = glow;
     ctx.fillRect(left, top, size, size);
@@ -6151,7 +6253,7 @@ html[lang="en"] .brand-en {
     ctx.restore();
 
     /* 视窗边框 */
-    ctx.strokeStyle = 'rgba(123, 241, 196, 0.2)';
+    ctx.strokeStyle = `rgba(${th.line}, ${(0.22 * th.shade).toFixed(3)})`;
     ctx.lineWidth = 1;
     ctx.strokeRect(Math.round(left) + 0.5, Math.round(top) + 0.5, Math.round(size) - 1, Math.round(size) - 1);
   }
@@ -6162,6 +6264,7 @@ html[lang="en"] .brand-en {
     const R = state.viewR;
     const right = left + size;
     const bottom = top + size;
+    const th = themeNow();
 
     for (let i = -R; i <= R; i++) {
       if (i === 0) continue;
@@ -6170,7 +6273,9 @@ html[lang="en"] .brand-en {
       const y = Math.round(cy - i * scale) + 0.5;
 
       ctx.lineWidth = 1;
-      ctx.strokeStyle = major ? 'rgba(123, 241, 196, 0.18)' : 'rgba(123, 241, 196, 0.075)';
+      ctx.strokeStyle = major
+        ? `rgba(${th.line}, ${(0.24 * th.shade).toFixed(3)})`
+        : `rgba(${th.line}, ${(0.1 * th.shade).toFixed(3)})`;
 
       ctx.beginPath();
       ctx.moveTo(x, top);
@@ -6633,19 +6738,76 @@ html[lang="en"] .brand-en {
      期间首个参数做轻微「呼吸」，看起来一直在缓慢变化。
      ---------------------------------------------- */
 
+  /* 首页曲线样本：从单条逐步过渡到三层叠加，越往后越复杂 */
+  const START_COLORS = ['#7bf1c4', '#7cc6ff', '#ffc06a'];
+
   const START_SAMPLES = [
-    { kind: 'sine', params: [2, 1.2, 0] },
-    { kind: 'sine', params: [1.6, 2.1, 0] },
-    { kind: 'sinAbs', params: [2.2, 1.4, -1.6] },
-    { kind: 'quadratic', params: [0.42, 0, -2.4] },
-    { kind: 'cubic', params: [0.1, 0, -1.1, 0] },
-    { kind: 'quartic', params: [0.05, 0, -0.8, 0, 1.1] },
-    { kind: 'gauss', params: [3.6, 0, 1.5, -0.6] },
-    { kind: 'logistic', params: [4.6, 1.6, 0, -2.3] },
-    { kind: 'log', params: [2.2, -3, 0] },
-    { kind: 'recipSq', params: [2.6, 0.4] },
-    { kind: 'exponential', params: [0.9, 0.85, -1.4] },
-    { kind: 'tan', params: [1.4, 0.8, 0] },
+    /* 单层：基础形态 */
+    { layers: [{ kind: 'sine', params: [2, 1.2, 0] }] },
+    { layers: [{ kind: 'gauss', params: [3.6, 0, 1.5, -0.6] }] },
+    { layers: [{ kind: 'tan', params: [1.4, 0.8, 0] }] },
+
+    /* 双层：两条曲线分工 */
+    {
+      layers: [
+        { kind: 'sine', params: [1.9, 1.1, 0.3] },
+        { kind: 'quadratic', params: [0.3, 0, -2.2] },
+      ],
+    },
+    {
+      layers: [
+        { kind: 'logistic', params: [3.2, 1.6, -1.4, -1.4] },
+        { kind: 'gauss', params: [2.4, 1.8, 1.1, -0.4] },
+      ],
+    },
+    {
+      layers: [
+        { kind: 'log', params: [2.2, -2.5, 0] },
+        { kind: 'sine', params: [1.4, 2.2, 0.2] },
+      ],
+    },
+    {
+      layers: [
+        { kind: 'cubic', params: [0.12, 0, -1.2, 0] },
+        { kind: 'sinAbs', params: [1.6, 1.6, -1.4] },
+      ],
+    },
+    {
+      layers: [
+        { kind: 'quartic', params: [0.06, 0, -0.9, 0, 1.1] },
+        { kind: 'linear', params: [-0.8, 1.6] },
+      ],
+    },
+
+    /* 三层：叠加成复合图景 */
+    {
+      layers: [
+        { kind: 'sine', params: [1.8, 1.4, 0.2] },
+        { kind: 'logistic', params: [2.6, 1.4, 1.8, -1.2] },
+        { kind: 'quadratic', params: [-0.22, 0, 1.6] },
+      ],
+    },
+    {
+      layers: [
+        { kind: 'gauss', params: [2.8, -1.2, 1.1, 0] },
+        { kind: 'gauss', params: [2.2, 1.6, 0.9, -0.4] },
+        { kind: 'linear', params: [0.32, -0.6] },
+      ],
+    },
+    {
+      layers: [
+        { kind: 'tan', params: [1.1, 0.7, 0] },
+        { kind: 'log', params: [1.8, -3, -0.8] },
+        { kind: 'sine', params: [1.2, 2.6, 0] },
+      ],
+    },
+    {
+      layers: [
+        { kind: 'quartic', params: [0.05, 0, -0.7, 0, 1.3] },
+        { kind: 'cubic', params: [-0.1, 0, 1.4, 0] },
+        { kind: 'sinAbs', params: [1.4, 2, -1.6] },
+      ],
+    },
   ];
 
   const START_SWAP_MS = 5000;
@@ -6666,10 +6828,13 @@ html[lang="en"] .brand-en {
     startView = { W: rect.width, H: rect.height, dpr, R: 6 };
   }
 
+  const startSig = (s) => (s && s.layers ? s.layers.map((l) => l.kind).join('|') : '');
+
   function pickStartSample(exclude) {
+    const skip = startSig(exclude);
     for (let i = 0; i < 8; i++) {
       const s = START_SAMPLES[Math.floor(Math.random() * START_SAMPLES.length)];
-      if (!exclude || s.kind !== exclude.kind) return s;
+      if (!exclude || startSig(s) !== skip) return s;
     }
     return START_SAMPLES[0];
   }
@@ -6701,53 +6866,70 @@ html[lang="en"] .brand-en {
     const ox = (W - size) / 2;
     const oy = (H - size) / 2;
     const scale = size / (2 * R);
-    const wobble = 1 + Math.sin(time * 0.7) * 0.07;
+
+    /* 裁剪到坐标系方框内，避免曲线冲出边框显得像渲染错误 */
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(ox, oy, size, size);
+    ctx.clip();
 
     const strokeOne = (sample, alpha) => {
       if (!sample || alpha <= 0.02) return;
-      const fn = KINDS[sample.kind].f;
-      const params = sample.params.map((v, i) => (i === 0 ? v * wobble : v));
+      const layers = sample.layers || [];
 
-      ctx.save();
-      ctx.globalAlpha = alpha;
-      ctx.strokeStyle = 'rgba(123, 241, 196, .92)';
-      ctx.lineWidth = 1.6;
-      ctx.lineCap = 'round';
-      ctx.shadowColor = 'rgba(123, 241, 196, .55)';
-      ctx.shadowBlur = 8;
-      ctx.beginPath();
+      /* 多层叠加：每条曲线用自己的颜色与呼吸相位 */
+      layers.forEach((layer, li) => {
+        const fn = KINDS[layer.kind] && KINDS[layer.kind].f;
+        if (!fn) return;
 
-      let pen = false;
-      for (let px = 0; px <= size; px += 2) {
-        const x = (px - size / 2) / scale;
-        let y;
-        try {
-          y = fn(x, params);
-        } catch (e) {
-          y = NaN;
+        const color = START_COLORS[li % START_COLORS.length];
+        const breathe = 1 + Math.sin(time * 0.7 + li * 1.7) * 0.07;
+        const params = layer.params.map((v, i) => (i === 0 ? v * breathe : v));
+
+        ctx.save();
+        ctx.globalAlpha = alpha * (1 - li * 0.22);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.6 - li * 0.16;
+        ctx.lineCap = 'round';
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 8 - li * 1.6;
+        ctx.beginPath();
+
+        let pen = false;
+        for (let px = 0; px <= size; px += 2) {
+          const x = (px - size / 2) / scale;
+          let y;
+          try {
+            y = fn(x, params);
+          } catch (e) {
+            y = NaN;
+          }
+          if (!Number.isFinite(y) || Math.abs(y) > R * 1.35) {
+            pen = false;
+            continue;
+          }
+          const gx = ox + px;
+          const gy = oy + size / 2 - y * scale;
+          if (pen) ctx.lineTo(gx, gy);
+          else { ctx.moveTo(gx, gy); pen = true; }
         }
-        if (!Number.isFinite(y) || Math.abs(y) > R * 1.35) {
-          pen = false;
-          continue;
-        }
-        const gx = ox + px;
-        const gy = oy + size / 2 - y * scale;
-        if (pen) ctx.lineTo(gx, gy);
-        else { ctx.moveTo(gx, gy); pen = true; }
-      }
-      ctx.stroke();
-      ctx.restore();
+        ctx.stroke();
+        ctx.restore();
+      });
     };
 
     const t = clamp((now - startState.switchedAt) / (START_FADE * 1000), 0, 1);
     strokeOne(startState.prev, 1 - t);
     strokeOne(startState.cur, t);
+
+    ctx.restore();
   }
 
   function drawBg(time) {
     const { w, h, dpr } = bgSize;
     if (!w || !h) return;
     const ctx = bgCtx;
+    const th = state.screen === 'game' ? themeNow() : DEFAULT_THEME;
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
@@ -6785,8 +6967,44 @@ html[lang="en"] .brand-en {
         if (x === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       }
-      ctx.strokeStyle = k % 2 ? 'rgba(255, 192, 106, 0.05)' : 'rgba(123, 241, 196, 0.065)';
+      ctx.strokeStyle = k % 2
+        ? `rgba(255, 192, 106, ${(0.05 * th.shade).toFixed(3)})`
+        : `rgba(${th.line}, ${(0.065 * th.shade).toFixed(3)})`;
       ctx.stroke();
+    }
+
+    drawBgFx(ctx, w, h, time);
+  }
+
+  /* 背景流光：一条横扫的斜向光带 + 若干竖直数据流，纯装饰、按时间驱动 */
+  const BG_STREAMS = Array.from({ length: 14 }, (_, i) => ({
+    x: (i * 0.0723 + 0.041) % 1,
+    off: (i * 0.371) % 1,
+    len: 26 + ((i * 17) % 42),
+    speed: 24 + ((i * 13) % 36),
+  }));
+
+  function drawBgFx(ctx, w, h, time) {
+    const th = state.screen === 'game' ? themeNow() : DEFAULT_THEME;
+
+    /* 1) 斜向流光带，缓慢横扫全屏 */
+    const bandW = Math.max(170, w * 0.15);
+    const travel = w + bandW * 2;
+    const bx = ((time * 44) % travel) - bandW;
+    const band = ctx.createLinearGradient(bx - bandW, 0, bx + bandW, h * 0.45);
+    band.addColorStop(0, `rgba(${th.line}, 0)`);
+    band.addColorStop(0.5, `rgba(${th.line}, ${(0.05 * th.shade).toFixed(3)})`);
+    band.addColorStop(1, `rgba(${th.line}, 0)`);
+    ctx.fillStyle = band;
+    ctx.fillRect(bx - bandW, 0, bandW * 2, h);
+
+    /* 2) 竖直数据流：短光条循环下落，纯色填充，零额外对象 */
+    ctx.fillStyle = `rgba(${th.line}, ${(0.055 * th.shade).toFixed(3)})`;
+    for (let i = 0; i < BG_STREAMS.length; i++) {
+      const s = BG_STREAMS[i];
+      const span = h + s.len;
+      const y = ((time * s.speed + s.off * span) % span) - s.len;
+      ctx.fillRect(s.x * w, y, 1.1, s.len);
     }
   }
 

@@ -2298,6 +2298,62 @@ html[lang="en"] .brand-en {
   .win-stats { gap: 16px; }
 }
 
+/* ============================================================
+   自定义滚动条：替换浏览器默认样式
+   —— 方角细条 + 薄荷渐变滑块，与深色终端面板同一套语言
+   ============================================================ */
+
+/* Firefox 专用：Chromium 一旦读到标准属性就会忽略下面的 WebKit 伪元素，
+   所以这里用 @supports 隔离，保证两套浏览器各走各的 */
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(123, 241, 196, .32) rgba(123, 241, 196, .04);
+  }
+}
+
+/* WebKit / Blink */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(123, 241, 196, .035);
+  box-shadow: inset 1px 0 0 rgba(123, 241, 196, .1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(123, 241, 196, .42), rgba(123, 241, 196, .14));
+  border: 1px solid rgba(123, 241, 196, .2);
+  border-radius: 1px;
+  min-height: 32px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(123, 241, 196, .7), rgba(123, 241, 196, .3));
+  border-color: rgba(123, 241, 196, .48);
+  box-shadow: 0 0 9px rgba(123, 241, 196, .34);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: var(--mint);
+  border-color: var(--mint);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* 弹窗内的滚动条再收窄一点 */
+.lesson::-webkit-scrollbar,
+.err-card::-webkit-scrollbar,
+.err-stack::-webkit-scrollbar,
+.fb-text::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: .001ms !important;
