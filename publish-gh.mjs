@@ -24,6 +24,7 @@ const bundle = `函数域-V${version}.html`;
 const FILES = [
   'index.html', 'style.css', 'game.js', bundle,
   'build-standalone.mjs', 'check-data.mjs', 'publish-gh.mjs',
+  'README.md', 'LICENSE',
 ];
 
 /* 1. 先重建单文件版本，避免把过期的产物推上去 */
