@@ -532,7 +532,15 @@
     { name: 'Inverse Square', hint: 'Inverse square is symmetric about the y-axis, opening upward on both sides.' },
     { name: 'Composite Pair', hint: 'Radical at right, line at left; a zone sits at the top left.' },
     { name: 'Triple Weave', hint: 'Cubic and rectified sine interleave, one zone guarding each corner.' },
-    { name: 'Convergence', hint: 'Final level: cubic, rectified sine and inverse square \u2014 six points, three zones.' },
+    {
+      name: 'Convergence',
+      hint: 'Final level: cubic, rectified sine and inverse square \u2014 six points, three zones.',
+      brief: {
+        plan: 'Six points, three groups: cubic on the diagonal, rectified sine for the two flat tops, inverse square for the rest.',
+        steps: ['(−2,−2) and (2,2) are symmetric: a cubic with A=1, C=−3 sends the two ends apart.', '(−1,5) and (1,5) share a height — the rectified sine crests with A=2, B=1, C=1.', '(0,1) and (3.14,1) are covered by the inverse square A=4, B=1.'],
+        pitfalls: ['All three curves must avoid the three zones, including their extensions.'],
+      },
+    },
     { name: 'Quartic Undulation', hint: 'Both ends of a quartic leave in the same direction. Five points pin down its five parameters.' },
     { name: 'Twin Valleys', hint: 'A, C and D place the two troughs; a circle zone blocks the lazy straight line.' },
     { name: 'Multi Peak', hint: 'Five points and two zones \u2014 the quartic has to thread between them.' },
@@ -544,14 +552,78 @@
     { name: 'Shifted Peak', hint: 'B moves the summit away from the origin, D lifts the whole hill.' },
     { name: 'Sigmoid Rise', hint: 'A sigmoid climbs from one asymptote to the other; the middle is steepest.' },
     { name: 'Gentle Rise', hint: 'B sets how steep the climb is, D shifts the whole S-curve.' },
-    { name: 'Log and Line', hint: 'Two curves share the work: the log climbs slowly on the right, the line descends on the left.' },
-    { name: 'Sine and Log', hint: 'Sine on the left, logarithm on the right, two zones pinching the middle.' },
-    { name: 'Bell and Line', hint: 'A Gaussian summit paired with a descending line; mind the lower-left block.' },
-    { name: 'S-curve and Arc', hint: 'The sigmoid starts slow on the left, the parabola takes over the climb.' },
-    { name: 'Three Layers', hint: 'Log, Gaussian and a line each own a stretch of the path.' },
-    { name: 'Mixed Curves', hint: 'Tangent in the middle, sigmoid on the right, parabola filling the left.' },
-    { name: 'Zone Maze', hint: 'Four zones carve the plane into corridors; thread the curve through the gaps.' },
-    { name: 'Finale', hint: 'Final level: four curves, four zones \u2014 everything you have learned.' },
+    {
+      name: 'Log and Line',
+      hint: 'Two curves share the work: the log climbs slowly on the right, the line descends on the left.',
+      brief: {
+        plan: 'Two collinear points on the left, three on a logarithm on the right.',
+        steps: ['(−3,4.4) and (−1,2.8) have slope −0.8: line A=−0.8, B=2.', 'The log points all sit at x>0: A=1.5, B=0, rising slowly.', 'The lower-right zone sits below y=−2 — watch the line extension.'],
+        pitfalls: ['One curve cannot pass all five points at this degree.'],
+      },
+    },
+    {
+      name: 'Sine and Log',
+      hint: 'Sine on the left, logarithm on the right, two zones pinching the middle.',
+      brief: {
+        plan: 'Sine takes the left three points, logarithm takes the right three.',
+        steps: ['Sine A=2, B=1.5: period about 4.2, covering −1 to 1.', 'Log A=1, B=2: domain starts at x=2, heights from 1 to 2.85 across x=3,5,7.', 'Both zones sit clear of the two curves.'],
+        pitfalls: ['Setting the log B to 1 pulls the domain left and adds an unwanted branch.'],
+      },
+    },
+    {
+      name: 'Bell and Line',
+      hint: 'A Gaussian summit paired with a descending line; mind the lower-left block.',
+      brief: {
+        plan: 'Gaussian owns the three summit points, the line covers the descent.',
+        steps: ['Gaussian A=5, B=0, C=1.2: peak at the origin, about 2.5 tall at x=±1.', '(3,−3) and (5,−5) lie on y=−x: line A=−1, B=0.', 'The lower-left block stays clear.'],
+        pitfalls: ['A smaller C sharpens the peak and breaks the height at x=±1.'],
+      },
+    },
+    {
+      name: 'S-curve and Arc',
+      hint: 'The sigmoid starts slow on the left, the parabola takes over the climb.',
+      brief: {
+        plan: 'The sigmoid covers the slow start on the left; the parabola takes the climb.',
+        steps: ['Logistic A=3, B=1.2, C=−1: the inflection moves to x=−1.', 'Parabola A=0.25, C=−1: starts at (2,0) and accelerates upward.', 'Both zones sit below and do not block the path.'],
+        pitfalls: ['The asymptotes are 0 and 3 — points beyond that cannot be reached.'],
+      },
+    },
+    {
+      name: 'Three Layers',
+      hint: 'Log, Gaussian and a line each own a stretch of the path.',
+      brief: {
+        plan: 'Six points split across three curves: log two, Gaussian two, line two.',
+        steps: ['Log A=1, B=0: passes (0.5,−0.69) and (1,0).', 'Gaussian A=3, B=2.5, C=0.8: peak at (2.5,3), (3.5,0.65) on the slope.', 'Line A=0.5, B=−2: covers (−4,−4) and (−2,−3).'],
+        pitfalls: ['Gaussian and log overlap near x≈2 — decide which owns that side first.'],
+      },
+    },
+    {
+      name: 'Mixed Curves',
+      hint: 'Tangent in the middle, sigmoid on the right, parabola filling the left.',
+      brief: {
+        plan: 'Tangent in the middle, sigmoid on the right, parabola on the left.',
+        steps: ['Tangent A=1, B=1: climbs from (−1,−1.56) to (1,1.56).', 'Logistic A=2, B=2, C=3, D=1: from (2,1.24) up to (4,2.76).', 'Parabola A=−0.4, C=−1: catches (−2.5,−3.5) and (−2,−2.6).'],
+        pitfalls: ['Tangent has many branches — lock onto the middle one first.'],
+      },
+    },
+    {
+      name: 'Zone Maze',
+      hint: 'Four zones carve the plane into corridors; thread the curve through the gaps.',
+      brief: {
+        plan: 'Four zones cut the plane into corridors; three curves take the middle, right and left.',
+        steps: ['Gaussian A=4, B=0, C=1.5: peak at the origin, covering −2, 0, 2.', 'Log A=1.5, B=2.5: only for x>2.5, covering the two right points.', 'Line A=0.5, B=−2: covers the lower-middle pair.'],
+        pitfalls: ['The log tail dives to −∞ and easily hits the lower-left circle.'],
+      },
+    },
+    {
+      name: 'Finale',
+      hint: 'Final level: four curves, four zones \u2014 everything you have learned.',
+      brief: {
+        plan: 'Four curves, four zones: sine in the middle, sigmoid on the right, Gaussian top-left, line linking.',
+        steps: ['Sine A=2, B=1.2: covers (−2,−1.86), (0,0), (2,1.86).', 'Logistic A=3, B=1.5, C=4: right side points near its upper asymptote.', 'Gaussian A=3, B=−4, C=1: summit at (−4,3) and (−5,1.1).', 'Line A=0.2: links (−2.5,−0.5) and (2.5,0.5).'],
+        pitfalls: ['Four zones guard the four corners — no extension may touch them.'],
+      },
+    },
     { name: 'Sandbox', hint: 'Test level: every function unlocked, up to 10 formulas, view range \u00b120, no zones.' },
   ];
 
@@ -595,6 +667,7 @@
       'btn.home': '返回主页 · 选择关卡',
       'btn.remember': '记住了',
       'btn.apply': '套用',
+      'brief.title': '关卡讲解 / LEVEL BRIEF',
       'sol.title': '官方解法 / SOLUTIONS',
       'sol.standard': '标准解法',
       'sol.split': '分线解法',
@@ -681,6 +754,7 @@
       'btn.home': 'Home · Levels',
       'btn.remember': 'Got it',
       'btn.apply': 'Apply',
+      'brief.title': 'LEVEL BRIEF',
       'sol.title': 'SOLUTIONS',
       'sol.standard': 'Standard solution',
       'sol.split': 'Split solution',
@@ -831,6 +905,7 @@
       renderPalette();
       renderTargetList();
       renderZoneList();
+      renderBrief();
       renderSolutions();
       updateStats();
       if (!dom.lesson.hidden && state.lessonKind) fillLesson(state.lessonKind, state.lessonIsNew);
@@ -1083,6 +1158,11 @@
     {
       name: '收敛',
       hint: '最后一关。三次、整流正弦与平方反比三条曲线，六点三禁区。',
+      brief: {
+        plan: '六个点分三组：三次曲线管对角，整流正弦压住上下两条水平段，平方反比补剩下的点。',
+        steps: ['(−2,−2) 与 (2,2) 关于原点对称，三次曲线 A=1、C=−3 能让两端反向发散。', '(−1,5) 与 (1,5) 在同一高度，交给整流正弦的波峰 A=2、B=1、C=1。', '(0,1) 与 (3.14,1) 由平方反比 A=4、B=1 收尾，注意它关于 y 轴对称。'],
+        pitfalls: ['三条曲线都要绕开三处禁区，延长线也别撞进去。'],
+      },
       seed: 'cubic', maxForms: 4, tol: 0.29,
       points: [{ x: -2, y: -2 }, { x: 2, y: 2 }, { x: 0, y: 1 }, { x: 3.14, y: 1 }, { x: 1, y: 5 }, { x: -1, y: 5 }],
       zones: [
@@ -1174,6 +1254,11 @@
     {
       name: '对数与弦',
       hint: '两条曲线分工：对数负责右侧缓慢上升，直线负责左侧下行。',
+      brief: {
+        plan: '左边两点共线，右边三点在同一条对数曲线上，两条曲线各管一段。',
+        steps: ['(−3,4.4) 与 (−1,2.8) 的斜率是 −0.8，用直线 A=−0.8、B=2 拿下。', '对数三点都在 x>0：A=1.5、B=0，从原点右侧缓慢上升。', '右下禁区在 y<−2 一带，直线延长后会经过，注意别越界。'],
+        pitfalls: ['想用一条曲线穿完五点，五次以下基本做不到。'],
+      },
       seed: 'log', maxForms: 2, tol: 0.36,
       points: [{ x: 0.5, y: -1.04 }, { x: 1, y: 0 }, { x: 2, y: 1.04 }, { x: -3, y: 4.4 }, { x: -1, y: 2.8 }],
       zones: [
@@ -1183,6 +1268,11 @@
     {
       name: '三角与对数',
       hint: '正弦在左，对数在右，两处禁区把中间的路挤窄了。',
+      brief: {
+        plan: '左边三点交给正弦，右边三点交给对数。',
+        steps: ['正弦 A=2、B=1.5：周期约 4.2，正好覆盖 −1 到 1。', '对数 A=1、B=2：定义域从 x=2 开始，x=3、5、7 三点高度从 1 到 2.85。', '左上圆形与右下矩形禁区都落在两条曲线之外。'],
+        pitfalls: ['对数的 B 调到 1 会让定义域提前，曲线往左多长出一段。'],
+      },
       seed: 'sine', maxForms: 2, tol: 0.36,
       points: [{ x: -1, y: -1.99 }, { x: 0, y: 0 }, { x: 1, y: 1.99 }, { x: 3, y: 1 }, { x: 5, y: 2.1 }, { x: 7, y: 2.61 }],
       zones: [
@@ -1193,6 +1283,11 @@
     {
       name: '钟形与弦',
       hint: '高斯峰顶配合一条下降的直线，注意左下角的方块。',
+      brief: {
+        plan: '高斯负责峰顶三点，直线接管右侧的下降段。',
+        steps: ['高斯 A=5、B=0、C=1.2：顶点在原点，x=±1 处高度约 2.5。', '(3,−3) 与 (5,−5) 落在 y=−x 上，用直线 A=−1、B=0。', '左下矩形禁区在两段曲线之外。'],
+        pitfalls: ['高斯的 C 调小会让峰变尖，±1 处的高度就对不上了。'],
+      },
       seed: 'gauss', maxForms: 2, tol: 0.36,
       points: [{ x: -1, y: 2.5 }, { x: 0, y: 5 }, { x: 1, y: 2.5 }, { x: 3, y: -3 }, { x: 5, y: -5 }],
       zones: [
@@ -1202,6 +1297,11 @@
     {
       name: 'S 形与弧',
       hint: 'S 形在左侧缓慢起步，抛物线接管右侧上升。',
+      brief: {
+        plan: '左侧三点在 S 形的起步段，右侧三点交给抛物线。',
+        steps: ['逻辑斯蒂 A=3、B=1.2、C=−1：拐点左移到 x=−1，起步更缓。', '抛物线 A=0.25、C=−1：从 (2,0) 开始向上加速。', '两处禁区都在下方，不挡主线。'],
+        pitfalls: ['S 形的上下渐近线是 0 和 3，点位超出这个范围就调不到了。'],
+      },
       seed: 'logistic', maxForms: 2, tol: 0.34,
       points: [{ x: -3, y: 0.25 }, { x: -1, y: 1.5 }, { x: 0, y: 2.31 }, { x: 2, y: 0 }, { x: 3, y: 1.25 }, { x: 4, y: 3 }],
       zones: [
@@ -1212,6 +1312,11 @@
     {
       name: '三层',
       hint: '对数、高斯、直线各管一段，三条曲线拼出完整路径。',
+      brief: {
+        plan: '六个点分给三条曲线：对数两点、高斯两点、直线两点。',
+        steps: ['对数 A=1、B=0：经过 (0.5,−0.69) 与 (1,0)。', '高斯 A=3、B=2.5、C=0.8：峰顶在 (2.5,3)，(3.5,0.65) 在下降段。', '直线 A=0.5、B=−2：负责左下 (−4,−4) 与 (−2,−3)。', '三处禁区分别在右上、左上与下方。'],
+        pitfalls: ['高斯与对数在 x≈2 附近会重叠，先想清楚谁负责哪一侧。'],
+      },
       seed: 'log', maxForms: 3, tol: 0.34,
       points: [{ x: 0.5, y: -0.69 }, { x: 1, y: 0 }, { x: 2.5, y: 3 }, { x: 3.5, y: 0.63 }, { x: -4, y: -4 }, { x: -2, y: -3 }],
       zones: [
@@ -1223,12 +1328,22 @@
     {
       name: '混合曲线',
       hint: '正切负责中段，逻辑斯蒂接管右侧，抛物线补齐左侧。',
+      brief: {
+        plan: '正切管中段，逻辑斯蒂管右侧，抛物线补左侧。',
+        steps: ['正切 A=1、B=1：在 (−1,−1.56) 到 (1,1.56) 之间单调上升。', '逻辑斯蒂 A=2、B=2、C=3、D=1：从 (2,1.24) 爬到 (4,2.76)。', '抛物线 A=−0.4、C=−1：接住左侧 (−2.5,−3.5)、(−2,−2.6) 的下降段。'],
+        pitfalls: ['正切分支极多，先对准中段那一条，别被旁边的陡坡带走。'],
+      },
       seed: 'tan', maxForms: 3, tol: 0.34,
       points: [{ x: -1, y: -1.56 }, { x: 0, y: 0 }, { x: 1, y: 1.56 }, { x: 2, y: 1.24 }, { x: 3, y: 2 }, { x: 4, y: 2.76 }, { x: -2.5, y: -3.5 }, { x: -2, y: -2.6 }],
     },
     {
       name: '禁区迷阵',
       hint: '四块禁区把图面切成走廊，曲线必须从缝里穿过。',
+      brief: {
+        plan: '四块禁区把平面切成走廊，三条曲线分别走中、右、左。',
+        steps: ['高斯 A=4、B=0、C=1.5：峰在原点，覆盖 −2、0、2 三点。', '对数 A=1.5、B=2.5：只在 x>2.5 有图像，负责右侧两点。', '直线 A=0.5、B=−2：负责左下到中部的两点。', '禁区在四个角落，曲线都不能延长进去。'],
+        pitfalls: ['对数左端冲向 −∞，很容易撞到左下的圆形禁区。'],
+      },
       seed: 'gauss', maxForms: 3, tol: 0.32,
       points: [{ x: -2, y: 0.68 }, { x: 0, y: 4 }, { x: 2, y: 0.68 }, { x: 3, y: -1.04 }, { x: 4.5, y: 1.04 }, { x: 2, y: -1 }, { x: 4, y: 0 }],
       zones: [
@@ -1241,6 +1356,11 @@
     {
       name: '终章',
       hint: '最后一关：四条曲线、四处禁区，把学过的一切都用上。',
+      brief: {
+        plan: '四条曲线、四处禁区：正弦守中段，逻辑斯蒂走右侧，高斯占左上，直线串联。',
+        steps: ['正弦 A=2、B=1.2：覆盖 (−2,−1.86)、(0,0)、(2,1.86)。', '逻辑斯蒂 A=3、B=1.5、C=4：右侧 (4,2.6)、(5,2.93) 已接近上渐近线。', '高斯 A=3、B=−4、C=1：左上峰顶 (−5,1.1)、(−4,3)。', '直线 A=0.2：串联 (−2.5,−0.5) 与 (2.5,0.5)。'],
+        pitfalls: ['四块禁区守在四角，任何一条曲线的延长线都不能碰到。'],
+      },
       seed: 'sine', maxForms: 4, tol: 0.32,
       points: [{ x: -2, y: -1.35 }, { x: 0, y: 0 }, { x: 2, y: 1.35 }, { x: 4, y: 1.5 }, { x: 5, y: 2.45 }, { x: -5, y: 1.1 }, { x: -4, y: 3 }, { x: -2.5, y: -0.5 }, { x: 2.5, y: 0.5 }],
       zones: [
@@ -1370,6 +1490,10 @@
     optTarget: $('#opt-target'),
     solutionsBlock: $('#solutions-block'),
     solutionList: $('#solution-list'),
+    briefBlock: $('#brief-block'),
+    briefPlan: $('#brief-plan'),
+    briefSteps: $('#brief-steps'),
+    briefPitfalls: $('#brief-pitfalls'),
     langSwitch: $('#lang-switch'),
     githubBlock: $('#github-block'),
     btnOpenRepo: $('#btn-open-repo'),
@@ -1634,6 +1758,7 @@
     renderPalette();
     renderTargetList();
     renderZoneList();
+    renderBrief();
     renderSolutions();
     updateStats();
 
@@ -2238,6 +2363,26 @@
     [...state.forms].forEach((form) => removeForm(form));
     sol.forms.forEach((spec) => addForm(spec.kind, spec.params));
     toast(t('toast.applySol', { name: solLabel(sol) }), true);
+  }
+
+  /* 多公式关的分步讲解；没写 brief 的关卡整块隐藏 */
+  function renderBrief() {
+    if (!dom.briefBlock) return;
+    const idx = state.levelIndex;
+    const brief = state.level
+      ? (state.lang === 'en' ? (LEVEL_EN[idx] && LEVEL_EN[idx].brief) : state.level.brief)
+      : null;
+
+    dom.briefBlock.hidden = !brief;
+    if (!brief) return;
+
+    dom.briefPlan.textContent = brief.plan || '';
+    dom.briefSteps.innerHTML = (brief.steps || [])
+      .map((text, i) => `<li><b>${i + 1}</b><span>${text}</span></li>`)
+      .join('');
+    dom.briefPitfalls.innerHTML = (brief.pitfalls || [])
+      .map((text) => `<li><span>${text}</span></li>`)
+      .join('');
   }
 
   function renderSolutions() {

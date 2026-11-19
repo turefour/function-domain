@@ -1315,6 +1315,97 @@ input.num:focus {
   gap: 6px 10px;
 }
 
+/* ---------- 关卡讲解 ---------- */
+.brief-block {
+  border: 1px solid rgba(123, 241, 196, .16);
+  background: rgba(123, 241, 196, .028);
+}
+.brief-block[hidden] { display: none; }
+.brief-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 8px;
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .16em;
+  color: rgba(123, 241, 196, .82);
+  cursor: pointer;
+  list-style: none;
+}
+.brief-title::-webkit-details-marker { display: none; }
+.brief-title::after { content: '+'; opacity: .7; }
+.brief-block[open] .brief-title::after { content: '\2212'; }
+
+.brief-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 8px 8px;
+}
+.brief-plan {
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.65;
+  color: var(--ink);
+}
+.brief-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.brief-steps li {
+  display: flex;
+  gap: 7px;
+  font-size: 9.5px;
+  line-height: 1.6;
+  color: var(--dim);
+}
+.brief-steps b {
+  flex: 0 0 14px;
+  height: 14px;
+  margin-top: 1px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(123, 241, 196, .3);
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 500;
+  color: var(--mint);
+}
+.brief-pitfalls {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 2px 0 0;
+  padding: 7px 0 0;
+  border-top: 1px dashed rgba(255, 125, 140, .18);
+  list-style: none;
+}
+.brief-pitfalls li {
+  display: flex;
+  gap: 6px;
+  font-size: 9px;
+  line-height: 1.55;
+  color: rgba(255, 157, 168, .8);
+}
+.brief-pitfalls li::before {
+  content: '!';
+  flex: 0 0 12px;
+  height: 12px;
+  margin-top: 1px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 125, 140, .42);
+  font-family: var(--mono);
+  font-size: 7px;
+  color: var(--rose);
+}
+
 .solutions-block {
   border: 1px solid rgba(123, 241, 196, .16);
   background: rgba(123, 241, 196, .028);
