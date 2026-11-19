@@ -683,10 +683,11 @@
       'gh.version': '版本',
       'fb.title': '反馈 / FEEDBACK',
       'fb.placeholder': '遇到问题或有建议？写在这里（最多 500 字）。',
-      'fb.hint': '每分钟最多提交一次，内容会记录到本地表格。',
+      'fb.hint': '每分钟最多提交一次；请勿包含广告、脚本或攻击性内容。',
       'fb.send': '提交',
       'fb.sending': '提交中',
       'fb.ok': '反馈已记录，谢谢',
+      'fb.review': '反馈已收到，我们会尽快查看',
       'fb.empty': '内容太短，至少写两个字',
       'fb.limit': '每分钟只能提交一次，{s} 秒后可再试',
       'fb.offline': '离线版无法提交，请通过服务器地址访问',
@@ -780,10 +781,11 @@
       'gh.version': 'Version',
       'fb.title': 'FEEDBACK',
       'fb.placeholder': 'Found a bug or have an idea? Write it here (max 500 chars).',
-      'fb.hint': 'One submission per minute; entries are saved to a local sheet.',
+      'fb.hint': 'One submission per minute; please avoid ads, scripts or abusive language.',
       'fb.send': 'Send',
       'fb.sending': 'Sending',
       'fb.ok': 'Feedback saved, thanks',
+      'fb.review': 'Received — we will review it soon',
       'fb.empty': 'Too short — write at least two characters',
       'fb.limit': 'One per minute — try again in {s}s',
       'fb.offline': 'Offline build cannot submit; open it from the server',
@@ -3309,7 +3311,7 @@
         dom.fbText.value = '';
         updateFbCount();
         try { localStorage.setItem(FB_KEY, String(Date.now())); } catch (e) { /* 忽略 */ }
-        toast(t('fb.ok'), true);
+        toast(t(data.quarantined ? 'fb.review' : 'fb.ok'), true);
       } else if (res.status === 429) {
         toast(t('fb.limit', { s: data.retryAfter || 60 }));
       } else {
